@@ -165,6 +165,8 @@
     let draggedShape = null;
     let shapeColor = '#90caf9'; // Цвет блоков по умолчанию
     let shapeOffsets = []; // Список смещений для фигуры
+    let shapeRows = 0; // Количество строк в фигуре
+    let shapeCols = 0; // Количество столбцов в фигуре
 
     document.querySelectorAll('.shape').forEach(shape => {
         shape.addEventListener('dragstart', () => {
@@ -173,11 +175,17 @@
 
             // Рассчитываем смещения блоков фигуры
             const blocks = shape.querySelectorAll('.block');
-            const shapeSize = Math.sqrt(blocks.length);
-            shapeOffsets = Array.from(blocks).map((_, index) => ({
-                row: Math.floor(index / shapeSize),
-                col: index % shapeSize,
-            }));
+            shapeRows = 0;
+            shapeCols = 0;
+
+            // Рассчитываем размеры фигуры (строки и столбцы)
+            shapeOffsets = Array.from(blocks).map((_, index) => {
+                const row = Math.floor(index / 3); // По строкам (зависит от количества блоков в строке)
+                const col = index % 3; // По столбцам
+                shapeRows = Math.max(shapeRows, row + 1);
+                shapeCols = Math.max(shapeCols, col + 1);
+                return { row, col };
+            });
 
             setTimeout(() => shape.classList.add('dragging'), 0);
         });
@@ -266,6 +274,7 @@
             startRow + offset.row === targetRow;
     }
 </script>
+
 
 
 </body>
