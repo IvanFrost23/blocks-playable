@@ -88,6 +88,39 @@
             background: url('crystal.png') no-repeat center center;
             background-size: contain;
         }
+
+        #shapes-container {
+            position: absolute;
+            bottom: 50px; /* Adjust based on layout */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 480px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shape {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background-color: #ddd;
+            padding: 10px;
+            border: 2px solid #aaa;
+            border-radius: 5px;
+            cursor: grab;
+        }
+
+        .shape .block {
+            width: 30px;
+            height: 30px;
+            background-color: #90caf9;
+            border: 1px solid #64b5f6;
+        }
+
+        .dragging {
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
@@ -100,28 +133,98 @@
 
     <!-- 8x8 Playing Field -->
     <div id="playing-field"></div>
+
+    <!-- Shapes Container -->
+    <div id="shapes-container">
+        <div class="shape" draggable="true">
+            <div class="block"></div>
+            <div class="block"></div>
+            <div class="block"></div>
+        </div>
+        <div class="shape" draggable="true">
+            <div class="block"></div>
+            <div class="block"></div>
+        </div>
+        <div class="shape" draggable="true">
+            <div class="block"></div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Populate the playing field with 64 cells
     const playingField = document.getElementById('playing-field');
+    const cells = [];
+
     for (let i = 0; i < 64; i++) {
         const cell = document.createElement('div');
         cell.classList.add('cell');
-
-        // Randomize cell content (color and crystal)
-        const colors = ['red', 'blue', 'yellow', 'green'];
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        cell.classList.add(randomColor);
-
-        if (Math.random() < 0.3) { // 30% chance to have a crystal
-            const crystal = document.createElement('div');
-            crystal.classList.add('crystal');
-            cell.appendChild(crystal);
-        }
-
         playingField.appendChild(cell);
+        cells.push(cell);
     }
+
+    // Drag-and-drop functionality
+    let draggedShape = null;
+
+    document.querySelectorAll('.shape').forEach(shape => {
+        shape.addEventListener('dragstart', (e) => {
+            draggedShape = shape; // Сохраняем текущую фигуру
+            setTimeout(() => shape.classList.add('dragging'), 0);
+        });
+
+        shape.addEventListener('dragend', () => {
+            draggedShape.classList.remove('dragging');
+            draggedShape = null;
+        });
+    });
+
+    playingField.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+
+    playingField.addEventListener('drop', (e) => {
+        if (!draggedShape) return;
+
+        const targetCellIndex = Array.from(playingField.children).indexOf(e.target);
+        const targetCell = cells[targetCellIndex];
+
+        if (targetCell && targetCell.classList.contains('cell')) {
+            const blocks = draggedShape.querySelectorAll('.block');
+            const shapeSize = Math.sqrt(blocks.length);
+
+            let canPlace = true;
+
+            // Проверка возможности размещения
+            blocks.forEach((block, index) => {
+                const rowOffset = Math.floor(index / shapeSize);
+                const colOffset = index % shapeSize;
+                const cellIndex = targetCellIndex + rowOffset * 8 + colOffset;
+
+                if (
+                    cellIndex >= 64 || // Выход за границы поля
+                    Math.floor((targetCellIndex + colOffset) / 8) !== Math.floor(targetCellIndex / 8) + rowOffset || // Смена ряда
+                    cells[cellIndex].children.length > 0 // Ячейка занята
+                ) {
+                    canPlace = false;
+                }
+            });
+
+            if (canPlace) {
+                // Размещаем блоки
+                blocks.forEach((block, index) => {
+                    const rowOffset = Math.floor(index / shapeSize);
+                    const colOffset = index % shapeSize;
+                    const cellIndex = targetCellIndex + rowOffset * 8 + colOffset;
+
+                    if (cells[cellIndex]) {
+                        cells[cellIndex].appendChild(block.cloneNode(true)); // Копируем блок
+                    }
+                });
+
+                // Удаляем оригинальную фигуру
+                draggedShape.remove();
+            }
+        }
+    });
 </script>
 
 </body>
