@@ -150,11 +150,11 @@
         </div>
     </div>
 </div>
-
 <script>
     const playingField = document.getElementById('playing-field');
     const cells = [];
 
+    // Создание ячеек игрового поля
     for (let i = 0; i < 64; i++) {
         const cell = document.createElement('div');
         cell.classList.add('cell');
@@ -162,70 +162,111 @@
         cells.push(cell);
     }
 
-    // Drag-and-drop functionality
     let draggedShape = null;
+    let shapeColor = '#90caf9'; // Цвет блоков по умолчанию
+    let shapeOffsets = []; // Список смещений для фигуры
 
     document.querySelectorAll('.shape').forEach(shape => {
-        shape.addEventListener('dragstart', (e) => {
+        shape.addEventListener('dragstart', () => {
             draggedShape = shape; // Сохраняем текущую фигуру
+            shapeColor = getComputedStyle(shape.querySelector('.block')).backgroundColor;
+
+            // Рассчитываем смещения блоков фигуры
+            const blocks = shape.querySelectorAll('.block');
+            const shapeSize = Math.sqrt(blocks.length);
+            shapeOffsets = Array.from(blocks).map((_, index) => ({
+                row: Math.floor(index / shapeSize),
+                col: index % shapeSize,
+            }));
+
             setTimeout(() => shape.classList.add('dragging'), 0);
         });
 
         shape.addEventListener('dragend', () => {
             draggedShape.classList.remove('dragging');
             draggedShape = null;
+            shapeOffsets = [];
         });
     });
 
     playingField.addEventListener('dragover', (e) => {
         e.preventDefault();
+        const targetCellIndex = Array.from(playingField.children).indexOf(e.target);
+
+        if (targetCellIndex !== -1) {
+            highlightCells(targetCellIndex);
+        }
     });
 
     playingField.addEventListener('drop', (e) => {
-        if (!draggedShape) return;
-
+        e.preventDefault();
         const targetCellIndex = Array.from(playingField.children).indexOf(e.target);
-        const targetCell = cells[targetCellIndex];
 
-        if (targetCell && targetCell.classList.contains('cell')) {
-            const blocks = draggedShape.querySelectorAll('.block');
-            const shapeSize = Math.sqrt(blocks.length);
+        if (targetCellIndex !== -1) {
+            placeShape(targetCellIndex);
+        }
+    });
 
-            let canPlace = true;
+    function highlightCells(startIndex) {
+        clearHighlight();
 
-            // Проверка возможности размещения
-            blocks.forEach((block, index) => {
-                const rowOffset = Math.floor(index / shapeSize);
-                const colOffset = index % shapeSize;
-                const cellIndex = targetCellIndex + rowOffset * 8 + colOffset;
+        shapeOffsets.forEach(offset => {
+            const targetIndex = startIndex + offset.row * 8 + offset.col;
 
-                if (
-                    cellIndex >= 64 || // Выход за границы поля
-                    Math.floor((targetCellIndex + colOffset) / 8) !== Math.floor(targetCellIndex / 8) + rowOffset || // Смена ряда
-                    cells[cellIndex].children.length > 0 // Ячейка занята
-                ) {
-                    canPlace = false;
+            // Проверяем границы игрового поля
+            if (isValidCell(startIndex, offset, targetIndex)) {
+                cells[targetIndex].style.backgroundColor = shapeColor;
+                cells[targetIndex].classList.add('highlight');
+            }
+        });
+    }
+
+    function clearHighlight() {
+        cells.forEach(cell => {
+            if (!cell.classList.contains('filled')) {
+                cell.style.backgroundColor = '#ccc'; // Цвет ячейки по умолчанию
+                cell.classList.remove('highlight');
+            }
+        });
+    }
+
+    function placeShape(startIndex) {
+        let canPlace = true;
+
+        // Проверяем, можно ли разместить фигуру
+        shapeOffsets.forEach(offset => {
+            const targetIndex = startIndex + offset.row * 8 + offset.col;
+            if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains('filled')) {
+                canPlace = false;
+            }
+        });
+
+        if (canPlace) {
+            shapeOffsets.forEach(offset => {
+                const targetIndex = startIndex + offset.row * 8 + offset.col;
+                if (cells[targetIndex]) {
+                    cells[targetIndex].classList.add('filled');
+                    cells[targetIndex].style.backgroundColor = shapeColor;
                 }
             });
 
-            if (canPlace) {
-                // Размещаем блоки
-                blocks.forEach((block, index) => {
-                    const rowOffset = Math.floor(index / shapeSize);
-                    const colOffset = index % shapeSize;
-                    const cellIndex = targetCellIndex + rowOffset * 8 + colOffset;
-
-                    if (cells[cellIndex]) {
-                        cells[cellIndex].appendChild(block.cloneNode(true)); // Копируем блок
-                    }
-                });
-
-                // Удаляем оригинальную фигуру
-                draggedShape.remove();
-            }
+            draggedShape.remove(); // Удаляем фигуру после размещения
         }
-    });
+
+        clearHighlight();
+    }
+
+    function isValidCell(startIndex, offset, targetIndex) {
+        const startRow = Math.floor(startIndex / 8);
+        const targetRow = Math.floor(targetIndex / 8);
+
+        // Проверяем, что фигура не выходит за границы ряда
+        return targetIndex >= 0 &&
+            targetIndex < 64 &&
+            startRow + offset.row === targetRow;
+    }
 </script>
+
 
 </body>
 </html>
