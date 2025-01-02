@@ -50,32 +50,78 @@
             font-weight: bold;
             color: #333;
         }
+
+        #playing-field {
+            position: absolute;
+            top: 150px; /* Adjust positioning based on your layout */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 480px; /* Field size */
+            height: 480px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: 2px;
+            background-color: #b0bec5; /* Background for the field */
+            border: 4px solid #333;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .cell {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ccc;
+            border: 1px solid #999;
+        }
+
+        .cell.red { background-color: #e57373; }
+        .cell.blue { background-color: #64b5f6; }
+        .cell.yellow { background-color: #ffd54f; }
+        .cell.green { background-color: #81c784; }
+
+        .crystal {
+            width: 50%;
+            height: 50%;
+            background: url('crystal.png') no-repeat center center;
+            background-size: contain;
+        }
     </style>
 </head>
 <body>
 
 <div id="game-container">
+    <div id="coin-container">
+        <img id="coin-icon" src="coin.png" alt="Coin Icon">
+        <span id="coin-count">150</span>
+    </div>
 
+    <!-- 8x8 Playing Field -->
+    <div id="playing-field"></div>
 </div>
 
 <script>
-    const coinCountElement = document.getElementById('coin-count');
-    let coinCount = parseInt(coinCountElement.textContent, 10);
+    // Populate the playing field with 64 cells
+    const playingField = document.getElementById('playing-field');
+    for (let i = 0; i < 64; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
 
-    function updateCoins(cost) {
-        if (coinCount >= cost) {
-            coinCount -= cost;
-            coinCountElement.textContent = coinCount;
-            return true;
-        } else {
-            alert("Not enough coins!");
-            return false;
+        // Randomize cell content (color and crystal)
+        const colors = ['red', 'blue', 'yellow', 'green'];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+        cell.classList.add(randomColor);
+
+        if (Math.random() < 0.3) { // 30% chance to have a crystal
+            const crystal = document.createElement('div');
+            crystal.classList.add('crystal');
+            cell.appendChild(crystal);
         }
+
+        playingField.appendChild(cell);
     }
-
-
-
-
 </script>
 
 </body>
