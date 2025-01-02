@@ -153,6 +153,7 @@
 <script>
     const playingField = document.getElementById('playing-field');
     const cells = [];
+    const shapesContainer = document.getElementById('shapes-container'); // контейнер для фигур
 
     // Создание ячеек игрового поля
     for (let i = 0; i < 64; i++) {
@@ -168,35 +169,66 @@
     let shapeRows = 0; // Количество строк в фигуре
     let shapeCols = 0; // Количество столбцов в фигуре
 
-    document.querySelectorAll('.shape').forEach(shape => {
-        shape.addEventListener('dragstart', () => {
-            draggedShape = shape; // Сохраняем текущую фигуру
-            shapeColor = getComputedStyle(shape.querySelector('.block')).backgroundColor;
+    const shapeTypes = [
+        [1], [2], [3], [2, 2], [2, 3], [3, 3] // Пример фигур разного размера
+    ];
 
-            // Рассчитываем смещения блоков фигуры
-            const blocks = shape.querySelectorAll('.block');
-            shapeRows = 0;
-            shapeCols = 0;
+    // Функция для создания новой фигуры
+    function createNewShape() {
+        const randomShape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        const shape = document.createElement('div');
+        shape.classList.add('shape');
+        shape.setAttribute('draggable', true);
 
-            // Рассчитываем размеры фигуры (строки и столбцы)
-            shapeOffsets = Array.from(blocks).map((_, index) => {
-                const row = Math.floor(index / 3); // По строкам (зависит от количества блоков в строке)
-                const col = index % 3; // По столбцам
-                shapeRows = Math.max(shapeRows, row + 1);
-                shapeCols = Math.max(shapeCols, col + 1);
-                return { row, col };
-            });
-
-            setTimeout(() => shape.classList.add('dragging'), 0);
+        randomShape.forEach(size => {
+            const block = document.createElement('div');
+            block.classList.add('block');
+            shape.appendChild(block);
         });
 
-        shape.addEventListener('dragend', () => {
-            draggedShape.classList.remove('dragging');
-            draggedShape = null;
-            shapeOffsets = [];
-        });
-    });
+        return shape;
+    }
 
+    // Генерация новых фигур в контейнер
+    function regenerateShapes() {
+        shapesContainer.innerHTML = ''; // Очищаем старые фигуры
+        for (let i = 0; i < 3; i++) {
+            const newShape = createNewShape();
+            shapesContainer.appendChild(newShape);
+            // Привязываем обработчики для перетаскивания новых фигур
+            newShape.addEventListener('dragstart', handleDragStart);
+            newShape.addEventListener('dragend', handleDragEnd);
+        }
+    }
+
+    // Обработчик для начала перетаскивания
+    function handleDragStart(event) {
+        draggedShape = event.target;
+        shapeColor = getComputedStyle(draggedShape.querySelector('.block')).backgroundColor;
+
+        const blocks = draggedShape.querySelectorAll('.block');
+        shapeRows = 0;
+        shapeCols = 0;
+
+        shapeOffsets = Array.from(blocks).map((_, index) => {
+            const row = Math.floor(index / 3);
+            const col = index % 3;
+            shapeRows = Math.max(shapeRows, row + 1);
+            shapeCols = Math.max(shapeCols, col + 1);
+            return { row, col };
+        });
+
+        setTimeout(() => draggedShape.classList.add('dragging'), 0);
+    }
+
+    // Обработчик для окончания перетаскивания
+    function handleDragEnd() {
+        draggedShape.classList.remove('dragging');
+        draggedShape = null;
+        shapeOffsets = [];
+    }
+
+    // Обработчик для перетаскивания по полю
     playingField.addEventListener('dragover', (e) => {
         e.preventDefault();
         const targetCellIndex = Array.from(playingField.children).indexOf(e.target);
@@ -206,6 +238,7 @@
         }
     });
 
+    // Обработчик для завершения перетаскивания (дроп)
     playingField.addEventListener('drop', (e) => {
         e.preventDefault();
         const targetCellIndex = Array.from(playingField.children).indexOf(e.target);
@@ -221,7 +254,6 @@
         shapeOffsets.forEach(offset => {
             const targetIndex = startIndex + offset.row * 8 + offset.col;
 
-            // Проверяем границы игрового поля
             if (isValidCell(startIndex, offset, targetIndex)) {
                 cells[targetIndex].style.backgroundColor = shapeColor;
                 cells[targetIndex].classList.add('highlight');
@@ -232,7 +264,7 @@
     function clearHighlight() {
         cells.forEach(cell => {
             if (!cell.classList.contains('filled')) {
-                cell.style.backgroundColor = '#ccc'; // Цвет ячейки по умолчанию
+                cell.style.backgroundColor = '#ccc';
                 cell.classList.remove('highlight');
             }
         });
@@ -241,7 +273,6 @@
     function placeShape(startIndex) {
         let canPlace = true;
 
-        // Проверяем, можно ли разместить фигуру
         shapeOffsets.forEach(offset => {
             const targetIndex = startIndex + offset.row * 8 + offset.col;
             if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains('filled')) {
@@ -258,7 +289,8 @@
                 }
             });
 
-            draggedShape.remove(); // Удаляем фигуру после размещения
+            checkAndClearFullRowsOrColumns();
+            regenerateShapes(); // Генерируем новые фигуры
         }
 
         clearHighlight();
@@ -268,12 +300,55 @@
         const startRow = Math.floor(startIndex / 8);
         const targetRow = Math.floor(targetIndex / 8);
 
-        // Проверяем, что фигура не выходит за границы ряда
         return targetIndex >= 0 &&
             targetIndex < 64 &&
             startRow + offset.row === targetRow;
     }
+
+    // Проверка на полный ряд или колонку
+    function checkAndClearFullRowsOrColumns() {
+        for (let i = 0; i < 8; i++) {
+            // Проверка по рядам
+            const rowStart = i * 8;
+            const rowEnd = rowStart + 7;
+            if (cells.slice(rowStart, rowEnd + 1).every(cell => cell.classList.contains('filled'))) {
+                clearRowOrColumn(rowStart, rowEnd, 'row');
+            }
+
+            // Проверка по колонкам
+            const colStart = i;
+            const colEnd = i + 56;
+            if ([0, 8, 16, 24, 32, 40, 48, 56].map(offset => cells[colStart + offset].classList.contains('filled')).every(Boolean)) {
+                clearRowOrColumn(colStart, colEnd, 'column');
+            }
+        }
+    }
+
+    // Очищаем заполненные ячейки с эффектом
+    function clearRowOrColumn(start, end, type) {
+        if (type === 'row') {
+            // Анимация сжигания
+            for (let i = start; i <= end; i++) {
+                cells[i].classList.add('burn');
+                setTimeout(() => cells[i].classList.remove('burn'), 500);
+                cells[i].classList.remove('filled');
+                cells[i].style.backgroundColor = '#ccc';
+            }
+        } else {
+            // Аналогично для колонок
+            for (let i = start; i <= end; i += 8) {
+                cells[i].classList.add('burn');
+                setTimeout(() => cells[i].classList.remove('burn'), 500);
+                cells[i].classList.remove('filled');
+                cells[i].style.backgroundColor = '#ccc';
+            }
+        }
+    }
+
+    // Инициализация новых фигур при загрузке страницы
+    window.onload = regenerateShapes;
 </script>
+
 
 
 
