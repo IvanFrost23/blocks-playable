@@ -105,21 +105,33 @@
             border: 1px solid #999;
             position: relative;
         }
-        .cell > .crystal{
+
+        .cell.red {
+            background-color: #e57373;
+        }
+        .cell.blue {
+            background-color: #64b5f6;
+        }
+        .cell.yellow {
+            background-color: #ffd54f;
+        }
+
+        .crystal {
             position: absolute;
             width: 50%;
             height: 50%;
+            background-size: contain;
+            z-index: 1;
         }
 
-        .cell.red { background-color: #e57373; }
-        .cell.blue { background-color: #64b5f6; }
-        .cell.yellow { background-color: #ffd54f; }
-        .cell.green { background-color: #81c784; }
-
-        .crystal {
-
-            background: url('crystal.png') no-repeat center center;
-            background-size: contain;
+        .crystal.blue {
+            background-image: url('crystal_blue.png');
+        }
+        .crystal.red {
+            background-image: url('crystal_red.png');
+        }
+        .crystal.yellow {
+            background-image: url('crystal_yellow.png');
         }
 
         .burn {
@@ -132,7 +144,8 @@
             100% { transform: scale(0); opacity: 0; }
         }
         .highlight {
-            box-shadow: 0 0 5px 2px yellow;
+            outline: 5px solid yellow;
+            box-shadow: none;
         }
         #shapes-container {
             position: absolute;
@@ -162,41 +175,25 @@
             position: relative;
         }
 
-        .shape .block.crystal.blue {
-            background: url('crystal_blue.png') no-repeat center center;
-            background-size: contain;
-        }
-        .shape .block.crystal.red {
-            background: url('crystal_red.png') no-repeat center center;
-            background-size: contain;
-        }
-        .shape .block.crystal.yellow{
-            background: url('crystal_yellow.png') no-repeat center center;
-            background-size: contain;
-        }
-
-        .shape .block.crystal {
-            background-size: 70%;
-        }
-
         .dragging {
             opacity: 0.5;
         }
+
         .block.blue{
-            background: #64b5f6 url('crystal_blue.png') no-repeat center center;
-            background-size: 70%;
+            background-color: #64b5f6;
         }
+
         .block.red{
-            background: #e57373 url('crystal_red.png') no-repeat center center;
-            background-size: 70%;
+            background-color: #e57373;
         }
+
         .block.yellow{
-            background: #ffd54f url('crystal_yellow.png') no-repeat center center;
-            background-size: 70%;
+            background-color: #ffd54f;
         }
-        .block.green {
-            background: #81c784 url('crystal_green.png') no-repeat center center;
-            background-size: 70%;
+
+        .shape .block > .crystal {
+            width: 70%;
+            height: 70%;
         }
 
     </style>
@@ -229,20 +226,7 @@
     <div id="playing-field"></div>
 
     <!-- Shapes Container -->
-    <div id="shapes-container">
-        <div class="shape" draggable="true">
-            <div class="block"></div>
-            <div class="block"></div>
-            <div class="block"></div>
-        </div>
-        <div class="shape" draggable="true">
-            <div class="block"></div>
-            <div class="block"></div>
-        </div>
-        <div class="shape" draggable="true">
-            <div class="block"></div>
-        </div>
-    </div>
+    <div id="shapes-container"></div>
 </div>
 <script>
     const playingField = document.getElementById('playing-field');
@@ -288,16 +272,14 @@
         randomType.shape.forEach(size => {
             for (let i = 0; i < size; i++) {
                 const block = document.createElement('div');
-
+                block.classList.add('block', randomType.color);
 
                 if (Math.random() < randomType.crystal) {
-                    block.classList.add('block', 'crystal', randomType.color);
+                    const crystal = document.createElement('div');
+                    crystal.classList.add('crystal', randomType.color);
+                    block.appendChild(crystal);
                     block.dataset.crystalType = randomType.color;
-                } else {
-                    block.classList.add('block', randomType.color);
-                    block.style.backgroundImage = 'none';
                 }
-
                 shape.appendChild(block);
             }
         });
@@ -328,20 +310,21 @@
 
         let currentRow = -1;
         let currentCol = 0;
+
         blocks.forEach((block, index) => {
             if (index % 3 === 0) {
                 currentRow++;
                 currentCol = 0;
             }
-            if (block.classList.contains('block')) {
-                shapeOffsets.push({
-                    row: currentRow,
-                    col: currentCol,
-                    crystalType: block.dataset.crystalType
-                });
-                shapeRows = Math.max(shapeRows, currentRow + 1);
-                shapeCols = Math.max(shapeCols, currentCol + 1);
-            }
+
+            shapeOffsets.push({
+                row: currentRow,
+                col: currentCol,
+                crystalType: block.dataset.crystalType
+            });
+            shapeRows = Math.max(shapeRows, currentRow + 1);
+            shapeCols = Math.max(shapeCols, currentCol + 1);
+
             currentCol++;
         });
 
@@ -372,16 +355,15 @@
             placeShape(targetCellIndex);
         }
     });
-
     function highlightCells(startIndex) {
         clearHighlight();
-
         shapeOffsets.forEach(offset => {
             const targetIndex = startIndex + offset.row * 8 + offset.col;
             if (isValidCell(startIndex, offset, targetIndex)) {
                 const cell = cells[targetIndex];
                 if (!cell.classList.contains('filled')) {
-                    cell.style.boxShadow = '0 0 5px 2px yellow';
+                    cell.style.outline = '5px solid yellow'; // Используем outline
+                    cell.style.boxShadow = 'none'; // Убираем box-shadow
                     cell.classList.add('highlight');
                 }
             }
@@ -390,17 +372,13 @@
 
     function clearHighlight() {
         cells.forEach(cell => {
-            if (!cell.classList.contains('filled')) {
-                cell.style.backgroundColor = '#ccc';
-                cell.style.boxShadow = 'none';
-                cell.classList.remove('highlight');
-            }
+            cell.style.outline = 'none';
+            cell.classList.remove('highlight');
         });
     }
 
     function placeShape(startIndex) {
         let canPlace = true;
-
         shapeOffsets.forEach(offset => {
             const targetIndex = startIndex + offset.row * 8 + offset.col;
             if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains('filled')) {
@@ -411,13 +389,24 @@
         if (canPlace) {
             shapeOffsets.forEach(offset => {
                 const targetIndex = startIndex + offset.row * 8 + offset.col;
-                if (cells[targetIndex]) {
-                    cells[targetIndex].classList.add('filled', draggedShape.querySelector('.block').classList[1]); // Добавляем цвет
-                    cells[targetIndex].style.backgroundColor = shapeColor;
-                    if (offset.crystalType) {
-                        const crystal = document.createElement('div');
-                        crystal.classList.add('crystal', offset.crystalType);
-                        cells[targetIndex].appendChild(crystal);
+                const cell = cells[targetIndex];
+
+                if (cell) {
+                    const shapeBlock = draggedShape.querySelectorAll('.block')[shapeOffsets.indexOf(offset)];
+
+
+                    cell.classList.add('filled');
+                    if(shapeBlock.classList.contains('blue')){
+                        cell.classList.add('blue');
+                    }else if(shapeBlock.classList.contains('red')){
+                        cell.classList.add('red');
+                    }else if(shapeBlock.classList.contains('yellow')){
+                        cell.classList.add('yellow');
+                    }
+                    const crystal = shapeBlock.querySelector('.crystal');
+                    if (crystal) {
+                        const newCrystal = crystal.cloneNode(true);
+                        cell.appendChild(newCrystal);
                     }
                 }
             });
