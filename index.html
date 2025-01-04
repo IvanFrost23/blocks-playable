@@ -51,6 +51,34 @@
             color: #333;
         }
 
+        #goals-container {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 480px;
+            height: 60px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: url('menubar_bg.png') no-repeat center center;
+            background-size: contain;
+            padding: 0 10px;
+        }
+
+        .goal {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+        }
+
+        .goal-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 5px;
+            background-size: contain;
+        }
+
         #playing-field {
             position: absolute;
             top: 150px;
@@ -75,6 +103,12 @@
             align-items: center;
             background-color: #ccc;
             border: 1px solid #999;
+            position: relative;
+        }
+        .cell > .crystal{
+            position: absolute;
+            width: 50%;
+            height: 50%;
         }
 
         .cell.red { background-color: #e57373; }
@@ -83,12 +117,23 @@
         .cell.green { background-color: #81c784; }
 
         .crystal {
-            width: 50%;
-            height: 50%;
+
             background: url('crystal.png') no-repeat center center;
             background-size: contain;
         }
 
+        .burn {
+            animation: burnAnimation 0.5s ease-in-out;
+        }
+
+        @keyframes burnAnimation {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+        .highlight {
+            box-shadow: 0 0 5px 2px yellow;
+        }
         #shapes-container {
             position: absolute;
             bottom: 50px;
@@ -104,22 +149,56 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 2px;
-            background-color: transparent; /* Убираем фон */
+            background-color: transparent;
             padding: 0;
-            border: none; /* Убираем обводку */
+            border: none;
             cursor: grab;
         }
 
         .shape .block {
             width: 30px;
             height: 30px;
-            background-color: #90caf9;
             border: 1px solid #64b5f6;
+            position: relative;
+        }
+
+        .shape .block.crystal.blue {
+            background: url('crystal_blue.png') no-repeat center center;
+            background-size: contain;
+        }
+        .shape .block.crystal.red {
+            background: url('crystal_red.png') no-repeat center center;
+            background-size: contain;
+        }
+        .shape .block.crystal.yellow{
+            background: url('crystal_yellow.png') no-repeat center center;
+            background-size: contain;
+        }
+
+        .shape .block.crystal {
+            background-size: 70%;
         }
 
         .dragging {
             opacity: 0.5;
         }
+        .block.blue{
+            background: #64b5f6 url('crystal_blue.png') no-repeat center center;
+            background-size: 70%;
+        }
+        .block.red{
+            background: #e57373 url('crystal_red.png') no-repeat center center;
+            background-size: 70%;
+        }
+        .block.yellow{
+            background: #ffd54f url('crystal_yellow.png') no-repeat center center;
+            background-size: 70%;
+        }
+        .block.green {
+            background: #81c784 url('crystal_green.png') no-repeat center center;
+            background-size: 70%;
+        }
+
     </style>
 
 </head>
@@ -129,6 +208,21 @@
     <div id="coin-container">
         <img id="coin-icon" src="coin.png" alt="Coin Icon">
         <span id="coin-count">150</span>
+    </div>
+
+    <div id="goals-container">
+        <div class="goal">
+            <div class="goal-icon" style="background-image: url('crystal_blue.png');"></div>
+            <span id="blue-goal">16</span>
+        </div>
+        <div class="goal">
+            <div class="goal-icon" style="background-image: url('crystal_red.png');"></div>
+            <span id="red-goal">16</span>
+        </div>
+        <div class="goal">
+            <div class="goal-icon" style="background-image: url('crystal_yellow.png');"></div>
+            <span id="yellow-goal">16</span>
+        </div>
     </div>
 
     <!-- 8x8 Playing Field -->
@@ -153,7 +247,13 @@
 <script>
     const playingField = document.getElementById('playing-field');
     const cells = [];
-    const shapesContainer = document.getElementById('shapes-container'); // контейнер для фигур
+    const shapesContainer = document.getElementById('shapes-container');
+    const blueGoal = document.getElementById('blue-goal');
+    const redGoal = document.getElementById('red-goal');
+    const yellowGoal = document.getElementById('yellow-goal');
+    let blueCrystals = parseInt(blueGoal.textContent);
+    let redCrystals = parseInt(redGoal.textContent);
+    let yellowCrystals = parseInt(yellowGoal.textContent);
 
     // Создание ячеек игрового поля
     for (let i = 0; i < 64; i++) {
@@ -164,26 +264,42 @@
     }
 
     let draggedShape = null;
-    let shapeColor = '#90caf9'; // Цвет блоков по умолчанию
-    let shapeOffsets = []; // Список смещений для фигуры
-    let shapeRows = 0; // Количество строк в фигуре
-    let shapeCols = 0; // Количество столбцов в фигуре
+    let shapeColor = '#90caf9';
+    let shapeOffsets = [];
+    let shapeRows = 0;
+    let shapeCols = 0;
 
     const shapeTypes = [
-        [1], [2], [3], [2, 2], [2, 3], [3, 3] // Пример фигур разного размера
+        { shape: [1], color: 'blue', crystal: 0.2 },
+        { shape: [2], color: 'red', crystal: 0.3 },
+        { shape: [3], color: 'yellow', crystal: 0.25 },
+        { shape: [2, 2], color: 'blue', crystal: 0.15 },
+        { shape: [2, 3], color: 'red', crystal: 0.4 },
+        { shape: [3, 3], color: 'yellow', crystal: 0.35 }
     ];
 
     // Функция для создания новой фигуры
     function createNewShape() {
-        const randomShape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        const randomType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
         const shape = document.createElement('div');
         shape.classList.add('shape');
         shape.setAttribute('draggable', true);
 
-        randomShape.forEach(size => {
-            const block = document.createElement('div');
-            block.classList.add('block');
-            shape.appendChild(block);
+        randomType.shape.forEach(size => {
+            for (let i = 0; i < size; i++) {
+                const block = document.createElement('div');
+
+
+                if (Math.random() < randomType.crystal) {
+                    block.classList.add('block', 'crystal', randomType.color);
+                    block.dataset.crystalType = randomType.color;
+                } else {
+                    block.classList.add('block', randomType.color);
+                    block.style.backgroundImage = 'none';
+                }
+
+                shape.appendChild(block);
+            }
         });
 
         return shape;
@@ -191,11 +307,10 @@
 
     // Генерация новых фигур в контейнер
     function regenerateShapes() {
-        shapesContainer.innerHTML = ''; // Очищаем старые фигуры
+        shapesContainer.innerHTML = '';
         for (let i = 0; i < 3; i++) {
             const newShape = createNewShape();
             shapesContainer.appendChild(newShape);
-            // Привязываем обработчики для перетаскивания новых фигур
             newShape.addEventListener('dragstart', handleDragStart);
             newShape.addEventListener('dragend', handleDragEnd);
         }
@@ -209,13 +324,25 @@
         const blocks = draggedShape.querySelectorAll('.block');
         shapeRows = 0;
         shapeCols = 0;
+        shapeOffsets = [];
 
-        shapeOffsets = Array.from(blocks).map((_, index) => {
-            const row = Math.floor(index / 3);
-            const col = index % 3;
-            shapeRows = Math.max(shapeRows, row + 1);
-            shapeCols = Math.max(shapeCols, col + 1);
-            return { row, col };
+        let currentRow = -1;
+        let currentCol = 0;
+        blocks.forEach((block, index) => {
+            if (index % 3 === 0) {
+                currentRow++;
+                currentCol = 0;
+            }
+            if (block.classList.contains('block')) {
+                shapeOffsets.push({
+                    row: currentRow,
+                    col: currentCol,
+                    crystalType: block.dataset.crystalType
+                });
+                shapeRows = Math.max(shapeRows, currentRow + 1);
+                shapeCols = Math.max(shapeCols, currentCol + 1);
+            }
+            currentCol++;
         });
 
         setTimeout(() => draggedShape.classList.add('dragging'), 0);
@@ -228,7 +355,6 @@
         shapeOffsets = [];
     }
 
-    // Обработчик для перетаскивания по полю
     playingField.addEventListener('dragover', (e) => {
         e.preventDefault();
         const targetCellIndex = Array.from(playingField.children).indexOf(e.target);
@@ -238,7 +364,6 @@
         }
     });
 
-    // Обработчик для завершения перетаскивания (дроп)
     playingField.addEventListener('drop', (e) => {
         e.preventDefault();
         const targetCellIndex = Array.from(playingField.children).indexOf(e.target);
@@ -253,10 +378,12 @@
 
         shapeOffsets.forEach(offset => {
             const targetIndex = startIndex + offset.row * 8 + offset.col;
-
             if (isValidCell(startIndex, offset, targetIndex)) {
-                cells[targetIndex].style.backgroundColor = shapeColor;
-                cells[targetIndex].classList.add('highlight');
+                const cell = cells[targetIndex];
+                if (!cell.classList.contains('filled')) {
+                    cell.style.boxShadow = '0 0 5px 2px yellow';
+                    cell.classList.add('highlight');
+                }
             }
         });
     }
@@ -265,6 +392,7 @@
         cells.forEach(cell => {
             if (!cell.classList.contains('filled')) {
                 cell.style.backgroundColor = '#ccc';
+                cell.style.boxShadow = 'none';
                 cell.classList.remove('highlight');
             }
         });
@@ -284,13 +412,18 @@
             shapeOffsets.forEach(offset => {
                 const targetIndex = startIndex + offset.row * 8 + offset.col;
                 if (cells[targetIndex]) {
-                    cells[targetIndex].classList.add('filled');
+                    cells[targetIndex].classList.add('filled', draggedShape.querySelector('.block').classList[1]); // Добавляем цвет
                     cells[targetIndex].style.backgroundColor = shapeColor;
+                    if (offset.crystalType) {
+                        const crystal = document.createElement('div');
+                        crystal.classList.add('crystal', offset.crystalType);
+                        cells[targetIndex].appendChild(crystal);
+                    }
                 }
             });
 
             checkAndClearFullRowsOrColumns();
-            regenerateShapes(); // Генерируем новые фигуры
+            regenerateShapes();
         }
 
         clearHighlight();
@@ -299,13 +432,14 @@
     function isValidCell(startIndex, offset, targetIndex) {
         const startRow = Math.floor(startIndex / 8);
         const targetRow = Math.floor(targetIndex / 8);
+        const startCol = startIndex % 8;
 
         return targetIndex >= 0 &&
             targetIndex < 64 &&
-            startRow + offset.row === targetRow;
+            startRow + offset.row === targetRow &&
+            startCol + offset.col < 8;
     }
 
-    // Проверка на полный ряд или колонку
     function checkAndClearFullRowsOrColumns() {
         for (let i = 0; i < 8; i++) {
             // Проверка по рядам
@@ -316,36 +450,54 @@
             }
 
             // Проверка по колонкам
-            const colStart = i;
-            const colEnd = i + 56;
-            if ([0, 8, 16, 24, 32, 40, 48, 56].map(offset => cells[colStart + offset].classList.contains('filled')).every(Boolean)) {
-                clearRowOrColumn(colStart, colEnd, 'column');
+            let colFilled = true;
+            for (let j = 0; j < 8; j++) {
+                if (!cells[i + j * 8].classList.contains('filled')) {
+                    colFilled = false;
+                    break;
+                }
+            }
+            if (colFilled) {
+                clearRowOrColumn(i, i + 56, 'column');
             }
         }
     }
 
-    // Очищаем заполненные ячейки с эффектом
     function clearRowOrColumn(start, end, type) {
-        if (type === 'row') {
-            // Анимация сжигания
-            for (let i = start; i <= end; i++) {
-                cells[i].classList.add('burn');
-                setTimeout(() => cells[i].classList.remove('burn'), 500);
-                cells[i].classList.remove('filled');
-                cells[i].style.backgroundColor = '#ccc';
+        const step = type === 'row' ? 1 : 8;
+        for (let i = start; i <= end; i += step) {
+            const cell = cells[i];
+            if (cell.querySelector('.crystal')) {
+                const crystalType = cell.querySelector('.crystal').classList[1];
+                updateCrystalCount(crystalType);
             }
-        } else {
-            // Аналогично для колонок
-            for (let i = start; i <= end; i += 8) {
-                cells[i].classList.add('burn');
-                setTimeout(() => cells[i].classList.remove('burn'), 500);
-                cells[i].classList.remove('filled');
-                cells[i].style.backgroundColor = '#ccc';
-            }
+
+            cell.classList.add('burn');
+            setTimeout(() => {
+                cell.classList.remove('burn');
+                cell.classList.remove('filled', 'blue', 'red', 'yellow');
+                cell.style.backgroundColor = '#ccc';
+                const crystal = cell.querySelector('.crystal');
+                if (crystal) {
+                    cell.removeChild(crystal);
+                }
+            }, 500);
         }
     }
 
-    // Инициализация новых фигур при загрузке страницы
+    function updateCrystalCount(type) {
+        if (type === 'blue' && blueCrystals > 0) {
+            blueCrystals--;
+            blueGoal.textContent = blueCrystals;
+        } else if (type === 'red' && redCrystals > 0) {
+            redCrystals--;
+            redGoal.textContent = redCrystals;
+        } else if (type === 'yellow' && yellowCrystals > 0) {
+            yellowCrystals--;
+            yellowGoal.textContent = yellowCrystals;
+        }
+    }
+
     window.onload = regenerateShapes;
 </script>
 
