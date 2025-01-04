@@ -362,8 +362,8 @@
             if (isValidCell(startIndex, offset, targetIndex)) {
                 const cell = cells[targetIndex];
                 if (!cell.classList.contains('filled')) {
-                    cell.style.outline = '5px solid yellow'; // Используем outline
-                    cell.style.boxShadow = 'none'; // Убираем box-shadow
+                    cell.style.outline = '5px solid yellow';
+                    cell.style.boxShadow = 'none';
                     cell.classList.add('highlight');
                 }
             }
@@ -451,11 +451,19 @@
             }
         }
     }
-
     function clearRowOrColumn(start, end, type) {
-        const step = type === 'row' ? 1 : 8;
-        for (let i = start; i <= end; i += step) {
-            const cell = cells[i];
+        const cellsToClear = [];
+        if (type === 'row') {
+            for (let i = start; i <= end; i++) {
+                cellsToClear.push(cells[i]);
+            }
+        } else {
+            for (let i = start; i <= end; i += 8) {
+                cellsToClear.push(cells[i]);
+            }
+        }
+
+        cellsToClear.forEach(cell => {
             if (cell.querySelector('.crystal')) {
                 const crystalType = cell.querySelector('.crystal').classList[1];
                 updateCrystalCount(crystalType);
@@ -463,15 +471,14 @@
 
             cell.classList.add('burn');
             setTimeout(() => {
-                cell.classList.remove('burn');
-                cell.classList.remove('filled', 'blue', 'red', 'yellow');
-                cell.style.backgroundColor = '#ccc';
+                cell.classList.remove('burn', 'blue', 'red', 'yellow'); // Убираем все классы
                 const crystal = cell.querySelector('.crystal');
                 if (crystal) {
                     cell.removeChild(crystal);
                 }
+                cell.classList.remove('filled');
             }, 500);
-        }
+        });
     }
 
     function updateCrystalCount(type) {
