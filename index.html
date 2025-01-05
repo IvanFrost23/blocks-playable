@@ -154,14 +154,17 @@
         }
         #shapes-container {
             position: absolute;
-            bottom: 50px;
-            left: 50%;
+            bottom: 300px; /* Расстояние от нижней границы */
+            left: 50%; /* Центрирование по горизонтали */
             transform: translateX(-50%);
-            width: 480px;
+            width: 400px; /* Корректируйте под нужную ширину */
+            height: 100px;
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around; /* Равномерное распределение фигур */
             align-items: center;
             background: url('pieces_bg.png') no-repeat center center;
+            background-size: cover; /* Убедитесь, что фон заполняет контейнер */
+            padding: 10px 0; /* Дополнительное пространство вокруг */
         }
 
         .shape {
