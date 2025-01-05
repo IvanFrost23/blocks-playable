@@ -248,10 +248,30 @@
     let redCrystals = parseInt(redGoal.textContent);
     let yellowCrystals = parseInt(yellowGoal.textContent);
 
-    // Создание ячеек игрового поля
+    const initialFieldState = [
+        null, "blue", null, null, "yellow", null, null, "red",
+        null, null, null, null, null, null, null, null,
+        null, "red", null, null, null, null, "blue", null,
+        null, null, "yellow", null, null, "blue", null, null,
+        "red", null, null, null, "yellow", null, null, "blue",
+        null, null, "red", null, null, "yellow", null, null,
+        null, null, null, null, null, "blue", null, null,
+        "yellow", null, null, null, "red", null, null, null
+    ];
+
     for (let i = 0; i < 64; i++) {
         const cell = document.createElement('div');
         cell.classList.add('cell');
+
+        // Добавляем кристалл, если он указан в начальном состоянии
+        if (initialFieldState[i]) {
+            const crystal = document.createElement('div');
+            crystal.classList.add('crystal', initialFieldState[i]); // Добавляем класс цвета
+            cell.appendChild(crystal);
+            cell.classList.add('filled'); // Помечаем ячейку как заполненную
+            cell.classList.add(initialFieldState[i]); // Добавляем цвет ячейке
+        }
+
         playingField.appendChild(cell);
         cells.push(cell);
     }
