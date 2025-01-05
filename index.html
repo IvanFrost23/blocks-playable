@@ -59,8 +59,9 @@
             width: 480px;
             height: 60px;
             display: flex;
-            justify-content: space-around;
             align-items: center;
+            justify-content: center; /* Центрирование элементов */
+            gap: 40px; /* Отступы между целями */
             background: url('goals_bg.png') no-repeat center center;
             background-size: contain;
             padding: 0 10px;
@@ -70,6 +71,10 @@
             display: flex;
             align-items: center;
             font-size: 18px;
+        }
+
+        .goal span {
+            color: white; /* Белый цвет текста у целей */
         }
 
         .goal-icon {
@@ -156,6 +161,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: url('pieces_bg.png') no-repeat center center;
         }
 
         .shape {
@@ -169,8 +175,8 @@
         }
 
         .shape .block {
-            width: 30px;
-            height: 30px;
+            width: 20px;
+            height: 20px;
             border: 1px solid #64b5f6;
             position: relative;
         }
