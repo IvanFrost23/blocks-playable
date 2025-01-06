@@ -395,6 +395,9 @@
     function highlightCells(startIndex) {
         clearHighlight();
         let canPlace = true;
+        const highlightedCells = [];
+
+        // Check if we can place the shape
         shapeOffsets.forEach(offset => {
             const targetIndex = startIndex + offset.row * 8 + offset.col;
             if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains('filled')) {
@@ -406,10 +409,9 @@
             shapeOffsets.forEach(offset => {
                 const targetIndex = startIndex + offset.row * 8 + offset.col;
                 const cell = cells[targetIndex];
-                if (!cell.classList.contains('filled')) {
-                    cell.style.outline = '5px solid yellow';
-                    cell.style.boxShadow = 'none';
+                if (cell && !cell.classList.contains('filled')) {
                     cell.classList.add('highlight');
+                    highlightedCells.push(cell);
                 }
             });
         }
@@ -417,10 +419,11 @@
 
     function clearHighlight() {
         cells.forEach(cell => {
-            cell.style.outline = 'none';
             cell.classList.remove('highlight');
         });
     }
+
+
 
     function placeShape(startIndex) {
         let canPlace = true;
