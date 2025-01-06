@@ -386,17 +386,25 @@
     });
     function highlightCells(startIndex) {
         clearHighlight();
+        let canPlace = true;
         shapeOffsets.forEach(offset => {
             const targetIndex = startIndex + offset.row * 8 + offset.col;
-            if (isValidCell(startIndex, offset, targetIndex)) {
+            if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains('filled')) {
+                canPlace = false;
+            }
+        });
+
+        if (canPlace) {
+            shapeOffsets.forEach(offset => {
+                const targetIndex = startIndex + offset.row * 8 + offset.col;
                 const cell = cells[targetIndex];
                 if (!cell.classList.contains('filled')) {
                     cell.style.outline = '5px solid yellow';
                     cell.style.boxShadow = 'none';
                     cell.classList.add('highlight');
                 }
-            }
-        });
+            });
+        }
     }
 
     function clearHighlight() {
