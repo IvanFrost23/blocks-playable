@@ -204,9 +204,7 @@
             width: 70%;
             height: 70%;
         }
-
     </style>
-
 </head>
 <body>
 
@@ -263,13 +261,12 @@
         const cell = document.createElement('div');
         cell.classList.add('cell');
 
-        // Добавляем кристалл, если он указан в начальном состоянии
         if (initialFieldState[i]) {
             const crystal = document.createElement('div');
-            crystal.classList.add('crystal', initialFieldState[i]); // Добавляем класс цвета
+            crystal.classList.add('crystal', initialFieldState[i]);
             cell.appendChild(crystal);
-            cell.classList.add('filled'); // Помечаем ячейку как заполненную
-            cell.classList.add(initialFieldState[i]); // Добавляем цвет ячейке
+            cell.classList.add('filled');
+            cell.classList.add(initialFieldState[i]);
         }
 
         playingField.appendChild(cell);
@@ -277,7 +274,6 @@
     }
 
     let draggedShape = null;
-    let shapeColor = '#90caf9';
     let shapeOffsets = [];
     let shapeRows = 0;
     let shapeCols = 0;
@@ -291,7 +287,6 @@
         { shape: [3, 3], color: 'yellow', crystal: 0.35 }
     ];
 
-    // Функция для создания новой фигуры
     function createNewShape() {
         const randomType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
         const shape = document.createElement('div');
@@ -302,6 +297,7 @@
             for (let i = 0; i < size; i++) {
                 const block = document.createElement('div');
                 block.classList.add('block', randomType.color);
+                block.dataset.color = randomType.color;
 
                 if (Math.random() < randomType.crystal) {
                     const crystal = document.createElement('div');
@@ -316,7 +312,6 @@
         return shape;
     }
 
-    // Генерация новых фигур в контейнер
     function regenerateShapes() {
         shapesContainer.innerHTML = '';
         for (let i = 0; i < 3; i++) {
@@ -327,11 +322,8 @@
         }
     }
 
-    // Обработчик для начала перетаскивания
     function handleDragStart(event) {
         draggedShape = event.target;
-        shapeColor = getComputedStyle(draggedShape.querySelector('.block')).backgroundColor;
-
         const blocks = draggedShape.querySelectorAll('.block');
         shapeRows = 0;
         shapeCols = 0;
@@ -349,7 +341,8 @@
             shapeOffsets.push({
                 row: currentRow,
                 col: currentCol,
-                crystalType: block.dataset.crystalType
+                crystalType: block.dataset.crystalType,
+                color: block.dataset.color
             });
             shapeRows = Math.max(shapeRows, currentRow + 1);
             shapeCols = Math.max(shapeCols, currentCol + 1);
@@ -357,10 +350,23 @@
             currentCol++;
         });
 
+        // Create a temporary clone of the shape for the drag image
+        const dragImage = draggedShape.cloneNode(true);
+        dragImage.style.position = 'absolute';
+        dragImage.style.left = '-9999px'; // Move it off-screen
+        document.body.appendChild(dragImage); // Append to body
+
+        // Set the drag image
+        event.dataTransfer.setDragImage(dragImage, 0, 0);
+
+        // Clean up the temporary clone after a short delay
+        setTimeout(() => {
+            document.body.removeChild(dragImage);
+        }, 0);
+
         setTimeout(() => draggedShape.classList.add('dragging'), 0);
     }
 
-    // Обработчик для окончания перетаскивания
     function handleDragEnd() {
         draggedShape.classList.remove('dragging');
         draggedShape = null;
@@ -384,6 +390,7 @@
             placeShape(targetCellIndex);
         }
     });
+
     function highlightCells(startIndex) {
         clearHighlight();
         let canPlace = true;
@@ -429,18 +436,11 @@
                 const cell = cells[targetIndex];
 
                 if (cell) {
-                    const shapeBlock = draggedShape.querySelectorAll('.block')[shapeOffsets.indexOf(offset)];
-
+                    const color = offset.color;
 
                     cell.classList.add('filled');
-                    if(shapeBlock.classList.contains('blue')){
-                        cell.classList.add('blue');
-                    }else if(shapeBlock.classList.contains('red')){
-                        cell.classList.add('red');
-                    }else if(shapeBlock.classList.contains('yellow')){
-                        cell.classList.add('yellow');
-                    }
-                    const crystal = shapeBlock.querySelector('.crystal');
+                    cell.classList.add(color);
+                    const crystal = draggedShape.querySelectorAll('.block')[shapeOffsets.indexOf(offset)].querySelector('.crystal');
                     if (crystal) {
                         const newCrystal = crystal.cloneNode(true);
                         cell.appendChild(newCrystal);
@@ -449,6 +449,7 @@
             });
 
             checkAndClearFullRowsOrColumns();
+            draggedShape.remove();
             regenerateShapes();
         }
 
@@ -468,14 +469,12 @@
 
     function checkAndClearFullRowsOrColumns() {
         for (let i = 0; i < 8; i++) {
-            // Проверка по рядам
             const rowStart = i * 8;
             const rowEnd = rowStart + 7;
             if (cells.slice(rowStart, rowEnd + 1).every(cell => cell.classList.contains('filled'))) {
                 clearRowOrColumn(rowStart, rowEnd, 'row');
             }
 
-            // Проверка по колонкам
             let colFilled = true;
             for (let j = 0; j < 8; j++) {
                 if (!cells[i + j * 8].classList.contains('filled')) {
@@ -488,6 +487,7 @@
             }
         }
     }
+
     function clearRowOrColumn(start, end, type) {
         const cellsToClear = [];
         if (type === 'row') {
@@ -508,7 +508,7 @@
 
             cell.classList.add('burn');
             setTimeout(() => {
-                cell.classList.remove('burn', 'blue', 'red', 'yellow'); // Убираем все классы
+                cell.classList.remove('burn', 'blue', 'red', 'yellow');
                 const crystal = cell.querySelector('.crystal');
                 if (crystal) {
                     cell.removeChild(crystal);
@@ -533,6 +533,5 @@
 
     window.onload = regenerateShapes;
 </script>
-
 </body>
 </html>
