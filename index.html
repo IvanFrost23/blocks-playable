@@ -405,10 +405,25 @@
             shapeOffsets.push({ row, col, color: block.dataset.color, hasCrystal: !!block.querySelector('.crystal'), crystalType: block.dataset.crystalType });
         });
 
+        // Calculate the size of a cell in the playing field
+        const cellSize = playingField.querySelector('.cell').offsetWidth;
+
         // Create a temporary clone of the shape for the drag image
         const dragImage = draggedShape.cloneNode(true);
         dragImage.style.position = 'absolute';
-        dragImage.style.left = '-9999px'; // Move it off-screen
+
+        // Resize the drag image to match the cell size
+        dragImage.style.width = cellSize * shapeOffsets[0].colSpan + 'px';
+        dragImage.style.height = cellSize * shapeOffsets[0].rowSpan + 'px';
+
+        // Adjust the block sizes within the drag image
+        dragImage.querySelectorAll('.block').forEach(block => {
+            block.style.width = cellSize + 'px';
+            block.style.height = cellSize + 'px';
+        });
+
+        // Move it off-screen
+        dragImage.style.left = '-9999px';
         document.body.appendChild(dragImage); // Append to body
 
         // Set the drag image
@@ -426,6 +441,15 @@
         draggedShape.classList.remove('dragging');
         draggedShape = null;
         shapeOffsets = [];
+
+        // Reset the shape to its original size
+        if (draggedShape) {
+            const blocks = draggedShape.querySelectorAll('.block');
+            blocks.forEach(block => {
+                block.style.width = '20px';
+                block.style.height = '20px';
+            });
+        }
     }
 
     playingField.addEventListener('dragover', (e) => {
