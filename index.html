@@ -338,16 +338,15 @@
 
 
     function regenerateShapes() {
-        shapesContainer.innerHTML = '';
-        const availableShapeTypes = [...shapeTypes]; // Copy of shapeTypes array
-        for (let i = 0; i < 3; i++) {
-            // Randomly select a shape without repeating types
-            const randomIndex = Math.floor(Math.random() * availableShapeTypes.length);
-            const selectedShapeType = availableShapeTypes.splice(randomIndex, 1)[0]; // Remove selected type from available options
-            const newShape = createNewShape(selectedShapeType);
-            shapesContainer.appendChild(newShape);
-            newShape.addEventListener('dragstart', handleDragStart);
-            newShape.addEventListener('dragend', handleDragEnd);
+        if (shapesContainer.children.length < 3) {
+            const shapesNeeded = 3 - shapesContainer.children.length;
+            for (let i = 0; i < shapesNeeded; i++) {
+                const randomType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+                const newShape = createNewShape(randomType);
+                shapesContainer.appendChild(newShape);
+                newShape.addEventListener('dragstart', handleDragStart);
+                newShape.addEventListener('dragend', handleDragEnd);
+            }
         }
     }
 
@@ -467,11 +466,18 @@
 
             checkAndClearFullRowsOrColumns();
             draggedShape.remove();
-            regenerateShapes();
+
+            // Check if shapes container is empty and regenerate if necessary
+            if (shapesContainer.children.length === 0) {
+                regenerateShapes();
+            }
         }
 
         clearHighlight();
     }
+
+    // Modify regenerateShapes to only add shapes if there are less than 3
+
 
     function isValidCell(startIndex, offset, targetIndex) {
         const startRow = Math.floor(startIndex / 8);
