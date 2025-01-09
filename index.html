@@ -287,43 +287,64 @@
     let shapeCols = 0;
 
     const shapeTypes = [
-        { shape: [1], color: 'blue', crystal: 0.2 },
-        { shape: [2], color: 'red', crystal: 0.3 },
-        { shape: [3], color: 'yellow', crystal: 0.25 },
-        { shape: [2, 2], color: 'blue', crystal: 0.15 },
-        { shape: [2, 3], color: 'red', crystal: 0.4 },
-        { shape: [3, 3], color: 'yellow', crystal: 0.35 }
+        { shape: [[1]], color: 'blue', crystal: 0.2 },
+        { shape: [[1, 1]], color: 'red', crystal: 0.3 },
+        { shape: [[1], [1]], color: 'red', crystal: 0.3 },
+        { shape: [[1], [1]], color: 'yellow', crystal: 0.3 },
+        { shape: [[1], [1]], color: 'blue', crystal: 0.3 },
+        { shape: [[1, 0], [1, 1]], color: 'yellow', crystal: 0.3 },
+        { shape: [[1, 0], [1, 1]], color: 'red', crystal: 0.3 },
+        { shape: [[1, 0], [1, 1]], color: 'blue', crystal: 0.3 },
+        { shape: [[1], [1]], color: 'yellow', crystal: 0.25 },
+        { shape: [[1, 1], [1, 1]], color: 'blue', crystal: 0.15 },
+        { shape: [[1, 1, 1]], color: 'yellow', crystal: 0.3 },
+        { shape: [[1, 1, 1, 1]], color: 'red', crystal: 0.5 },
+        { shape: [[1, 1, 1], [1, 0, 1]], color: 'blue', crystal: 0.3 }
     ];
 
-    function createNewShape() {
-        const randomType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+    function createNewShape(randomType) {
         const shape = document.createElement('div');
         shape.classList.add('shape');
         shape.setAttribute('draggable', true);
 
-        randomType.shape.forEach(size => {
-            for (let i = 0; i < size; i++) {
-                const block = document.createElement('div');
-                block.classList.add('block', randomType.color);
-                block.dataset.color = randomType.color;
+        // Loop through the shape's grid and create blocks
+        randomType.shape.forEach((row, rowIndex) => {
+            row.forEach((cell, colIndex) => {
+                if (cell === 1) {
+                    const block = document.createElement('div');
+                    block.classList.add('block', randomType.color);
+                    block.dataset.color = randomType.color;
 
-                if (Math.random() < randomType.crystal) {
-                    const crystal = document.createElement('div');
-                    crystal.classList.add('crystal', randomType.color);
-                    block.appendChild(crystal);
-                    block.dataset.crystalType = randomType.color;
+                    if (Math.random() < randomType.crystal) {
+                        const crystal = document.createElement('div');
+                        crystal.classList.add('crystal', randomType.color);
+                        block.appendChild(crystal);
+                        block.dataset.crystalType = randomType.color;
+                    }
+
+                    // Set position based on grid coordinates
+                    block.style.gridRowStart = rowIndex + 1;
+                    block.style.gridColumnStart = colIndex + 1;
+
+                    shape.appendChild(block);
                 }
-                shape.appendChild(block);
-            }
+            });
         });
+
+        console.log('Generated shape with blocks:', shape.querySelectorAll('.block').length); // Debugging
 
         return shape;
     }
 
+
     function regenerateShapes() {
         shapesContainer.innerHTML = '';
+        const availableShapeTypes = [...shapeTypes]; // Copy of shapeTypes array
         for (let i = 0; i < 3; i++) {
-            const newShape = createNewShape();
+            // Randomly select a shape without repeating types
+            const randomIndex = Math.floor(Math.random() * availableShapeTypes.length);
+            const selectedShapeType = availableShapeTypes.splice(randomIndex, 1)[0]; // Remove selected type from available options
+            const newShape = createNewShape(selectedShapeType);
             shapesContainer.appendChild(newShape);
             newShape.addEventListener('dragstart', handleDragStart);
             newShape.addEventListener('dragend', handleDragEnd);
@@ -333,29 +354,13 @@
     function handleDragStart(event) {
         draggedShape = event.target;
         const blocks = draggedShape.querySelectorAll('.block');
-        shapeRows = 0;
-        shapeCols = 0;
         shapeOffsets = [];
 
-        let currentRow = -1;
-        let currentCol = 0;
-
         blocks.forEach((block, index) => {
-            if (index % 3 === 0) {
-                currentRow++;
-                currentCol = 0;
-            }
+            const row = parseInt(block.style.gridRowStart) - 1;
+            const col = parseInt(block.style.gridColumnStart) - 1;
 
-            shapeOffsets.push({
-                row: currentRow,
-                col: currentCol,
-                crystalType: block.dataset.crystalType,
-                color: block.dataset.color
-            });
-            shapeRows = Math.max(shapeRows, currentRow + 1);
-            shapeCols = Math.max(shapeCols, currentCol + 1);
-
-            currentCol++;
+            shapeOffsets.push({ row, col, color: block.dataset.color });
         });
 
         // Create a temporary clone of the shape for the drag image
