@@ -411,15 +411,20 @@
         // Create a temporary clone of the shape for the drag image
         const dragImage = draggedShape.cloneNode(true);
         dragImage.style.position = 'absolute';
-
-        // Resize the drag image to match the cell size
-        dragImage.style.width = cellSize * shapeOffsets[0].colSpan + 'px';
-        dragImage.style.height = cellSize * shapeOffsets[0].rowSpan + 'px';
+        dragImage.style.width = cellSize * (Math.max(...shapeOffsets.map(offset => offset.col)) + 1) + 'px';
+        dragImage.style.height = cellSize * (Math.max(...shapeOffsets.map(offset => offset.row)) + 1) + 'px';
 
         // Adjust the block sizes within the drag image
         dragImage.querySelectorAll('.block').forEach(block => {
             block.style.width = cellSize + 'px';
             block.style.height = cellSize + 'px';
+
+            // Adjust crystal size to maintain original proportions
+            const crystal = block.querySelector('.crystal');
+            if (crystal) {
+                crystal.style.width = (cellSize * 0.5) + 'px'; // 50% of the cell size
+                crystal.style.height = (cellSize * 0.5) + 'px';
+            }
         });
 
         // Move it off-screen
@@ -448,6 +453,13 @@
             blocks.forEach(block => {
                 block.style.width = '20px';
                 block.style.height = '20px';
+
+                // Reset crystal size
+                const crystal = block.querySelector('.crystal');
+                if (crystal) {
+                    crystal.style.width = '70%';
+                    crystal.style.height = '70%';
+                }
             });
         }
     }
