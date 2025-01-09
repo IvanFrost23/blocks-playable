@@ -111,14 +111,8 @@
             position: relative;
         }
 
-        .cell.red {
-            background-color: #e57373;
-        }
-        .cell.blue {
-            background-color: #64b5f6;
-        }
-        .cell.yellow {
-            background-color: #ffd54f;
+        .cell.filled {
+            background-color: transparent;
         }
 
         .crystal {
@@ -137,6 +131,24 @@
         }
         .crystal.yellow {
             background-image: url('crystal_yellow.png');
+        }
+
+        .block {
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+        }
+
+        .block.blue {
+            background-image: url('blue.png');
+        }
+
+        .block.red {
+            background-image: url('red.png');
+        }
+
+        .block.yellow {
+            background-image: url('yellow.png');
         }
 
         .burn {
@@ -183,22 +195,11 @@
             height: 20px;
             border: 1px solid #64b5f6;
             position: relative;
+            background-size: contain;
         }
 
         .dragging {
             opacity: 0.5;
-        }
-
-        .block.blue{
-            background-color: #64b5f6;
-        }
-
-        .block.red{
-            background-color: #e57373;
-        }
-
-        .block.yellow{
-            background-color: #ffd54f;
         }
 
         .shape .block > .crystal {
@@ -263,11 +264,13 @@
         cell.classList.add('cell');
 
         if (initialFieldState[i]) {
+            const block = document.createElement('div');
+            block.classList.add('block', initialFieldState[i]);
+            cell.appendChild(block);
             const crystal = document.createElement('div');
             crystal.classList.add('crystal', initialFieldState[i]);
             cell.appendChild(crystal);
             cell.classList.add('filled');
-            cell.classList.add(initialFieldState[i]);
         }
 
         playingField.appendChild(cell);
@@ -423,8 +426,6 @@
         });
     }
 
-
-
     function placeShape(startIndex) {
         let canPlace = true;
         shapeOffsets.forEach(offset => {
@@ -443,7 +444,10 @@
                     const color = offset.color;
 
                     cell.classList.add('filled');
-                    cell.classList.add(color);
+                    const block = document.createElement('div');
+                    block.classList.add('block', color);
+                    cell.appendChild(block);
+
                     const crystal = draggedShape.querySelectorAll('.block')[shapeOffsets.indexOf(offset)].querySelector('.crystal');
                     if (crystal) {
                         const newCrystal = crystal.cloneNode(true);
@@ -512,12 +516,10 @@
 
             cell.classList.add('burn');
             setTimeout(() => {
-                cell.classList.remove('burn', 'blue', 'red', 'yellow');
-                const crystal = cell.querySelector('.crystal');
-                if (crystal) {
-                    cell.removeChild(crystal);
+                cell.classList.remove('burn', 'filled');
+                while (cell.firstChild) {
+                    cell.removeChild(cell.firstChild);
                 }
-                cell.classList.remove('filled');
             }, 500);
         });
     }
