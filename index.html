@@ -467,77 +467,6 @@
         }
     }
 
-    // Для мобильных устройств
-    function handleTouchStart(event) {
-        event.preventDefault();
-        draggedShape = event.target;
-        const blocks = draggedShape.querySelectorAll('.block');
-        shapeOffsets = [];
-
-        blocks.forEach((block, index) => {
-            const row = parseInt(block.style.gridRowStart) - 1;
-            const col = parseInt(block.style.gridColumnStart) - 1;
-
-            shapeOffsets.push({ row, col, color: block.dataset.color, hasCrystal: !!block.querySelector('.crystal'), crystalType: block.dataset.crystalType });
-        });
-
-        // Определим размер ячеек в игровом поле
-        const cellSize = playingField.querySelector('.cell').offsetWidth;
-
-        // Создадим временный клон фигуры для перетаскивания
-        const dragImage = draggedShape.cloneNode(true);
-        dragImage.style.position = 'absolute';
-        dragImage.style.width = cellSize * (Math.max(...shapeOffsets.map(offset => offset.col)) + 1) + 'px';
-        dragImage.style.height = cellSize * (Math.max(...shapeOffsets.map(offset => offset.row)) + 1) + 'px';
-
-        dragImage.querySelectorAll('.block').forEach(block => {
-            block.style.width = cellSize + 'px';
-            block.style.height = cellSize + 'px';
-
-            const crystal = block.querySelector('.crystal');
-            if (crystal) {
-                crystal.style.width = (cellSize * 0.5) + 'px';
-                crystal.style.height = (cellSize * 0.5) + 'px';
-            }
-        });
-
-        document.body.appendChild(dragImage); // Добавим в body
-
-        // Устанавливаем изображение для перетаскивания
-        event.dataTransfer.setDragImage(dragImage, 0, 0);
-
-        setTimeout(() => draggedShape.classList.add('dragging'), 0);
-    }
-
-    function handleTouchMove(event) {
-        if (!draggedShape) return;
-
-        // Получаем текущие координаты касания
-        const touch = event.touches[0];
-        const x = touch.pageX;
-        const y = touch.pageY;
-
-        draggedShape.style.left = `${x}px`;
-        draggedShape.style.top = `${y}px`;
-    }
-
-    function handleTouchEnd(event) {
-        if (draggedShape) {
-            draggedShape.classList.remove('dragging');
-            draggedShape = null;
-        }
-    }
-
-    // Инициализация для обработки касания
-    function initializeMobileTouchEvents() {
-        shapesContainer.addEventListener('touchstart', handleTouchStart);
-        shapesContainer.addEventListener('touchmove', handleTouchMove);
-        shapesContainer.addEventListener('touchend', handleTouchEnd);
-    }
-
-    // Вызовем эту функцию при загрузке
-    initializeMobileTouchEvents();
-
     playingField.addEventListener('dragover', (e) => {
         e.preventDefault();
         const targetCellIndex = Array.from(playingField.children).indexOf(e.target);
@@ -710,6 +639,49 @@
             }, 500);
         });
     }
+
+    // ...
+
+    // Добавляем поддержку событий касаний
+    let touchStart = null;
+    let touchMove = null;
+    let touchEnd = null;
+
+    playingField.addEventListener('touchstart', (e) => {
+        touchStart = e.touches[0];
+    });
+
+    playingField.addEventListener('touchmove', (e) => {
+        touchMove = e.touches[0];
+        if (draggedShape) {
+            const targetCellIndex = getTargetCellIndex(touchMove);
+            if (targetCellIndex !== -1) {
+                highlightCells(targetCellIndex);
+            }
+        }
+    });
+
+    playingField.addEventListener('touchend', (e) => {
+        touchEnd = e.changedTouches[0];
+        if (draggedShape) {
+            const targetCellIndex = getTargetCellIndex(touchEnd);
+            if (targetCellIndex !== -1) {
+                placeShape(targetCellIndex);
+            }
+        }
+    });
+
+    function getTargetCellIndex(touch) {
+        const rect = playingField.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        const cellSize = playingField.querySelector('.cell').offsetWidth;
+        const col = Math.floor(x / cellSize);
+        const row = Math.floor(y / cellSize);
+        return row * 8 + col;
+    }
+
+    // ...
 
     function updateCrystalCount(type) {
         if (type === 'blue' && blueCrystals > 0) {
