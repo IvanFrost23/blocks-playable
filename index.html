@@ -155,14 +155,6 @@
             animation: burnAnimation 0.5s ease-in-out;
         }
 
-        .temp-block {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-size: contain;
-            opacity: 0.5;
-        }
-
         @keyframes burnAnimation {
             0% { transform: scale(1); opacity: 1; }
             50% { transform: scale(1.2); opacity: 0.5; }
@@ -425,22 +417,17 @@
                 const targetIndex = startIndex + offset.row * 8 + offset.col;
                 const cell = cells[targetIndex];
                 if (cell && !cell.classList.contains('filled')) {
-                    const color = offset.color;
-                    const tempBlock = document.createElement('div');
-                    tempBlock.classList.add('temp-block', 'block', color);
-                    cell.appendChild(tempBlock);
-                    highlightedCells.push(tempBlock);
+                    cell.classList.add('highlight');
+                    highlightedCells.push(cell);
                 }
             });
         }
-
-        // Очистка временных блоков при уходе мыши
-        playingField.addEventListener('dragleave', clearHighlight);
     }
 
     function clearHighlight() {
-        const tempBlocks = playingField.querySelectorAll('.temp-block');
-        tempBlocks.forEach(block => block.remove());
+        cells.forEach(cell => {
+            cell.classList.remove('highlight');
+        });
     }
 
     function placeShape(startIndex) {
