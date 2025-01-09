@@ -210,6 +210,21 @@
             width: 70%;
             height: 70%;
         }
+
+        .preview-block {
+            opacity: 0.5;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .placed-block {
+            opacity: 1;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body>
@@ -381,6 +396,7 @@
     }
 
     function handleDragEnd() {
+        clearHighlight();
         draggedShape.classList.remove('dragging');
         draggedShape = null;
         shapeOffsets = [];
@@ -407,9 +423,8 @@
     function highlightCells(startIndex) {
         clearHighlight();
         let canPlace = true;
-        const highlightedCells = [];
 
-        // Check if we can place the shape
+        // Проверяем возможность размещения
         shapeOffsets.forEach(offset => {
             const targetIndex = startIndex + offset.row * 8 + offset.col;
             if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains('filled')) {
@@ -422,8 +437,10 @@
                 const targetIndex = startIndex + offset.row * 8 + offset.col;
                 const cell = cells[targetIndex];
                 if (cell && !cell.classList.contains('filled')) {
-                    cell.classList.add('highlight');
-                    highlightedCells.push(cell);
+                    // Создаем только превью блок
+                    const previewBlock = document.createElement('div');
+                    previewBlock.classList.add('preview-block', offset.color, 'block');
+                    cell.appendChild(previewBlock);
                 }
             });
         }
@@ -431,11 +448,16 @@
 
     function clearHighlight() {
         cells.forEach(cell => {
-            cell.classList.remove('highlight');
+            const previewBlock = cell.querySelector('.preview-block');
+            if (previewBlock) {
+                cell.removeChild(previewBlock);
+            }
         });
     }
 
     function placeShape(startIndex) {
+        clearHighlight(); // Сначала очищаем все превью
+
         let canPlace = true;
         shapeOffsets.forEach(offset => {
             const targetIndex = startIndex + offset.row * 8 + offset.col;
@@ -451,12 +473,14 @@
 
                 if (cell) {
                     const color = offset.color;
-
                     cell.classList.add('filled');
+
+                    // Создаем новый блок для размещения
                     const block = document.createElement('div');
-                    block.classList.add('block', color);
+                    block.classList.add('block', color, 'placed-block');
                     cell.appendChild(block);
 
+                    // Добавляем кристалл, если он есть
                     const crystal = draggedShape.querySelectorAll('.block')[shapeOffsets.indexOf(offset)].querySelector('.crystal');
                     if (crystal) {
                         const newCrystal = crystal.cloneNode(true);
@@ -466,17 +490,12 @@
             });
 
             checkAndClearFullRowsOrColumns();
-
-            // Вместо удаления фигуры просто скрываем её
             draggedShape.style.visibility = 'hidden';
 
-            // Если все фигуры скрыты, создаём новые и делаем их видимыми
             if ([...shapesContainer.children].every(shape => shape.style.visibility === 'hidden')) {
                 regenerateShapes();
             }
         }
-
-        clearHighlight();
     }
 
     // Modify regenerateShapes to only add shapes if there are less than 3
