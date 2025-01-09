@@ -640,49 +640,6 @@
         });
     }
 
-    // ...
-
-    // Добавляем поддержку событий касаний
-    let touchStart = null;
-    let touchMove = null;
-    let touchEnd = null;
-
-    playingField.addEventListener('touchstart', (e) => {
-        touchStart = e.touches[0];
-    });
-
-    playingField.addEventListener('touchmove', (e) => {
-        touchMove = e.touches[0];
-        if (draggedShape) {
-            const targetCellIndex = getTargetCellIndex(touchMove);
-            if (targetCellIndex !== -1) {
-                highlightCells(targetCellIndex);
-            }
-        }
-    });
-
-    playingField.addEventListener('touchend', (e) => {
-        touchEnd = e.changedTouches[0];
-        if (draggedShape) {
-            const targetCellIndex = getTargetCellIndex(touchEnd);
-            if (targetCellIndex !== -1) {
-                placeShape(targetCellIndex);
-            }
-        }
-    });
-
-    function getTargetCellIndex(touch) {
-        const rect = playingField.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-        const cellSize = playingField.querySelector('.cell').offsetWidth;
-        const col = Math.floor(x / cellSize);
-        const row = Math.floor(y / cellSize);
-        return row * 8 + col;
-    }
-
-    // ...
-
     function updateCrystalCount(type) {
         if (type === 'blue' && blueCrystals > 0) {
             blueCrystals--;
