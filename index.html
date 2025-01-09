@@ -11,12 +11,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
             background-color: #f3f3f3;
             font-family: Arial, sans-serif;
-            height: 100vh;
-            background-image: url('background.png'); /* Добавляем фон */
-            background-size: cover; /* Фон будет покрывать весь экран */
-            background-position: center; /* Центрируем фон */
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: center;
         }
 
         #game-container {
@@ -24,6 +24,7 @@
             width: 600px;
             height: 1000px;
         }
+
 
         #coin-container {
             position: absolute;
@@ -676,8 +677,7 @@
         const scaledWidth = 600 * scaleFactor;
         const scaledHeight = 931 * scaleFactor;
 
-        gameContainer.style.left = `${(viewportWidth - scaledWidth) / 2}px`;
-        gameContainer.style.top = `${(viewportHeight - scaledHeight) / 2}px`;
+
     }
 
     // Вызов функции при загрузке и изменении размера окна
