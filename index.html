@@ -338,15 +338,16 @@
 
 
     function regenerateShapes() {
-        if (shapesContainer.children.length < 3) {
-            const shapesNeeded = 3 - shapesContainer.children.length;
-            for (let i = 0; i < shapesNeeded; i++) {
-                const randomType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-                const newShape = createNewShape(randomType);
-                shapesContainer.appendChild(newShape);
-                newShape.addEventListener('dragstart', handleDragStart);
-                newShape.addEventListener('dragend', handleDragEnd);
-            }
+        // Удаляем все фигуры из контейнера перед созданием новых
+        shapesContainer.innerHTML = '';
+
+        // Создаём 3 новые случайные фигуры
+        for (let i = 0; i < 3; i++) {
+            const randomType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+            const newShape = createNewShape(randomType);
+            shapesContainer.appendChild(newShape);
+            newShape.addEventListener('dragstart', handleDragStart);
+            newShape.addEventListener('dragend', handleDragEnd);
         }
     }
 
@@ -465,10 +466,12 @@
             });
 
             checkAndClearFullRowsOrColumns();
-            draggedShape.remove();
 
-            // Check if shapes container is empty and regenerate if necessary
-            if (shapesContainer.children.length === 0) {
+            // Вместо удаления фигуры просто скрываем её
+            draggedShape.style.visibility = 'hidden';
+
+            // Если все фигуры скрыты, создаём новые и делаем их видимыми
+            if ([...shapesContainer.children].every(shape => shape.style.visibility === 'hidden')) {
                 regenerateShapes();
             }
         }
