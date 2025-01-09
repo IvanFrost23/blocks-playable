@@ -652,5 +652,36 @@
 
     window.onload = regenerateShapes;
 </script>
+<script>
+    function resizeGame() {
+        const gameContainer = document.getElementById('game-container');
+        const widthToHeightRatio = 600 / 931;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        let scaleFactor;
+
+        // Масштабирование в зависимости от соотношения сторон
+        if (viewportWidth / viewportHeight < widthToHeightRatio) {
+            scaleFactor = viewportWidth / 600;
+        } else {
+            scaleFactor = viewportHeight / 931;
+        }
+
+        // Применяем масштабирование
+        gameContainer.style.transform = `scale(${scaleFactor})`;
+
+        // Центрирование по вертикали и горизонтали
+        const scaledWidth = 600 * scaleFactor;
+        const scaledHeight = 931 * scaleFactor;
+
+        gameContainer.style.left = `${(viewportWidth - scaledWidth) / 2}px`;
+        gameContainer.style.top = `${(viewportHeight - scaledHeight) / 2}px`;
+    }
+
+    // Вызов функции при загрузке и изменении размера окна
+    window.addEventListener('resize', resizeGame);
+    window.addEventListener('load', resizeGame);
+</script>
 </body>
 </html>
