@@ -160,11 +160,43 @@
             50% { transform: scale(1.2); opacity: 0.5; }
             100% { transform: scale(0); opacity: 0; }
         }
+
         .highlight {
-            outline: 2px solid yellow !important;
-            z-index: 1;
-            position: relative;
+            position: absolute; /* Абсолютное позиционирование */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2; /* Убедитесь, что подсветка сверху */
+            pointer-events: none; /* Позволяет кликать на ячейки за подсветкой */
+            opacity: 0.5; /* Полупрозрачность */
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
+
+        .highlight.blue {
+            background-color: #0000ff;
+        }
+        .highlight.red {
+            background-color: #ff0000;
+        }
+        .highlight.yellow {
+            background-color: #ffff00;
+        }
+
+
+        .highlight .crystal {
+            position: relative; /* Относительное позиционирование внутри highlight */
+            width: 50%;
+            height: 50%;
+            background-size: contain;
+            z-index: 1;
+            /* Add opacity and blur effect for crystals */
+        }
+
+
         #shapes-container {
             position: absolute;
             bottom: 180px; /* Расстояние от нижней границы */
@@ -360,7 +392,7 @@
             const row = parseInt(block.style.gridRowStart) - 1;
             const col = parseInt(block.style.gridColumnStart) - 1;
 
-            shapeOffsets.push({ row, col, color: block.dataset.color });
+            shapeOffsets.push({ row, col, color: block.dataset.color, hasCrystal: !!block.querySelector('.crystal'), crystalType: block.dataset.crystalType });
         });
 
         // Create a temporary clone of the shape for the drag image
@@ -395,6 +427,10 @@
         }
     });
 
+    playingField.addEventListener('dragleave', (e) => {
+        clearHighlight();
+    });
+
     playingField.addEventListener('drop', (e) => {
         e.preventDefault();
         const targetCellIndex = Array.from(playingField.children).indexOf(e.target);
@@ -407,7 +443,6 @@
     function highlightCells(startIndex) {
         clearHighlight();
         let canPlace = true;
-        const highlightedCells = [];
 
         // Check if we can place the shape
         shapeOffsets.forEach(offset => {
@@ -421,17 +456,31 @@
             shapeOffsets.forEach(offset => {
                 const targetIndex = startIndex + offset.row * 8 + offset.col;
                 const cell = cells[targetIndex];
+
                 if (cell && !cell.classList.contains('filled')) {
-                    cell.classList.add('highlight');
-                    highlightedCells.push(cell);
+
+                    const highlightDiv = document.createElement('div');
+                    highlightDiv.classList.add('highlight', offset.color);
+
+                    if (offset.hasCrystal) {
+                        const crystal = document.createElement('div');
+                        crystal.classList.add('crystal', offset.crystalType);
+                        highlightDiv.appendChild(crystal);
+                    }
+                    cell.appendChild(highlightDiv);
                 }
+
             });
         }
     }
 
+
     function clearHighlight() {
         cells.forEach(cell => {
-            cell.classList.remove('highlight');
+            const highlightDiv = cell.querySelector('.highlight');
+            if (highlightDiv) {
+                cell.removeChild(highlightDiv);
+            }
         });
     }
 
@@ -457,10 +506,10 @@
                     block.classList.add('block', color);
                     cell.appendChild(block);
 
-                    const crystal = draggedShape.querySelectorAll('.block')[shapeOffsets.indexOf(offset)].querySelector('.crystal');
-                    if (crystal) {
-                        const newCrystal = crystal.cloneNode(true);
-                        cell.appendChild(newCrystal);
+                    if (offset.hasCrystal) {
+                        const crystal = document.createElement('div');
+                        crystal.classList.add('crystal', offset.crystalType);
+                        cell.appendChild(crystal);
                     }
                 }
             });
