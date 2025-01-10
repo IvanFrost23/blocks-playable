@@ -18,6 +18,7 @@
             background-size: cover;
             background-position: center;
             overflow: hidden;
+            touch-action: none; /* Prevent default browser touch actions */
         }
 
         #game-container {
@@ -233,6 +234,7 @@
             padding: 0;
             border: none;
             cursor: grab;
+            touch-action: none; /* Allow panning and zooming but not default touch actions on this element */
         }
 
         .shape .block {
@@ -328,8 +330,8 @@
 
     let draggedShape = null;
     let shapeOffsets = [];
-    let shapeRows = 0;
-    let shapeCols = 0;
+    let touchOffsetX, touchOffsetY;
+    let currentHighlightCells = [];
 
     const shapeTypes = [
         { shape: [[1]], color: 'blue', crystal: 0.2 },
@@ -351,8 +353,14 @@
         const shape = document.createElement('div');
         shape.classList.add('shape');
         shape.setAttribute('draggable', true);
+        shape.addEventListener('touchstart', handleTouchStart);
+        shape.addEventListener('touchmove', handleTouchMove);
+        shape.addEventListener('touchend', handleTouchEnd);
+        shape.addEventListener('touchcancel', handleTouchEnd); // Handle cancellation
 
-        // Loop through the shape's grid and create blocks
+        shape.addEventListener('dragstart', handleDragStart);
+        shape.addEventListener('dragend', handleDragEnd);
+
         randomType.shape.forEach((row, rowIndex) => {
             row.forEach((cell, colIndex) => {
                 if (cell === 1) {
@@ -367,7 +375,6 @@
                         block.dataset.crystalType = randomType.color;
                     }
 
-                    // Set position based on grid coordinates
                     block.style.gridRowStart = rowIndex + 1;
                     block.style.gridColumnStart = colIndex + 1;
 
@@ -376,26 +383,93 @@
             });
         });
 
-        console.log('Generated shape with blocks:', shape.querySelectorAll('.block').length); // Debugging
-
         return shape;
     }
 
 
     function regenerateShapes() {
-        // Удаляем все фигуры из контейнера перед созданием новых
         shapesContainer.innerHTML = '';
-
-        // Создаём 3 новые случайные фигуры
         for (let i = 0; i < 3; i++) {
             const randomType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
             const newShape = createNewShape(randomType);
             shapesContainer.appendChild(newShape);
-            newShape.addEventListener('dragstart', handleDragStart);
-            newShape.addEventListener('dragend', handleDragEnd);
         }
     }
 
+    // --- Touch Event Handlers ---
+    function handleTouchStart(event) {
+        draggedShape = event.target.closest('.shape');
+        if (!draggedShape) return;
+
+        const touch = event.touches[0];
+        const rect = draggedShape.getBoundingClientRect();
+        touchOffsetX = touch.clientX - rect.left;
+        touchOffsetY = touch.clientY - rect.top;
+
+        const blocks = draggedShape.querySelectorAll('.block');
+        shapeOffsets = [];
+        blocks.forEach((block, index) => {
+            const row = parseInt(block.style.gridRowStart) - 1;
+            const col = parseInt(block.style.gridColumnStart) - 1;
+            shapeOffsets.push({ row, col, color: block.dataset.color, hasCrystal: !!block.querySelector('.crystal'), crystalType: block.dataset.crystalType });
+        });
+
+        draggedShape.classList.add('dragging');
+    }
+
+    function handleTouchMove(event) {
+        if (!draggedShape) return;
+        event.preventDefault(); // Prevent scrolling
+        const touch = event.touches[0];
+
+        // Calculate the position relative to the playing field
+        const fieldRect = playingField.getBoundingClientRect();
+        const touchX = touch.clientX - fieldRect.left;
+        const touchY = touch.clientY - fieldRect.top;
+
+        // Determine the cell under the touch
+        const cellWidth = playingField.offsetWidth / 8;
+        const cellHeight = playingField.offsetHeight / 8;
+        const gridX = Math.floor(touchX / cellWidth);
+        const gridY = Math.floor(touchY / cellHeight);
+        const startIndex = gridY * 8 + gridX;
+
+        if (startIndex >= 0 && startIndex < 64) {
+            highlightCells(startIndex, true); // Indicate it's a touch event
+        } else {
+            clearHighlight();
+        }
+    }
+
+    function handleTouchEnd(event) {
+        if (!draggedShape) return;
+        draggedShape.classList.remove('dragging');
+
+        const touch = event.changedTouches[0];
+
+        const fieldRect = playingField.getBoundingClientRect();
+        const touchX = touch.clientX - fieldRect.left;
+        const touchY = touch.clientY - fieldRect.top;
+
+        const cellWidth = playingField.offsetWidth / 8;
+        const cellHeight = playingField.offsetHeight / 8;
+        const gridX = Math.floor(touchX / cellWidth);
+        const gridY = Math.floor(touchY / cellHeight);
+        const startIndex = gridY * 8 + gridX;
+
+        if (startIndex >= 0 && startIndex < 64) {
+            placeShape(startIndex);
+        } else {
+            // If dropped outside the playing field, reset highlight
+            clearHighlight();
+        }
+
+        draggedShape = null;
+        shapeOffsets = [];
+    }
+
+
+    // --- Mouse Drag and Drop Handlers ---
     function handleDragStart(event) {
         draggedShape = event.target;
         const blocks = draggedShape.querySelectorAll('.block');
@@ -404,40 +478,26 @@
         blocks.forEach((block, index) => {
             const row = parseInt(block.style.gridRowStart) - 1;
             const col = parseInt(block.style.gridColumnStart) - 1;
-
             shapeOffsets.push({ row, col, color: block.dataset.color, hasCrystal: !!block.querySelector('.crystal'), crystalType: block.dataset.crystalType });
         });
 
-        // Calculate the size of a cell in the playing field
         const cellSize = playingField.querySelector('.cell').offsetWidth;
-
-        // Create a temporary clone of the shape for the drag image
         const dragImage = draggedShape.cloneNode(true);
         dragImage.style.position = 'absolute';
         dragImage.style.width = cellSize * (Math.max(...shapeOffsets.map(offset => offset.col)) + 1) + 'px';
         dragImage.style.height = cellSize * (Math.max(...shapeOffsets.map(offset => offset.row)) + 1) + 'px';
-
-        // Adjust the block sizes within the drag image
         dragImage.querySelectorAll('.block').forEach(block => {
             block.style.width = cellSize + 'px';
             block.style.height = cellSize + 'px';
-
-            // Adjust crystal size to maintain original proportions
             const crystal = block.querySelector('.crystal');
             if (crystal) {
-                crystal.style.width = (cellSize * 0.5) + 'px'; // 50% of the cell size
+                crystal.style.width = (cellSize * 0.5) + 'px';
                 crystal.style.height = (cellSize * 0.5) + 'px';
             }
         });
-
-        // Move it off-screen
         dragImage.style.left = '-9999px';
-        document.body.appendChild(dragImage); // Append to body
-
-        // Set the drag image
+        document.body.appendChild(dragImage);
         event.dataTransfer.setDragImage(dragImage, 0, 0);
-
-        // Clean up the temporary clone after a short delay
         setTimeout(() => {
             document.body.removeChild(dragImage);
         }, 0);
@@ -446,31 +506,16 @@
     }
 
     function handleDragEnd() {
-        draggedShape.classList.remove('dragging');
-        draggedShape = null;
-        shapeOffsets = [];
-
-        // Reset the shape to its original size
         if (draggedShape) {
-            const blocks = draggedShape.querySelectorAll('.block');
-            blocks.forEach(block => {
-                block.style.width = '20px';
-                block.style.height = '20px';
-
-                // Reset crystal size
-                const crystal = block.querySelector('.crystal');
-                if (crystal) {
-                    crystal.style.width = '70%';
-                    crystal.style.height = '70%';
-                }
-            });
+            draggedShape.classList.remove('dragging');
+            draggedShape = null;
+            shapeOffsets = [];
         }
     }
 
     playingField.addEventListener('dragover', (e) => {
         e.preventDefault();
         const targetCellIndex = Array.from(playingField.children).indexOf(e.target);
-
         if (targetCellIndex !== -1) {
             highlightCells(targetCellIndex);
         }
@@ -483,17 +528,16 @@
     playingField.addEventListener('drop', (e) => {
         e.preventDefault();
         const targetCellIndex = Array.from(playingField.children).indexOf(e.target);
-
         if (targetCellIndex !== -1) {
             placeShape(targetCellIndex);
         }
     });
 
-    function highlightCells(startIndex) {
+    function highlightCells(startIndex, isTouch = false) {
         clearHighlight();
+        currentHighlightCells = [];
         let canPlace = true;
 
-        // Check if we can place the shape
         shapeOffsets.forEach(offset => {
             const targetIndex = startIndex + offset.row * 8 + offset.col;
             if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains('filled')) {
@@ -507,33 +551,34 @@
                 const cell = cells[targetIndex];
 
                 if (cell && !cell.classList.contains('filled')) {
-
                     const highlightDiv = document.createElement('div');
                     highlightDiv.classList.add('highlight', offset.color);
-
                     if (offset.hasCrystal) {
                         const crystal = document.createElement('div');
                         crystal.classList.add('crystal', offset.crystalType);
                         highlightDiv.appendChild(crystal);
                     }
                     cell.appendChild(highlightDiv);
+                    currentHighlightCells.push(cell);
                 }
-
             });
         }
     }
 
 
     function clearHighlight() {
-        cells.forEach(cell => {
+        currentHighlightCells.forEach(cell => {
             const highlightDiv = cell.querySelector('.highlight');
             if (highlightDiv) {
                 cell.removeChild(highlightDiv);
             }
         });
+        currentHighlightCells = [];
     }
 
     function placeShape(startIndex) {
+        if (!draggedShape) return; // Ensure there's a shape being dragged
+
         let canPlace = true;
         shapeOffsets.forEach(offset => {
             const targetIndex = startIndex + offset.row * 8 + offset.col;
@@ -549,7 +594,6 @@
 
                 if (cell) {
                     const color = offset.color;
-
                     cell.classList.add('filled');
                     const block = document.createElement('div');
                     block.classList.add('block', color);
@@ -564,11 +608,8 @@
             });
 
             checkAndClearFullRowsOrColumns();
-
-            // Вместо удаления фигуры просто скрываем её
             draggedShape.style.visibility = 'hidden';
 
-            // Если все фигуры скрыты, создаём новые и делаем их видимыми
             if ([...shapesContainer.children].every(shape => shape.style.visibility === 'hidden')) {
                 regenerateShapes();
             }
@@ -576,8 +617,6 @@
 
         clearHighlight();
     }
-
-    // Modify regenerateShapes to only add shapes if there are less than 3
 
 
     function isValidCell(startIndex, offset, targetIndex) {
@@ -664,24 +703,15 @@
 
         let scaleFactor;
 
-        // Масштабирование в зависимости от соотношения сторон
         if (viewportWidth / viewportHeight < widthToHeightRatio) {
             scaleFactor = viewportWidth / 600;
         } else {
             scaleFactor = viewportHeight / 931;
         }
 
-        // Применяем масштабирование
         gameContainer.style.transform = `scale(${scaleFactor})`;
-
-        // Центрирование по вертикали и горизонтали
-        const scaledWidth = 600 * scaleFactor;
-        const scaledHeight = 931 * scaleFactor;
-
-
     }
 
-    // Вызов функции при загрузке и изменении размера окна
     window.addEventListener('resize', resizeGame);
     window.addEventListener('load', resizeGame);
 </script>
