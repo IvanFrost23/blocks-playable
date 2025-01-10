@@ -397,37 +397,77 @@
     }
 
     // --- Touch Event Handlers ---
+    // --- Touch Event Handlers ---
     function handleTouchStart(event) {
         draggedShape = event.target.closest('.shape');
         if (!draggedShape) return;
+
+        const blocks = draggedShape.querySelectorAll('.block');
+        shapeOffsets = [];
+
+        blocks.forEach((block) => {
+            const row = parseInt(block.style.gridRowStart) - 1;
+            const col = parseInt(block.style.gridColumnStart) - 1;
+            shapeOffsets.push({
+                row,
+                col,
+                color: block.dataset.color,
+                hasCrystal: !!block.querySelector('.crystal'),
+                crystalType: block.dataset.crystalType,
+            });
+        });
+
+        const cellSize = playingField.querySelector('.cell').offsetWidth;
+
+        // Создаём клон для отображения при перемещении
+        const dragImage = draggedShape.cloneNode(true);
+        dragImage.style.position = 'absolute';
+        dragImage.style.pointerEvents = 'none';
+        dragImage.style.width =
+            cellSize * (Math.max(...shapeOffsets.map((offset) => offset.col)) + 1) + 'px';
+        dragImage.style.height =
+            cellSize * (Math.max(...shapeOffsets.map((offset) => offset.row)) + 1) + 'px';
+
+        dragImage.querySelectorAll('.block').forEach((block) => {
+            block.style.width = cellSize + 'px';
+            block.style.height = cellSize + 'px';
+            const crystal = block.querySelector('.crystal');
+            if (crystal) {
+                crystal.style.width = cellSize * 0.5 + 'px';
+                crystal.style.height = cellSize * 0.5 + 'px';
+            }
+        });
+
+        document.body.appendChild(dragImage);
+        draggedShape.dragImage = dragImage;
 
         const touch = event.touches[0];
         const rect = draggedShape.getBoundingClientRect();
         touchOffsetX = touch.clientX - rect.left;
         touchOffsetY = touch.clientY - rect.top;
 
-        const blocks = draggedShape.querySelectorAll('.block');
-        shapeOffsets = [];
-        blocks.forEach((block, index) => {
-            const row = parseInt(block.style.gridRowStart) - 1;
-            const col = parseInt(block.style.gridColumnStart) - 1;
-            shapeOffsets.push({ row, col, color: block.dataset.color, hasCrystal: !!block.querySelector('.crystal'), crystalType: block.dataset.crystalType });
-        });
+        dragImage.style.left = `${touch.clientX - touchOffsetX}px`;
+        dragImage.style.top = `${touch.clientY - touchOffsetY}px`;
 
-        draggedShape.classList.add('dragging');
+        setTimeout(() => draggedShape.classList.add('dragging'), 0);
     }
 
     function handleTouchMove(event) {
         if (!draggedShape) return;
+
         event.preventDefault(); // Prevent scrolling
         const touch = event.touches[0];
+        const dragImage = draggedShape.dragImage;
 
-        // Calculate the position relative to the playing field
+        if (dragImage) {
+            dragImage.style.left = `${touch.clientX - touchOffsetX}px`;
+            dragImage.style.top = `${touch.clientY - touchOffsetY}px`;
+        }
+
         const fieldRect = playingField.getBoundingClientRect();
         const touchX = touch.clientX - fieldRect.left;
         const touchY = touch.clientY - fieldRect.top;
 
-        // Determine the cell under the touch
         const cellWidth = playingField.offsetWidth / 8;
         const cellHeight = playingField.offsetHeight / 8;
         const gridX = Math.floor(touchX / cellWidth);
@@ -443,10 +483,16 @@
 
     function handleTouchEnd(event) {
         if (!draggedShape) return;
+
+        const dragImage = draggedShape.dragImage;
+        if (dragImage) {
+            document.body.removeChild(dragImage);
+            draggedShape.dragImage = null;
+        }
+
         draggedShape.classList.remove('dragging');
 
         const touch = event.changedTouches[0];
-
         const fieldRect = playingField.getBoundingClientRect();
         const touchX = touch.clientX - fieldRect.left;
         const touchY = touch.clientY - fieldRect.top;
@@ -460,13 +506,13 @@
         if (startIndex >= 0 && startIndex < 64) {
             placeShape(startIndex);
         } else {
-            // If dropped outside the playing field, reset highlight
             clearHighlight();
         }
 
         draggedShape = null;
         shapeOffsets = [];
     }
+
 
 
     // --- Mouse Drag and Drop Handlers ---
