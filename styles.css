@@ -1,0 +1,248 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f3f3f3;
+    font-family: Arial, sans-serif;
+    background-image: url('background.png');
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    touch-action: none; /* Prevent default browser touch actions */
+}
+
+#game-container {
+    position: relative;
+    width: 600px;
+    height: 1000px;
+}
+
+
+#coin-container {
+    position: absolute;
+    top: 40px;
+    left: 20px;
+    width: 120px;
+    height: 30px;
+    background: url('menubar_bg.png') no-repeat center center;
+    background-size: contain;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding: 10px;
+}
+
+#coin-icon {
+    width: 50px;
+    height: 50px;
+    margin-right: 0px;
+    transform: translateX(-20px);
+}
+
+#coin-count {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+#goals-container {
+    position: absolute;
+    top: 160px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 480px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Центрирование элементов */
+    gap: 40px; /* Отступы между целями */
+    background: url('goals_bg.png') no-repeat center center;
+    background-size: contain;
+    padding: 0 10px;
+}
+
+.goal {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+}
+
+.goal span {
+    color: white; /* Белый цвет текста у целей */
+}
+
+.goal-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
+    background-size: contain;
+}
+
+#playing-field {
+    position: absolute;
+    top: 250px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: 400px;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    background-color: #000;
+    border: 4px solid #333;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.cell {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #371279;
+    position: relative;
+}
+
+.cell.filled {
+    background-color: transparent;
+}
+
+.crystal {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    background-size: contain;
+    z-index: 1;
+}
+
+.crystal.blue {
+    background-image: url('crystal_blue.png');
+}
+.crystal.red {
+    background-image: url('crystal_red.png');
+}
+.crystal.yellow {
+    background-image: url('crystal_yellow.png');
+}
+
+.block {
+    width: 100%;
+    height: 100%;
+    background-size: contain;
+}
+
+.block.blue {
+    background-image: url('blue.png');
+}
+
+.block.red {
+    background-image: url('red.png');
+}
+
+.block.yellow {
+    background-image: url('yellow.png');
+}
+
+.burn {
+    animation: burnAnimation 0.5s ease-in-out;
+}
+
+@keyframes burnAnimation {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.5; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+.highlight {
+    position: absolute; /* Абсолютное позиционирование */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2; /* Убедитесь, что подсветка сверху */
+    pointer-events: none; /* Позволяет кликать на ячейки за подсветкой */
+    opacity: 0.5; /* Полупрозрачность */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.highlight.blue {
+    background-image: url('blue.png');
+    background-size: contain; /* Чтобы картинка вписывалась в блок */
+    background-repeat: no-repeat; /* Чтобы не повторялась */
+    background-position: center; /* Центрировать картинку */
+}
+.highlight.red {
+    background-image: url('red.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.highlight.yellow {
+    background-image: url('yellow.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+
+
+.highlight .crystal {
+    position: relative; /* Относительное позиционирование внутри highlight */
+    width: 50%;
+    height: 50%;
+    background-size: contain;
+    z-index: 1;
+    /* Add opacity and blur effect for crystals */
+}
+
+
+#shapes-container {
+    position: absolute;
+    bottom: 180px; /* Расстояние от нижней границы */
+    left: 50%; /* Центрирование по горизонтали */
+    transform: translateX(-50%);
+    width: 400px; /* Корректируйте под нужную ширину */
+    height: 100px;
+    display: flex;
+    justify-content: space-around; /* Равномерное распределение фигур */
+    align-items: center;
+    background: url('pieces_bg.png') no-repeat center center;
+    background-size: cover; /* Убедитесь, что фон заполняет контейнер */
+    padding: 10px 0; /* Дополнительное пространство вокруг */
+}
+
+.shape {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    cursor: grab;
+    touch-action: none; /* Allow panning and zooming but not default touch actions on this element */
+}
+
+.shape .block {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    background-size: contain;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.dragging {
+    opacity: 0.5;
+}
+
+.shape .block > .crystal {
+    width: 70%;
+    height: 70%;
+}
