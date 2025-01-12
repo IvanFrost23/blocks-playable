@@ -239,7 +239,7 @@ body {
 }
 
 .dragging {
-    opacity: 0.5;
+    visibility: hidden;
 }
 
 .shape .block > .crystal {

@@ -62,6 +62,100 @@ const shapeTypes = [
     { shape: [[1, 1, 1], [1, 0, 1]], color: 'blue', crystal: 0.3 }
 ];
 
+function createDragImage(shape, shapeOffsets, cellSize) {
+    const dragImage = shape.cloneNode(true);
+    dragImage.style.position = 'absolute';
+    dragImage.style.pointerEvents = 'none';
+    dragImage.style.display = 'grid';
+    dragImage.style.gridTemplateRows = `repeat(${Math.max(...shapeOffsets.map(o => o.row)) + 1}, ${cellSize}px)`;
+    dragImage.style.gridTemplateColumns = `repeat(${Math.max(...shapeOffsets.map(o => o.col)) + 1}, ${cellSize}px)`;
+    dragImage.style.width = `${cellSize * (Math.max(...shapeOffsets.map(o => o.col)) + 1)}px`;
+    dragImage.style.height = `${cellSize * (Math.max(...shapeOffsets.map(o => o.row)) + 1)}px`;
+    dragImage.style.zIndex = '1000';
+
+    dragImage.querySelectorAll('.block').forEach((block) => {
+        block.style.width = `${cellSize}px`;
+        block.style.height = `${cellSize}px`;
+        const crystal = block.querySelector('.crystal');
+        if (crystal) {
+            crystal.style.width = `${cellSize * 0.5}px`;
+            crystal.style.height = `${cellSize * 0.5}px`;
+        }
+    });
+
+    return dragImage;
+}
+
+// Измененный обработчик handleTouchStart
+function handleTouchStart(event) {
+    draggedShape = event.target.closest('.shape');
+    if (!draggedShape) return;
+
+    const touch = event.touches[0];
+    const rect = draggedShape.getBoundingClientRect();
+    touchOffsetX = touch.clientX - rect.left;
+    touchOffsetY = touch.clientY - rect.top;
+
+    const blocks = draggedShape.querySelectorAll('.block');
+    shapeOffsets = [];
+
+    blocks.forEach((block) => {
+        const row = parseInt(block.style.gridRowStart) - 1;
+        const col = parseInt(block.style.gridColumnStart) - 1;
+        shapeOffsets.push({
+            row,
+            col,
+            color: block.dataset.color,
+            hasCrystal: !!block.querySelector('.crystal'),
+            crystalType: block.dataset.crystalType,
+        });
+    });
+
+    const cellSize = playingField.querySelector('.cell').offsetWidth;
+    const dragImage = createDragImage(draggedShape, shapeOffsets, cellSize);
+
+    dragImage.style.left = `${touch.clientX - touchOffsetX}px`;
+    dragImage.style.top = `${touch.clientY - touchOffsetY}px`;
+
+    document.body.appendChild(dragImage);
+    draggedShape.dragImage = dragImage;
+
+    setTimeout(() => draggedShape.classList.add('dragging'), 0);
+}
+
+// Измененный обработчик handleDragStart
+function handleDragStart(event) {
+    draggedShape = event.target;
+    const blocks = draggedShape.querySelectorAll('.block');
+    shapeOffsets = [];
+
+    blocks.forEach((block) => {
+        const row = parseInt(block.style.gridRowStart) - 1;
+        const col = parseInt(block.style.gridColumnStart) - 1;
+        shapeOffsets.push({
+            row,
+            col,
+            color: block.dataset.color,
+            hasCrystal: !!block.querySelector('.crystal'),
+            crystalType: block.dataset.crystalType,
+        });
+    });
+
+    const cellSize = playingField.querySelector('.cell').offsetWidth;
+    const dragImage = createDragImage(draggedShape, shapeOffsets, cellSize);
+
+    dragImage.style.left = '-9999px'; // Initially hide the drag image
+    document.body.appendChild(dragImage);
+
+    event.dataTransfer.setDragImage(dragImage, cellSize / 2, cellSize / 2);
+
+    setTimeout(() => {
+        document.body.removeChild(dragImage);
+    }, 0);
+
+    setTimeout(() => draggedShape.classList.add('dragging'), 0);
+}
+
 function createNewShape(randomType) {
     const shape = document.createElement('div');
     shape.classList.add('shape');
@@ -108,63 +202,6 @@ function regenerateShapes() {
         shapesContainer.appendChild(newShape);
     }
 }
-
-function handleTouchStart(event) {
-    draggedShape = event.target.closest('.shape');
-    if (!draggedShape) return;
-
-    const touch = event.touches[0];
-    const rect = draggedShape.getBoundingClientRect();
-    touchOffsetX = touch.clientX - rect.left;
-    touchOffsetY = touch.clientY - rect.top;
-
-    const blocks = draggedShape.querySelectorAll('.block');
-    shapeOffsets = [];
-
-    blocks.forEach((block) => {
-        const row = parseInt(block.style.gridRowStart) - 1;
-        const col = parseInt(block.style.gridColumnStart) - 1;
-        shapeOffsets.push({
-            row,
-            col,
-            color: block.dataset.color,
-            hasCrystal: !!block.querySelector('.crystal'),
-            crystalType: block.dataset.crystalType,
-        });
-    });
-
-    const cellSize = playingField.querySelector('.cell').offsetWidth;
-
-    // Create the drag image
-    const dragImage = draggedShape.cloneNode(true);
-    dragImage.style.position = 'absolute';
-    dragImage.style.pointerEvents = 'none';
-    dragImage.style.display = 'grid';
-    dragImage.style.gridTemplateRows = `repeat(${Math.max(...shapeOffsets.map(o => o.row)) + 1}, ${cellSize}px)`;
-    dragImage.style.gridTemplateColumns = `repeat(${Math.max(...shapeOffsets.map(o => o.col)) + 1}, ${cellSize}px)`;
-    dragImage.style.width = `${cellSize * (Math.max(...shapeOffsets.map((o) => o.col)) + 1)}px`;
-    dragImage.style.height = `${cellSize * (Math.max(...shapeOffsets.map((o) => o.row)) + 1)}px`;
-    dragImage.style.left = `${touch.clientX - touchOffsetX}px`;
-    dragImage.style.top = `${touch.clientY - touchOffsetY}px`;
-    dragImage.style.zIndex = '1000';
-
-    dragImage.querySelectorAll('.block').forEach((block) => {
-        block.style.width = `${cellSize}px`;
-        block.style.height = `${cellSize}px`;
-        const crystal = block.querySelector('.crystal');
-        if (crystal) {
-            crystal.style.width = `${cellSize * 0.5}px`;
-            crystal.style.height = `${cellSize * 0.5}px`;
-        }
-    });
-
-    document.body.appendChild(dragImage);
-    draggedShape.dragImage = dragImage;
-
-    // Highlight the dragged shape visually
-    setTimeout(() => draggedShape.classList.add('dragging'), 0);
-}
-
 
 function handleTouchMove(event) {
     if (!draggedShape) return;
@@ -227,62 +264,6 @@ function handleTouchEnd(event) {
     shapeOffsets = [];
 }
 
-function handleDragStart(event) {
-    draggedShape = event.target;
-    const blocks = draggedShape.querySelectorAll('.block');
-    shapeOffsets = [];
-
-    blocks.forEach((block) => {
-        const row = parseInt(block.style.gridRowStart) - 1;
-        const col = parseInt(block.style.gridColumnStart) - 1;
-        shapeOffsets.push({
-            row,
-            col,
-            color: block.dataset.color,
-            hasCrystal: !!block.querySelector('.crystal'),
-            crystalType: block.dataset.crystalType,
-        });
-    });
-
-    const cellSize = playingField.querySelector('.cell').offsetWidth;
-
-    // Create the drag image
-    const dragImage = draggedShape.cloneNode(true);
-    dragImage.style.position = 'absolute';
-    dragImage.style.display = 'grid';
-    dragImage.style.gridGap = '0';
-    dragImage.style.width =
-        cellSize * (Math.max(...shapeOffsets.map((offset) => offset.col)) + 1) + 'px';
-    dragImage.style.height =
-        cellSize * (Math.max(...shapeOffsets.map((offset) => offset.row)) + 1) + 'px';
-
-    // Adjust child block sizes to match the original
-    dragImage.querySelectorAll('.block').forEach((block) => {
-        block.style.width = cellSize + 'px';
-        block.style.height = cellSize + 'px';
-        block.style.gridRowStart = parseInt(block.style.gridRowStart);
-        block.style.gridColumnStart = parseInt(block.style.gridColumnStart);
-
-        const crystal = block.querySelector('.crystal');
-        if (crystal) {
-            crystal.style.width = cellSize * 0.5 + 'px';
-            crystal.style.height = cellSize * 0.5 + 'px';
-        }
-    });
-
-    dragImage.style.left = '-9999px'; // Initially hide the drag image
-    document.body.appendChild(dragImage);
-
-    // Set the drag image for the event
-    event.dataTransfer.setDragImage(dragImage, cellSize / 2, cellSize / 2);
-
-    // Cleanup the drag image after drag starts
-    setTimeout(() => {
-        document.body.removeChild(dragImage);
-    }, 0);
-
-    setTimeout(() => draggedShape.classList.add('dragging'), 0);
-}
 
 function handleDragEnd() {
     if (draggedShape) {
@@ -303,6 +284,7 @@ playingField.addEventListener('dragover', (e) => {
 playingField.addEventListener('dragleave', (e) => {
     clearHighlight();
 });
+
 
 playingField.addEventListener('drop', (e) => {
     e.preventDefault();
