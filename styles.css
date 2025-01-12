@@ -190,15 +190,12 @@ body {
     background-position: center;
 }
 
-
-
 .highlight .crystal {
-    position: relative; /* Относительное позиционирование внутри highlight */
+    position: relative;
     width: 50%;
     height: 50%;
     background-size: contain;
     z-index: 1;
-    /* Add opacity and blur effect for crystals */
 }
 
 
