@@ -13,14 +13,14 @@ let redCrystals = parseInt(redGoal.textContent);
 let yellowCrystals = parseInt(yellowGoal.textContent);
 
 const initialFieldState = [
-    null, "blue", null, null, "yellow", null, null, "red",
-    null, null, null, null, null, null, null, null,
+    "red", "blue", null, null, null, null, "yellow", "red",
+    null, "blue", null, null, "red", null, "red", null,
     null, "red", null, null, null, null, "blue", null,
     null, null, "yellow", null, null, "blue", null, null,
     "red", null, null, null, "yellow", null, null, "blue",
     null, null, "red", null, null, "yellow", null, null,
-    null, null, null, null, null, "blue", null, null,
-    "yellow", null, null, null, "red", null, null, null
+    "red", "yellow", null, null, "red", "blue", "yellow", "blue",
+    "blue", "blue", null, null, "yellow", "blue", "red", "red"
 ];
 
 for (let i = 0; i < 64; i++) {
@@ -173,14 +173,22 @@ function createNewShape(randomType) {
     return shape;
 }
 
+const startShapes = [9, 12, 11];
+let step = 0;
 
 function regenerateShapes() {
     shapesContainer.innerHTML = '';
+
     for (let i = 0; i < 3; i++) {
-        const randomType = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
-        const newShape = createNewShape(randomType);
+        let type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        if (step === 0) {
+            type = shapeTypes[startShapes[i]];
+        }
+        const newShape = createNewShape(type);
         shapesContainer.appendChild(newShape);
     }
+
+    step++;
 }
 
 function handleTouchMove(event) {
