@@ -116,10 +116,19 @@ function handleStart(event, isTouch = false) {
         dragImage.style.left = `${touch.clientX - touchOffsetX}px`;
         dragImage.style.top = `${touch.clientY - touchOffsetY}px`;
     } else {
-        dragImage.style.left = '-9999px'; // Скрываем изображение при drag & drop
-        event.dataTransfer.setDragImage(dragImage, cellSize / 2, cellSize / 2);
-    }
 
+        const rect = draggedShape.getBoundingClientRect();
+        const startX = event.clientX - rect.left;
+        const startY = event.clientY - rect.top;
+
+        dragImage.style.left = `${event.clientX - draggedShape.offsetWidth / 2}px`;
+        dragImage.style.top = `${event.clientY - draggedShape.offsetHeight / 2}px`;
+
+        const transparentPixel = new Image();
+        transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAn8B9WYyDmMAAAAASUVORK5CYII=";
+        event.dataTransfer.setDragImage(transparentPixel, 0, 0);
+
+    }
     document.body.appendChild(dragImage);
     draggedShape.dragImage = dragImage;
 
@@ -136,6 +145,19 @@ function handleDragStart(event) {
     handleStart(event, false);
 }
 
+function handleDragMove(event) {
+    console.log("------");
+    if (!draggedShape) return;
+
+    event.preventDefault();
+    const dragImage = draggedShape.dragImage;
+
+    if (dragImage) {
+        dragImage.style.left = `${event.clientX - draggedShape.offsetWidth / 2}px`;
+        dragImage.style.top = `${event.clientY - draggedShape.offsetHeight / 2}px`;
+    }
+}
+
 function createNewShape(randomType) {
     const shape = document.createElement('div');
     shape.classList.add('shape');
@@ -143,9 +165,10 @@ function createNewShape(randomType) {
     shape.addEventListener('touchstart', handleTouchStart);
     shape.addEventListener('touchmove', handleTouchMove);
     shape.addEventListener('touchend', handleTouchEnd);
-    shape.addEventListener('touchcancel', handleTouchEnd); // Handle cancellation
+    shape.addEventListener('touchcancel', handleTouchEnd);
 
     shape.addEventListener('dragstart', handleDragStart);
+    shape.addEventListener('drag', handleDragMove);
     shape.addEventListener('dragend', handleDragEnd);
 
     randomType.shape.forEach((row, rowIndex) => {
@@ -254,6 +277,12 @@ function handleTouchEnd(event) {
 
 
 function handleDragEnd() {
+    const dragImage = draggedShape.dragImage;
+    if (dragImage) {
+        document.body.removeChild(dragImage);
+        draggedShape.dragImage = null;
+    }
+
     if (draggedShape) {
         draggedShape.classList.remove('dragging');
         draggedShape = null;
