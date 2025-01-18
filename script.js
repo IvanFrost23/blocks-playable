@@ -12,7 +12,7 @@ const shapeTypes = [
     [[1, 1, 1, 1]],
     [[1, 1, 1], [1, 0, 1]]
 ];
-const colorTypes = ["red", "blue", "yellow"];
+const colorTypes = ["blue", "red", "yellow"];
 const playingField = document.getElementById('playing-field');
 const cells = [];
 const shapesContainer = document.getElementById('shapes-container');
