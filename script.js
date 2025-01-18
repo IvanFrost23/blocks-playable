@@ -2,38 +2,52 @@
  * Created by Ivan on 10.01.2025
  */
 
+const shapeTypes = [
+    [[1]],
+    [[1, 1]],
+    [[1], [1]],
+    [[1, 1], [1, 1]],
+    [[1, 0], [1, 1]],
+    [[1, 1, 1]],
+    [[1, 1, 1, 1]],
+    [[1, 1, 1], [1, 0, 1]]
+];
+const colorTypes = ["red", "blue", "yellow"];
 const playingField = document.getElementById('playing-field');
 const cells = [];
 const shapesContainer = document.getElementById('shapes-container');
-const blueGoal = document.getElementById('blue-goal');
-const redGoal = document.getElementById('red-goal');
-const yellowGoal = document.getElementById('yellow-goal');
-let blueCrystals = parseInt(blueGoal.textContent);
-let redCrystals = parseInt(redGoal.textContent);
-let yellowCrystals = parseInt(yellowGoal.textContent);
+const goal = document.getElementById('goal');
+let crystals = parseInt(goal.textContent);
+let step = 0;
 
 const initialFieldState = [
-    "red", "blue", null, null, null, null, "yellow", "red",
-    null, "blue", null, null, "red", null, "red", null,
-    null, "red", null, null, null, null, "blue", null,
-    null, null, "yellow", null, null, "blue", null, null,
-    "red", null, null, null, "yellow", null, null, "blue",
-    null, null, "red", null, null, "yellow", null, null,
-    "red", "yellow", null, null, "red", "blue", "yellow", "blue",
-    "blue", "blue", null, null, "yellow", "blue", "red", "red"
+    0, 1, null, null, null, null, 2, 0,
+    null, 1, null, null, 0, null, 0, null,
+    null, 0, null, null, null, null, 1, null,
+    null, null, 2, null, null, 1, null, null,
+    0, null, null, null, 2, null, null, 1,
+    null, null, 0, null, null, 2, null, null,
+    0, 2, null, null, 0, 1, 2, 1,
+    1, 1, null, null, 2, 1, 0, 0
 ];
+var initialCrystalsState = [0, 7, 12, 14, 17, 32, 48, 52, 62, 63];
 
 for (let i = 0; i < 64; i++) {
     const cell = document.createElement('div');
     cell.classList.add('cell');
 
-    if (initialFieldState[i]) {
+    if (initialFieldState[i] !== null) {
         const block = document.createElement('div');
-        block.classList.add('block', initialFieldState[i]);
+        block.classList.add('block', colorTypes[initialFieldState[i]]);
         cell.appendChild(block);
-        const crystal = document.createElement('div');
-        crystal.classList.add('crystal', initialFieldState[i]);
-        cell.appendChild(crystal);
+
+
+        if (initialCrystalsState.indexOf(i) !== -1) {
+            const crystal = document.createElement('div');
+            crystal.classList.add('crystal', colorTypes[initialFieldState[i]]);
+            cell.appendChild(crystal);
+        }
+
         cell.classList.add('filled');
     }
 
@@ -45,22 +59,6 @@ let draggedShape = null;
 let shapeOffsets = [];
 let touchOffsetX, touchOffsetY;
 let currentHighlightCells = [];
-
-const shapeTypes = [
-    { shape: [[1]], color: 'blue', crystal: 0.2 },
-    { shape: [[1, 1]], color: 'red', crystal: 0.3 },
-    { shape: [[1], [1]], color: 'red', crystal: 0.3 },
-    { shape: [[1], [1]], color: 'yellow', crystal: 0.3 },
-    { shape: [[1], [1]], color: 'blue', crystal: 0.3 },
-    { shape: [[1, 0], [1, 1]], color: 'yellow', crystal: 0.3 },
-    { shape: [[1, 0], [1, 1]], color: 'red', crystal: 0.3 },
-    { shape: [[1, 0], [1, 1]], color: 'blue', crystal: 0.3 },
-    { shape: [[1], [1]], color: 'yellow', crystal: 0.25 },
-    { shape: [[1, 1], [1, 1]], color: 'blue', crystal: 0.15 },
-    { shape: [[1, 1, 1]], color: 'yellow', crystal: 0.3 },
-    { shape: [[1, 1, 1, 1]], color: 'red', crystal: 0.5 },
-    { shape: [[1, 1, 1], [1, 0, 1]], color: 'blue', crystal: 0.3 }
-];
 
 function createDragImage(shape, shapeOffsets, cellSize) {
     const dragImage = shape.cloneNode(true);
@@ -100,7 +98,7 @@ function handleStart(event, isTouch = false) {
             col,
             color: block.dataset.color,
             hasCrystal: !!block.querySelector('.crystal'),
-            crystalType: block.dataset.crystalType,
+            crystal: block.dataset.crystal,
         });
     });
 
@@ -138,15 +136,24 @@ function handleStart(event, isTouch = false) {
 }
 
 function handleTouchStart(event) {
+    if (isGameOver()) {
+        event.preventDefault();
+        alert("GAME OVER!");
+        return;
+    }
     handleStart(event, true);
 }
 
 function handleDragStart(event) {
+    if (isGameOver()) {
+        event.preventDefault();
+        alert("GAME OVER!");
+        return;
+    }
     handleStart(event, false);
 }
 
 function handleDragMove(event) {
-    console.log("------");
     if (!draggedShape) return;
 
     event.preventDefault();
@@ -178,11 +185,11 @@ function createNewShape(randomType) {
                 block.classList.add('block', randomType.color);
                 block.dataset.color = randomType.color;
 
-                if (Math.random() < randomType.crystal) {
+                if (block.dataset.color === colorTypes[0] && Math.random() > 0.5) {
                     const crystal = document.createElement('div');
                     crystal.classList.add('crystal', randomType.color);
                     block.appendChild(crystal);
-                    block.dataset.crystalType = randomType.color;
+                    block.dataset.crystal = true;
                 }
 
                 block.style.gridRowStart = rowIndex + 1;
@@ -196,28 +203,29 @@ function createNewShape(randomType) {
     return shape;
 }
 
-const startShapes = [9, 12, 11];
-let step = 0;
+const startShapes = [3, 7, 6];
 
 function regenerateShapes() {
     shapesContainer.innerHTML = '';
 
     for (let i = 0; i < 3; i++) {
-        let type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        let shape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
         if (step === 0) {
-            type = shapeTypes[startShapes[i]];
+            shape = shapeTypes[startShapes[i]];
         }
-        const newShape = createNewShape(type);
+
+        const newShape = createNewShape({
+            shape: shape,
+            color: colorTypes[Math.floor(Math.random() * colorTypes.length)]
+        });
         shapesContainer.appendChild(newShape);
     }
-
-    step++;
 }
 
 function handleTouchMove(event) {
     if (!draggedShape) return;
 
-    event.preventDefault(); // Prevent scrolling
+    event.preventDefault();
     const touch = event.touches[0];
     const dragImage = draggedShape.dragImage;
 
@@ -237,7 +245,7 @@ function handleTouchMove(event) {
     const startIndex = gridY * 8 + gridX;
 
     if (startIndex >= 0 && startIndex < 64) {
-        highlightCells(startIndex, true); // Indicate it's a touch event
+        highlightCells(startIndex, true);
     } else {
         clearHighlight();
     }
@@ -333,7 +341,7 @@ function highlightCells(startIndex, isTouch = false) {
                 highlightDiv.classList.add('highlight', offset.color);
                 if (offset.hasCrystal) {
                     const crystal = document.createElement('div');
-                    crystal.classList.add('crystal', offset.crystalType);
+                    crystal.classList.add('crystal');
                     highlightDiv.appendChild(crystal);
                 }
                 cell.appendChild(highlightDiv);
@@ -355,7 +363,7 @@ function clearHighlight() {
 }
 
 function placeShape(startIndex) {
-    if (!draggedShape) return; // Ensure there's a shape being dragged
+    if (!draggedShape) return;
 
     let canPlace = true;
     shapeOffsets.forEach(offset => {
@@ -379,7 +387,7 @@ function placeShape(startIndex) {
 
                 if (offset.hasCrystal) {
                     const crystal = document.createElement('div');
-                    crystal.classList.add('crystal', offset.crystalType);
+                    crystal.classList.add('crystal');
                     cell.appendChild(crystal);
                 }
             }
@@ -391,6 +399,8 @@ function placeShape(startIndex) {
         if ([...shapesContainer.children].every(shape => shape.style.visibility === 'hidden')) {
             regenerateShapes();
         }
+
+        step++;
     }
 
     clearHighlight();
@@ -443,8 +453,7 @@ function clearRowOrColumn(start, end, type) {
 
     cellsToClear.forEach(cell => {
         if (cell.querySelector('.crystal')) {
-            const crystalType = cell.querySelector('.crystal').classList[1];
-            updateCrystalCount(crystalType);
+            updateCrystalCount();
         }
 
         cell.classList.add('burn');
@@ -457,17 +466,13 @@ function clearRowOrColumn(start, end, type) {
     });
 }
 
-function updateCrystalCount(type) {
-    if (type === 'blue' && blueCrystals > 0) {
-        blueCrystals--;
-        blueGoal.textContent = blueCrystals;
-    } else if (type === 'red' && redCrystals > 0) {
-        redCrystals--;
-        redGoal.textContent = redCrystals;
-    } else if (type === 'yellow' && yellowCrystals > 0) {
-        yellowCrystals--;
-        yellowGoal.textContent = yellowCrystals;
-    }
+function updateCrystalCount() {
+    crystals = Math.max(0, crystals - 1);
+    goal.textContent = crystals;
+}
+
+function isGameOver() {
+    return crystals === 0 || step > 4;
 }
 
 window.onload = regenerateShapes;

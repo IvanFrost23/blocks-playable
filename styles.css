@@ -11,7 +11,7 @@ body {
     background-size: cover;
     background-position: center;
     overflow: hidden;
-    touch-action: none; /* Prevent default browser touch actions */
+    touch-action: none;
 }
 
 #game-container {
@@ -116,16 +116,7 @@ body {
     height: 50%;
     background-size: contain;
     z-index: 1;
-}
-
-.crystal.blue {
-    background-image: url('crystal_blue.png');
-}
-.crystal.red {
-    background-image: url('crystal_red.png');
-}
-.crystal.yellow {
-    background-image: url('crystal_yellow.png');
+    background-image: url('crystal.png');
 }
 
 .block {
