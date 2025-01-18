@@ -2,6 +2,8 @@
  * Created by Ivan on 10.01.2025
  */
 
+let scaleFactor = 1;
+
 const shapeTypes = [
     [[1]],
     [[1, 1]],
@@ -107,23 +109,23 @@ function handleStart(event, isTouch = false) {
 
     // Получаем координаты поля относительно окна
     const fieldRect = playingField.getBoundingClientRect();
-
+    const currentScaleFactor = getScaleFactor();
     if (isTouch) {
         const touch = event.touches[0];
         const rect = draggedShape.getBoundingClientRect();
         touchOffsetX = touch.clientX - rect.left;
         touchOffsetY = touch.clientY - rect.top;
 
-        // Корректируем позицию dragImage относительно поля
-        dragImage.style.left = `${touch.clientX - fieldRect.left - touchOffsetX}px`;
-        dragImage.style.top = `${touch.clientY - fieldRect.top - touchOffsetY}px`;
+        // Корректируем позицию dragImage относительно поля, учитывая масштаб
+        dragImage.style.left = `${(touch.clientX - fieldRect.left - touchOffsetX)/currentScaleFactor}px`;
+        dragImage.style.top = `${(touch.clientY - fieldRect.top - touchOffsetY)/currentScaleFactor}px`;
     } else {
         const rect = draggedShape.getBoundingClientRect();
         const startX = event.clientX - rect.left;
         const startY = event.clientY - rect.top;
-
-        dragImage.style.left = `${event.clientX - fieldRect.left - draggedShape.offsetWidth / 2}px`;
-        dragImage.style.top = `${event.clientY - fieldRect.top - draggedShape.offsetHeight / 2}px`;
+        // Корректируем позицию dragImage относительно поля, учитывая масштаб
+        dragImage.style.left = `${(event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor}px`;
+        dragImage.style.top = `${(event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor}px`;
 
         const transparentPixel = new Image();
         transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAn8B9WYyDmMAAAAASUVORK5CYII=";
@@ -161,10 +163,11 @@ function handleDragMove(event) {
 
     event.preventDefault();
     const dragImage = draggedShape.dragImage;
+    const currentScaleFactor = getScaleFactor();
 
     if (dragImage) {
-        dragImage.style.left = `${event.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2}px`;
-        dragImage.style.top = `${event.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2}px`;
+        dragImage.style.left = `${(event.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor}px`;
+        dragImage.style.top = `${(event.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor}px`;
     }
 }
 
@@ -227,14 +230,13 @@ function regenerateShapes() {
 
 function handleTouchMove(event) {
     if (!draggedShape) return;
-
     event.preventDefault();
     const touch = event.touches[0];
     const dragImage = draggedShape.dragImage;
-
+    const currentScaleFactor = getScaleFactor();
     if (dragImage) {
-        dragImage.style.left = `${touch.clientX - playingField.getBoundingClientRect().left - touchOffsetX}px`;
-        dragImage.style.top = `${touch.clientY - playingField.getBoundingClientRect().top - touchOffsetY}px`;
+        dragImage.style.left = `${(touch.clientX - playingField.getBoundingClientRect().left - touchOffsetX) / currentScaleFactor}px`;
+        dragImage.style.top = `${(touch.clientY - playingField.getBoundingClientRect().top - touchOffsetY) / currentScaleFactor}px`;
     }
 
     const fieldRect = playingField.getBoundingClientRect();
@@ -243,8 +245,8 @@ function handleTouchMove(event) {
 
     const cellWidth = playingField.offsetWidth / 8;
     const cellHeight = playingField.offsetHeight / 8;
-    const gridX = Math.floor(touchX / cellWidth);
-    const gridY = Math.floor(touchY / cellHeight);
+    const gridX = Math.floor((touchX / currentScaleFactor) / cellWidth);
+    const gridY = Math.floor((touchY/ currentScaleFactor) / cellHeight);
     const startIndex = gridY * 8 + gridX;
 
     if (startIndex >= 0 && startIndex < 64) {
@@ -272,8 +274,9 @@ function handleTouchEnd(event) {
 
     const cellWidth = playingField.offsetWidth / 8;
     const cellHeight = playingField.offsetHeight / 8;
-    const gridX = Math.floor(touchX / cellWidth);
-    const gridY = Math.floor(touchY / cellHeight);
+    const currentScaleFactor = getScaleFactor();
+    const gridX = Math.floor((touchX / currentScaleFactor) / cellWidth);
+    const gridY = Math.floor((touchY/ currentScaleFactor) / cellHeight);
     const startIndex = gridY * 8 + gridX;
 
     if (startIndex >= 0 && startIndex < 64) {
@@ -477,5 +480,28 @@ function updateCrystalCount() {
 function isGameOver() {
     return crystals === 0 || step > 4;
 }
+
+function getScaleFactor() {
+    const gameContainer = document.getElementById('game-container');
+    const widthToHeightRatio = 600 / 931;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    if (viewportWidth / viewportHeight < widthToHeightRatio) {
+        scaleFactor = viewportWidth / 600;
+    } else {
+        scaleFactor = viewportHeight / 931;
+    }
+    return scaleFactor;
+}
+
+function resizeGame() {
+    const gameContainer = document.getElementById('game-container');
+    scaleFactor = getScaleFactor();
+    gameContainer.style.transform = `scale(${scaleFactor})`;
+}
+
+window.addEventListener('resize', resizeGame);
+window.addEventListener('load', resizeGame);
 
 window.onload = regenerateShapes;
