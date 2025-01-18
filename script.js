@@ -105,29 +105,32 @@ function handleStart(event, isTouch = false) {
     const cellSize = playingField.querySelector('.cell').offsetWidth;
     const dragImage = createDragImage(draggedShape, shapeOffsets, cellSize);
 
+    // Получаем координаты поля относительно окна
+    const fieldRect = playingField.getBoundingClientRect();
+
     if (isTouch) {
         const touch = event.touches[0];
         const rect = draggedShape.getBoundingClientRect();
         touchOffsetX = touch.clientX - rect.left;
         touchOffsetY = touch.clientY - rect.top;
 
-        dragImage.style.left = `${touch.clientX - touchOffsetX}px`;
-        dragImage.style.top = `${touch.clientY - touchOffsetY}px`;
+        // Корректируем позицию dragImage относительно поля
+        dragImage.style.left = `${touch.clientX - fieldRect.left - touchOffsetX}px`;
+        dragImage.style.top = `${touch.clientY - fieldRect.top - touchOffsetY}px`;
     } else {
-
         const rect = draggedShape.getBoundingClientRect();
         const startX = event.clientX - rect.left;
         const startY = event.clientY - rect.top;
 
-        dragImage.style.left = `${event.clientX - draggedShape.offsetWidth / 2}px`;
-        dragImage.style.top = `${event.clientY - draggedShape.offsetHeight / 2}px`;
+        dragImage.style.left = `${event.clientX - fieldRect.left - draggedShape.offsetWidth / 2}px`;
+        dragImage.style.top = `${event.clientY - fieldRect.top - draggedShape.offsetHeight / 2}px`;
 
         const transparentPixel = new Image();
         transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAn8B9WYyDmMAAAAASUVORK5CYII=";
         event.dataTransfer.setDragImage(transparentPixel, 0, 0);
-
     }
-    document.body.appendChild(dragImage);
+
+    playingField.appendChild(dragImage);
     draggedShape.dragImage = dragImage;
 
     setTimeout(() => {
@@ -160,8 +163,8 @@ function handleDragMove(event) {
     const dragImage = draggedShape.dragImage;
 
     if (dragImage) {
-        dragImage.style.left = `${event.clientX - draggedShape.offsetWidth / 2}px`;
-        dragImage.style.top = `${event.clientY - draggedShape.offsetHeight / 2}px`;
+        dragImage.style.left = `${event.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2}px`;
+        dragImage.style.top = `${event.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2}px`;
     }
 }
 
@@ -230,8 +233,8 @@ function handleTouchMove(event) {
     const dragImage = draggedShape.dragImage;
 
     if (dragImage) {
-        dragImage.style.left = `${touch.clientX - touchOffsetX}px`;
-        dragImage.style.top = `${touch.clientY - touchOffsetY}px`;
+        dragImage.style.left = `${touch.clientX - playingField.getBoundingClientRect().left - touchOffsetX}px`;
+        dragImage.style.top = `${touch.clientY - playingField.getBoundingClientRect().top - touchOffsetY}px`;
     }
 
     const fieldRect = playingField.getBoundingClientRect();
@@ -256,7 +259,7 @@ function handleTouchEnd(event) {
 
     const dragImage = draggedShape.dragImage;
     if (dragImage) {
-        document.body.removeChild(dragImage);
+        playingField.removeChild(dragImage);
         draggedShape.dragImage = null;
     }
 
@@ -287,7 +290,7 @@ function handleTouchEnd(event) {
 function handleDragEnd() {
     const dragImage = draggedShape.dragImage;
     if (dragImage) {
-        document.body.removeChild(dragImage);
+        playingField.removeChild(dragImage);
         draggedShape.dragImage = null;
     }
 
