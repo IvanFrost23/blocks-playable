@@ -141,17 +141,23 @@ function handleStart(event, isTouch = false) {
 }
 
 function handleTouchStart(event) {
-    if (isPageLoaded && !isGameOver()) {
+    if (!isGameOver()) {
         handleStart(event, true);
     } else {
+        if (isGameOver()) {
+            alert("GAME OVER!");
+        }
         event.preventDefault();
     }
 }
 
 function handleDragStart(event) {
-    if (isPageLoaded && !isGameOver()) {
+    if (!isGameOver()) {
         handleStart(event, false);
     } else {
+        if (isGameOver()) {
+            alert("GAME OVER!");
+        }
         event.preventDefault();
     }
 }
@@ -499,12 +505,8 @@ function resizeGame() {
     gameContainer.style.transform = `scale(${scaleFactor})`;
 }
 
-let isPageLoaded = false;
-
 window.addEventListener('resize', resizeGame);
-
 window.onload = function() {
-    isPageLoaded = true;
     regenerateShapes();
     resizeGame();
 }
