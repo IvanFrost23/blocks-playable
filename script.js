@@ -24,11 +24,11 @@ let step = 0;
 
 const initialFieldState = [
     0, 1, null, null, null, null, 2, 0,
-    null, 1, null, null, 0, null, 0, null,
-    null, 0, null, null, null, null, 1, null,
-    null, null, 2, null, null, 1, null, null,
-    0, null, null, null, 2, null, null, 1,
-    null, null, 0, null, null, 2, null, null,
+    2, 1, null, null, 0, null, 0, 2,
+    2, 0, null, null, null, null, 1, 2,
+    2, null, null, null, null, null, null, null,
+    0, null, null, null, 2, null, null, null,
+    null, null, null, null, null, null, null, null,
     0, 2, null, null, 0, 1, 2, 1,
     1, 1, null, null, 2, 1, 0, 0
 ];
