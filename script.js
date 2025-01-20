@@ -480,7 +480,7 @@ function updateCrystalCount() {
 }
 
 function isGameOver() {
-    return crystals === 0 || step > 4;
+    return crystals === 0 || step > 3;
 }
 
 function getScaleFactor() {

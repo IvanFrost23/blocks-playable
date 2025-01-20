@@ -57,8 +57,7 @@ body {
     height: 60px;
     display: flex;
     align-items: center;
-    justify-content: center; /* Центрирование элементов */
-    gap: 40px; /* Отступы между целями */
+    justify-content: center;
     background: url('goals_bg.png') no-repeat center center;
     background-size: contain;
     padding: 0 10px;
@@ -67,11 +66,11 @@ body {
 .goal {
     display: flex;
     align-items: center;
-    font-size: 18px;
+    font-size: 24px;
 }
 
 .goal span {
-    color: white; /* Белый цвет текста у целей */
+    color: white;
 }
 
 .goal-icon {
