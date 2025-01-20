@@ -42,12 +42,13 @@ for (let i = 0; i < 64; i++) {
         const block = document.createElement('div');
         block.classList.add('block', colorTypes[initialFieldState[i]]);
         cell.appendChild(block);
+        cell.block = block;
 
 
         if (initialCrystalsState.indexOf(i) !== -1) {
             const crystal = document.createElement('div');
             crystal.classList.add('crystal', colorTypes[initialFieldState[i]]);
-            cell.appendChild(crystal);
+            block.appendChild(crystal);
         }
 
         cell.classList.add('filled');
@@ -107,7 +108,6 @@ function handleStart(event, isTouch = false) {
     const cellSize = playingField.querySelector('.cell').offsetWidth;
     const dragImage = createDragImage(draggedShape, shapeOffsets, cellSize);
 
-    // Получаем координаты поля относительно окна
     const fieldRect = playingField.getBoundingClientRect();
     const currentScaleFactor = getScaleFactor();
     if (isTouch) {
@@ -116,14 +116,13 @@ function handleStart(event, isTouch = false) {
         touchOffsetX = touch.clientX - rect.left;
         touchOffsetY = touch.clientY - rect.top;
 
-        // Корректируем позицию dragImage относительно поля, учитывая масштаб
         dragImage.style.left = `${(touch.clientX - fieldRect.left - touchOffsetX)/currentScaleFactor}px`;
         dragImage.style.top = `${(touch.clientY - fieldRect.top - touchOffsetY)/currentScaleFactor}px`;
     } else {
         const rect = draggedShape.getBoundingClientRect();
         const startX = event.clientX - rect.left;
         const startY = event.clientY - rect.top;
-        // Корректируем позицию dragImage относительно поля, учитывая масштаб
+
         dragImage.style.left = `${(event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor}px`;
         dragImage.style.top = `${(event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor}px`;
 
@@ -394,11 +393,12 @@ function placeShape(startIndex) {
                 const block = document.createElement('div');
                 block.classList.add('block', color);
                 cell.appendChild(block);
+                cell.block = block;
 
                 if (offset.hasCrystal) {
                     const crystal = document.createElement('div');
                     crystal.classList.add('crystal');
-                    cell.appendChild(crystal);
+                    block.appendChild(crystal);
                 }
             }
         });
@@ -466,13 +466,11 @@ function clearRowOrColumn(start, end, type) {
             updateCrystalCount();
         }
 
-        cell.classList.add('burn');
-        setTimeout(() => {
-            cell.classList.remove('burn', 'filled');
-            while (cell.firstChild) {
-                cell.removeChild(cell.firstChild);
-            }
-        }, 500);
+        cell.classList.remove('filled');
+        cell.block.classList.add('burn');
+        cell.block.addEventListener('animationend', () => {
+            cell.block.remove();
+        }, { once: true });
     });
 }
 
