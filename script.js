@@ -135,9 +135,9 @@ function handleStart(event, isTouch = false) {
     playingField.appendChild(dragImage);
     draggedShape.dragImage = dragImage;
 
-    setTimeout(() => {
+    requestAnimationFrame(() => {
         draggedShape.classList.add('dragging');
-    }, 0);
+    });
 }
 
 function handleTouchStart(event) {
