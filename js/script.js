@@ -1,7 +1,3 @@
-/**
- * Created by Ivan on 10.01.2025
- */
-
 var scaleFactor = 1;
 
 var shapeTypes = [
@@ -15,13 +11,13 @@ var shapeTypes = [
     [[1, 1, 1], [1, 0, 1]]
 ];
 var colorTypes = ["blue", "red", "yellow"];
-var playingField = document.getElementById('playing-field');
+var playingField = document.getElementById("playing-field");
 var cells = [];
-var shapesContainer = document.getElementById('shapes-container');
-var goal = document.getElementById('goal');
+var shapesContainer = document.getElementById("shapes-container");
+var goal = document.getElementById("goal");
 var crystals = parseInt(goal.textContent);
 var step = 0;
-var coinCountElement = document.getElementById('coin-count');
+var coinCountElement = document.getElementById("coin-count");
 var coinCount = parseInt(coinCountElement.textContent, 10);
 
 var initialFieldState = [
@@ -37,23 +33,23 @@ var initialFieldState = [
 var initialCrystalsState = [0, 7, 12, 14, 17, 32, 48, 52, 62, 63];
 
 for (var i = 0; i < 64; i++) {
-    var cell = document.createElement('div');
-    cell.classList.add('cell');
+    var cell = document.createElement("div");
+    cell.classList.add("cell");
 
     if (initialFieldState[i] !== null) {
-        var block = document.createElement('div');
-        block.classList.add('block', colorTypes[initialFieldState[i]]);
+        var block = document.createElement("div");
+        block.classList.add("block", colorTypes[initialFieldState[i]]);
         cell.appendChild(block);
         cell.block = block;
 
 
         if (initialCrystalsState.indexOf(i) !== -1) {
-            var crystal = document.createElement('div');
-            crystal.classList.add('crystal', colorTypes[initialFieldState[i]]);
+            var crystal = document.createElement("div");
+            crystal.classList.add("crystal", colorTypes[initialFieldState[i]]);
             block.appendChild(crystal);
         }
 
-        cell.classList.add('filled');
+        cell.classList.add("filled");
     }
 
     playingField.appendChild(cell);
@@ -67,47 +63,51 @@ var currentHighlightCells = [];
 
 function createDragImage(shape, shapeOffsets, cellSize) {
     var dragImage = shape.cloneNode(true);
-    dragImage.style.position = 'absolute';
-    dragImage.style.pointerEvents = 'none';
-    dragImage.style.display = 'grid';
-    dragImage.style.gridTemplateRows = `repeat(${Math.max(...shapeOffsets.map(o => o.row)) + 1}, ${cellSize}px)`;
-    dragImage.style.gridTemplateColumns = `repeat(${Math.max(...shapeOffsets.map(o => o.col)) + 1}, ${cellSize}px)`;
-    dragImage.style.width = `${cellSize * (Math.max(...shapeOffsets.map(o => o.col)) + 1)}px`;
-    dragImage.style.height = `${cellSize * (Math.max(...shapeOffsets.map(o => o.row)) + 1)}px`;
-    dragImage.style.zIndex = '1000';
+    dragImage.style.position = "absolute";
+    dragImage.style.pointerEvents = "none";
+    dragImage.style.display = "grid";
+    dragImage.style.gridTemplateRows = `repeat(${Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1}, ${cellSize}px)`;
+    dragImage.style.gridTemplateColumns = `repeat(${Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1}, ${cellSize}px)`;
+    dragImage.style.width = `${cellSize * (Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1)}px`;
+    dragImage.style.height = `${cellSize * (Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1)}px`;
+    dragImage.style.zIndex = "1000";
 
-    dragImage.querySelectorAll('.block').forEach((block) => {
+    var blocks = dragImage.querySelectorAll(".block");
+    for (var i = 0; i < blocks.length; i++) {
+        var block = blocks[i];
         block.style.width = `${cellSize}px`;
         block.style.height = `${cellSize}px`;
-        var crystal = block.querySelector('.crystal');
+        var crystal = block.querySelector(".crystal");
         if (crystal) {
             crystal.style.width = `${cellSize * 0.5}px`;
             crystal.style.height = `${cellSize * 0.5}px`;
         }
-    });
+    }
 
     return dragImage;
 }
-function handleStart(event, isTouch = false) {
-    draggedShape = isTouch ? event.target.closest('.shape') : event.target;
+function handleStart(event, isTouch) {
+    if (isTouch === void 0) { isTouch = false; }
+    draggedShape = isTouch ? event.target.closest(".shape") : event.target;
     if (!draggedShape) return;
 
-    var blocks = draggedShape.querySelectorAll('.block');
+    var blocks = draggedShape.querySelectorAll(".block");
     shapeOffsets = [];
 
-    blocks.forEach((block) => {
+    for (var i = 0; i < blocks.length; i++) {
+        var block = blocks[i];
         var row = parseInt(block.style.gridRowStart) - 1;
         var col = parseInt(block.style.gridColumnStart) - 1;
         shapeOffsets.push({
-            row,
-            col,
+            row: row,
+            col: col,
             color: block.dataset.color,
-            hasCrystal: !!block.querySelector('.crystal'),
-            crystal: block.dataset.crystal,
+            hasCrystal: !!block.querySelector(".crystal"),
+            crystal: block.dataset.crystal
         });
-    });
+    }
 
-    var cellSize = playingField.querySelector('.cell').offsetWidth;
+    var cellSize = playingField.querySelector(".cell").offsetWidth;
     var dragImage = createDragImage(draggedShape, shapeOffsets, cellSize);
 
     var fieldRect = playingField.getBoundingClientRect();
@@ -118,8 +118,8 @@ function handleStart(event, isTouch = false) {
         touchOffsetX = touch.clientX - rect.left;
         touchOffsetY = touch.clientY - rect.top;
 
-        dragImage.style.left = `${(touch.clientX - fieldRect.left - touchOffsetX)/currentScaleFactor}px`;
-        dragImage.style.top = `${(touch.clientY - fieldRect.top - touchOffsetY)/currentScaleFactor}px`;
+        dragImage.style.left = `${(touch.clientX - fieldRect.left - touchOffsetX) / currentScaleFactor}px`;
+        dragImage.style.top = `${(touch.clientY - fieldRect.top - touchOffsetY) / currentScaleFactor}px`;
     } else {
         var rect = draggedShape.getBoundingClientRect();
         var startX = event.clientX - rect.left;
@@ -136,8 +136,8 @@ function handleStart(event, isTouch = false) {
     playingField.appendChild(dragImage);
     draggedShape.dragImage = dragImage;
 
-    requestAnimationFrame(() => {
-        draggedShape.classList.add('dragging');
+    requestAnimationFrame(function() {
+        draggedShape.classList.add("dragging");
     });
 }
 
@@ -177,28 +177,28 @@ function handleDragMove(event) {
 }
 
 function createNewShape(randomType) {
-    var shape = document.createElement('div');
-    shape.classList.add('shape');
-    shape.setAttribute('draggable', true);
-    shape.addEventListener('touchstart', handleTouchStart);
-    shape.addEventListener('touchmove', handleTouchMove);
-    shape.addEventListener('touchend', handleTouchEnd);
-    shape.addEventListener('touchcancel', handleTouchEnd);
+    var shape = document.createElement("div");
+    shape.classList.add("shape");
+    shape.setAttribute("draggable", true);
+    shape.addEventListener("touchstart", handleTouchStart);
+    shape.addEventListener("touchmove", handleTouchMove);
+    shape.addEventListener("touchend", handleTouchEnd);
+    shape.addEventListener("touchcancel", handleTouchEnd);
 
-    shape.addEventListener('dragstart', handleDragStart);
-    shape.addEventListener('drag', handleDragMove);
-    shape.addEventListener('dragend', handleDragEnd);
+    shape.addEventListener("dragstart", handleDragStart);
+    shape.addEventListener("drag", handleDragMove);
+    shape.addEventListener("dragend", handleDragEnd);
 
-    randomType.shape.forEach((row, rowIndex) => {
-        row.forEach((cell, colIndex) => {
+    randomType.shape.forEach(function(row, rowIndex) {
+        row.forEach(function(cell, colIndex) {
             if (cell === 1) {
-                var block = document.createElement('div');
-                block.classList.add('block', randomType.color);
+                var block = document.createElement("div");
+                block.classList.add("block", randomType.color);
                 block.dataset.color = randomType.color;
 
                 if (block.dataset.color === colorTypes[0] && Math.random() > 0.5) {
-                    var crystal = document.createElement('div');
-                    crystal.classList.add('crystal', randomType.color);
+                    var crystal = document.createElement("div");
+                    crystal.classList.add("crystal", randomType.color);
                     block.appendChild(crystal);
                     block.dataset.crystal = true;
                 }
@@ -217,7 +217,7 @@ function createNewShape(randomType) {
 var startShapes = [3, 7, 6];
 
 function regenerateShapes() {
-    shapesContainer.innerHTML = '';
+    shapesContainer.innerHTML = "";
 
     for (var i = 0; i < 3; i++) {
         var shape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
@@ -251,7 +251,7 @@ function handleTouchMove(event) {
     var cellWidth = playingField.offsetWidth / 8;
     var cellHeight = playingField.offsetHeight / 8;
     var gridX = Math.floor((touchX / currentScaleFactor) / cellWidth);
-    var gridY = Math.floor((touchY/ currentScaleFactor) / cellHeight);
+    var gridY = Math.floor((touchY / currentScaleFactor) / cellHeight);
     var startIndex = gridY * 8 + gridX;
 
     if (startIndex >= 0 && startIndex < 64) {
@@ -270,7 +270,7 @@ function handleTouchEnd(event) {
         draggedShape.dragImage = null;
     }
 
-    draggedShape.classList.remove('dragging');
+    draggedShape.classList.remove("dragging");
 
     var touch = event.changedTouches[0];
     var fieldRect = playingField.getBoundingClientRect();
@@ -281,7 +281,7 @@ function handleTouchEnd(event) {
     var cellHeight = playingField.offsetHeight / 8;
     var currentScaleFactor = getScaleFactor();
     var gridX = Math.floor((touchX / currentScaleFactor) / cellWidth);
-    var gridY = Math.floor((touchY/ currentScaleFactor) / cellHeight);
+    var gridY = Math.floor((touchY / currentScaleFactor) / cellHeight);
     var startIndex = gridY * 8 + gridX;
 
     if (startIndex >= 0 && startIndex < 64) {
@@ -303,13 +303,13 @@ function handleDragEnd() {
     }
 
     if (draggedShape) {
-        draggedShape.classList.remove('dragging');
+        draggedShape.classList.remove("dragging");
         draggedShape = null;
         shapeOffsets = [];
     }
 }
 
-playingField.addEventListener('dragover', (e) => {
+playingField.addEventListener("dragover", function(e) {
     e.preventDefault();
     var targetCellIndex = Array.from(playingField.children).indexOf(e.target);
     if (targetCellIndex !== -1) {
@@ -317,12 +317,12 @@ playingField.addEventListener('dragover', (e) => {
     }
 });
 
-playingField.addEventListener('dragleave', (e) => {
+playingField.addEventListener("dragleave", function(e) {
     clearHighlight();
 });
 
 
-playingField.addEventListener('drop', (e) => {
+playingField.addEventListener("drop", function(e) {
     e.preventDefault();
     var targetCellIndex = Array.from(playingField.children).indexOf(e.target);
     if (targetCellIndex !== -1) {
@@ -330,29 +330,30 @@ playingField.addEventListener('drop', (e) => {
     }
 });
 
-function highlightCells(startIndex, isTouch = false) {
+function highlightCells(startIndex, isTouch) {
+    if (isTouch === void 0) { isTouch = false; }
     clearHighlight();
     currentHighlightCells = [];
     var canPlace = true;
 
-    shapeOffsets.forEach(offset => {
+    shapeOffsets.forEach(function(offset) {
         var targetIndex = startIndex + offset.row * 8 + offset.col;
-        if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains('filled')) {
+        if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains("filled")) {
             canPlace = false;
         }
     });
 
     if (canPlace) {
-        shapeOffsets.forEach(offset => {
+        shapeOffsets.forEach(function(offset) {
             var targetIndex = startIndex + offset.row * 8 + offset.col;
             var cell = cells[targetIndex];
 
-            if (cell && !cell.classList.contains('filled')) {
-                var highlightDiv = document.createElement('div');
-                highlightDiv.classList.add('highlight', offset.color);
+            if (cell && !cell.classList.contains("filled")) {
+                var highlightDiv = document.createElement("div");
+                highlightDiv.classList.add("highlight", offset.color);
                 if (offset.hasCrystal) {
-                    var crystal = document.createElement('div');
-                    crystal.classList.add('crystal');
+                    var crystal = document.createElement("div");
+                    crystal.classList.add("crystal");
                     highlightDiv.appendChild(crystal);
                 }
                 cell.appendChild(highlightDiv);
@@ -364,8 +365,8 @@ function highlightCells(startIndex, isTouch = false) {
 
 
 function clearHighlight() {
-    currentHighlightCells.forEach(cell => {
-        var highlightDiv = cell.querySelector('.highlight');
+    currentHighlightCells.forEach(function(cell) {
+        var highlightDiv = cell.querySelector(".highlight");
         if (highlightDiv) {
             cell.removeChild(highlightDiv);
         }
@@ -377,38 +378,38 @@ function placeShape(startIndex) {
     if (!draggedShape) return;
 
     var canPlace = true;
-    shapeOffsets.forEach(offset => {
+    shapeOffsets.forEach(function(offset) {
         var targetIndex = startIndex + offset.row * 8 + offset.col;
-        if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains('filled')) {
+        if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains("filled")) {
             canPlace = false;
         }
     });
 
     if (canPlace) {
-        shapeOffsets.forEach(offset => {
+        shapeOffsets.forEach(function(offset) {
             var targetIndex = startIndex + offset.row * 8 + offset.col;
             var cell = cells[targetIndex];
 
             if (cell) {
                 var color = offset.color;
-                cell.classList.add('filled');
-                var block = document.createElement('div');
-                block.classList.add('block', color);
+                cell.classList.add("filled");
+                var block = document.createElement("div");
+                block.classList.add("block", color);
                 cell.appendChild(block);
                 cell.block = block;
 
                 if (offset.hasCrystal) {
-                    var crystal = document.createElement('div');
-                    crystal.classList.add('crystal');
+                    var crystal = document.createElement("div");
+                    crystal.classList.add("crystal");
                     block.appendChild(crystal);
                 }
             }
         });
 
         checkAndClearFullRowsOrColumns();
-        draggedShape.style.visibility = 'hidden';
+        draggedShape.style.visibility = "hidden";
 
-        if ([...shapesContainer.children].every(shape => shape.style.visibility === 'hidden')) {
+        if (Array.prototype.every.call(shapesContainer.children, function(shape) { return shape.style.visibility === "hidden"; })) {
             regenerateShapes();
         }
 
@@ -434,26 +435,34 @@ function checkAndClearFullRowsOrColumns() {
     for (var i = 0; i < 8; i++) {
         var rowStart = i * 8;
         var rowEnd = rowStart + 7;
-        if (cells.slice(rowStart, rowEnd + 1).every(cell => cell.classList.contains('filled'))) {
-            clearRowOrColumn(rowStart, rowEnd, 'row');
+        var rowCells = cells.slice(rowStart, rowEnd + 1);
+        var rowFilled = true;
+        for (var k = 0; k < rowCells.length; k++) {
+            if (!rowCells[k].classList.contains("filled")) {
+                rowFilled = false;
+                break;
+            }
+        }
+        if (rowFilled) {
+            clearRowOrColumn(rowStart, rowEnd, "row");
         }
 
         var colFilled = true;
         for (var j = 0; j < 8; j++) {
-            if (!cells[i + j * 8].classList.contains('filled')) {
+            if (!cells[i + j * 8].classList.contains("filled")) {
                 colFilled = false;
                 break;
             }
         }
         if (colFilled) {
-            clearRowOrColumn(i, i + 56, 'column');
+            clearRowOrColumn(i, i + 56, "column");
         }
     }
 }
 
 function clearRowOrColumn(start, end, type) {
     var cellsToClear = [];
-    if (type === 'row') {
+    if (type === "row") {
         for (var i = start; i <= end; i++) {
             cellsToClear.push(cells[i]);
         }
@@ -464,14 +473,14 @@ function clearRowOrColumn(start, end, type) {
     }
 
     addCoins(10);
-    cellsToClear.forEach(cell => {
-        if (cell.querySelector('.crystal')) {
+    cellsToClear.forEach(function(cell) {
+        if (cell.querySelector(".crystal")) {
             updateCrystalCount();
         }
 
-        cell.classList.remove('filled');
-        cell.block.classList.add('burn');
-        cell.block.addEventListener('animationend', () => {
+        cell.classList.remove("filled");
+        cell.block.classList.add("burn");
+        cell.block.addEventListener("animationend", function() {
             cell.block.remove();
         }, { once: true });
     });
@@ -487,7 +496,7 @@ function isGameOver() {
 }
 
 function getScaleFactor() {
-    var gameContainer = document.getElementById('game-container');
+    var gameContainer = document.getElementById("game-container");
     var widthToHeightRatio = 600 / 931;
     var viewportWidth = window.innerWidth;
     var viewportHeight = window.innerHeight;
@@ -540,17 +549,17 @@ function addCoins(amount) {
 }
 
 function resizeGame() {
-    var gameContainer = document.getElementById('game-container');
+    var gameContainer = document.getElementById("game-container");
     scaleFactor = getScaleFactor();
     gameContainer.style.transform = `scale(${scaleFactor})`;
 
-    var coinContainer = document.getElementById('coin-container');
-    coinContainer.style.transform = 'scale(' + scaleFactor + ')';
-    coinContainer.style.left = (20 * scaleFactor) + 'px';
-    coinContainer.style.top = (20 * scaleFactor) + 'px';
+    var coinContainer = document.getElementById("coin-container");
+    coinContainer.style.transform = "scale(" + scaleFactor + ")";
+    coinContainer.style.left = (20 * scaleFactor) + "px";
+    coinContainer.style.top = (20 * scaleFactor) + "px";
 }
 
-window.addEventListener('resize', resizeGame);
+window.addEventListener("resize", resizeGame);
 window.onload = function() {
     regenerateShapes();
     resizeGame();
