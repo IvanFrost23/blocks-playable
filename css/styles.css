@@ -7,7 +7,7 @@ body {
     height: 100vh;
     background-color: #f3f3f3;
     font-family: Arial, sans-serif;
-    background-image: url('background.png');
+    background-image: url('../images/background.png');
     background-size: cover;
     background-position: center;
     overflow: hidden;
@@ -22,12 +22,13 @@ body {
 
 
 #coin-container {
-    position: absolute;
+    position: fixed;
     top: 20px;
     left: 20px;
+    transform-origin: top left;
     width: 120px;
     height: 30px;
-    background: url('menubar_bg.png') no-repeat center center;
+    background: url('../images/menubar_bg.png') no-repeat center center;
     background-size: contain;
     display: flex;
     align-items: center;
@@ -38,14 +39,41 @@ body {
 #coin-icon {
     width: 50px;
     height: 50px;
-    margin-right: 0px;
+    margin-right: 0;
     transform: translateX(-20px);
+    background-image: url('../images/coin.png');
+    background-size: cover;
+    background-position: center;
 }
 
 #coin-count {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: bold;
     color: #333;
+}
+
+.coin-animation {
+    position: absolute;
+    font-size: 24px;
+    font-weight: bold;
+    color: gold;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.5s ease;
+    pointer-events: none;
+}
+
+.coin-delta {
+    position: absolute;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    opacity: 1;
+    transform: translateY(0);
+    transition: transform 1s ease, opacity 1s ease;
+    pointer-events: none;
+    z-index: 1000;
 }
 
 #goals-container {
@@ -58,7 +86,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: url('goals_bg.png') no-repeat center center;
+    background: url('../images/goals_bg.png') no-repeat center center;
     background-size: contain;
     padding: 0 10px;
 }
@@ -78,6 +106,7 @@ body {
     height: 30px;
     margin-right: 5px;
     background-size: contain;
+    background-image: url('../images/crystal.png');
 }
 
 #playing-field {
@@ -116,7 +145,7 @@ body {
     height: 50%;
     background-size: contain;
     z-index: 1;
-    background-image: url('crystal.png');
+    background-image: url('../images/crystal.png');
 }
 
 .block {
@@ -129,15 +158,15 @@ body {
 }
 
 .block.blue {
-    background-image: url('blue.png');
+    background-image: url('../images/blue.png');
 }
 
 .block.red {
-    background-image: url('red.png');
+    background-image: url('../images/red.png');
 }
 
 .block.yellow {
-    background-image: url('yellow.png');
+    background-image: url('../images/yellow.png');
 }
 
 .burn {
@@ -166,19 +195,19 @@ body {
 
 
 .highlight.blue {
-    background-image: url('blue.png');
+    background-image: url('../images/blue.png');
     background-size: contain; /* Чтобы картинка вписывалась в блок */
     background-repeat: no-repeat; /* Чтобы не повторялась */
     background-position: center; /* Центрировать картинку */
 }
 .highlight.red {
-    background-image: url('red.png');
+    background-image: url('../images/red.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }
 .highlight.yellow {
-    background-image: url('yellow.png');
+    background-image: url('../images/yellow.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -203,7 +232,7 @@ body {
     display: flex;
     justify-content: space-around; /* Равномерное распределение фигур */
     align-items: center;
-    background: url('pieces_bg.png') no-repeat center center;
+    background: url('../images/pieces_bg.png') no-repeat center center;
     background-size: cover; /* Убедитесь, что фон заполняет контейнер */
     padding: 10px 0; /* Дополнительное пространство вокруг */
 }
