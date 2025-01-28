@@ -1,7 +1,3 @@
-/**
- * Created by Ivan on 10.01.2025
- */
-
 var scaleFactor = 1;
 
 var shapeTypes = [
@@ -19,7 +15,7 @@ var playingField = document.getElementById('playing-field');
 var cells = [];
 var shapesContainer = document.getElementById('shapes-container');
 var goal = document.getElementById('goal');
-var crystals = parseInt(goal.textContent);
+var crystals = parseInt(goal.textContent, 10);
 var step = 0;
 var coinCountElement = document.getElementById('coin-count');
 var coinCount = parseInt(coinCountElement.textContent, 10);
@@ -45,7 +41,6 @@ for (var i = 0; i < 64; i++) {
         block.classList.add('block', colorTypes[initialFieldState[i]]);
         cell.appendChild(block);
         cell.block = block;
-
 
         if (initialCrystalsState.indexOf(i) !== -1) {
             var crystal = document.createElement('div');
@@ -73,37 +68,39 @@ function createDragImage(shape, shapeOffsets, cellSize) {
     dragImage.style.gridTemplateRows = 'repeat(' + (Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1) + ', ' + cellSize + 'px)';
     dragImage.style.gridTemplateColumns = 'repeat(' + (Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1) + ', ' + cellSize + 'px)';
     dragImage.style.width = (cellSize * (Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1)) + 'px';
-    dragImage.style.height = `${cellSize * (Math.max(...shapeOffsets.map(function (o) {return o.row;})) + 1)}px`;
+    dragImage.style.height = (cellSize * (Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1)) + 'px';
     dragImage.style.zIndex = '1000';
 
-    dragImage.querySelectorAll('.block').forEach(function (block) {
-        block.style.width = `${cellSize}px`;
-        block.style.height = `${cellSize}px`;
+    Array.prototype.forEach.call(dragImage.querySelectorAll('.block'), function(block) {
+        block.style.width = cellSize + 'px';
+        block.style.height = cellSize + 'px';
         var crystal = block.querySelector('.crystal');
         if (crystal) {
-            crystal.style.width = `${cellSize * 0.5}px`;
-            crystal.style.height = `${cellSize * 0.5}px`;
+            crystal.style.width = (cellSize * 0.5) + 'px';
+            crystal.style.height = (cellSize * 0.5) + 'px';
         }
     });
 
     return dragImage;
 }
-function handleStart(event, isTouch = false) {
+
+function handleStart(event, isTouch) {
+    isTouch = typeof isTouch !== 'undefined' ? isTouch : false;
     draggedShape = isTouch ? event.target.closest('.shape') : event.target;
     if (!draggedShape) return;
 
     var blocks = draggedShape.querySelectorAll('.block');
     shapeOffsets = [];
 
-    blocks.forEach(function (block) {
-        var row = parseInt(block.style.gridRowStart) - 1;
-        var col = parseInt(block.style.gridColumnStart) - 1;
+    Array.prototype.forEach.call(blocks, function(block) {
+        var row = parseInt(block.style.gridRowStart, 10) - 1;
+        var col = parseInt(block.style.gridColumnStart, 10) - 1;
         shapeOffsets.push({
-            row,
-            col,
+            row: row,
+            col: col,
             color: block.dataset.color,
             hasCrystal: !!block.querySelector('.crystal'),
-            crystal: block.dataset.crystal,
+            crystal: block.dataset.crystal
         });
     });
 
@@ -118,15 +115,15 @@ function handleStart(event, isTouch = false) {
         touchOffsetX = touch.clientX - rect.left;
         touchOffsetY = touch.clientY - rect.top;
 
-        dragImage.style.left = `${(touch.clientX - fieldRect.left - touchOffsetX)/currentScaleFactor}px`;
-        dragImage.style.top = `${(touch.clientY - fieldRect.top - touchOffsetY)/currentScaleFactor}px`;
+        dragImage.style.left = ((touch.clientX - fieldRect.left - touchOffsetX) / currentScaleFactor) + 'px';
+        dragImage.style.top = ((touch.clientY - fieldRect.top - touchOffsetY) / currentScaleFactor) + 'px';
     } else {
         var rect = draggedShape.getBoundingClientRect();
         var startX = event.clientX - rect.left;
         var startY = event.clientY - rect.top;
 
-        dragImage.style.left = `${(event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor}px`;
-        dragImage.style.top = `${(event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor}px`;
+        dragImage.style.left = ((event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
+        dragImage.style.top = ((event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
 
         var transparentPixel = new Image();
         transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAn8B9WYyDmMAAAAASUVORK5CYII=";
@@ -171,8 +168,10 @@ function handleDragMove(event) {
     var currentScaleFactor = getScaleFactor();
 
     if (dragImage) {
-        dragImage.style.left = `${(event.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor}px`;
-        dragImage.style.top = `${(event.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor}px`;
+        var left = (event.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor;
+        var right = (event.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor;
+        dragImage.style.left = left + "px";
+        dragImage.style.top = right + "px";
     }
 }
 
@@ -240,8 +239,10 @@ function handleTouchMove(event) {
     var dragImage = draggedShape.dragImage;
     var currentScaleFactor = getScaleFactor();
     if (dragImage) {
-        dragImage.style.left = `${(touch.clientX - playingField.getBoundingClientRect().left - touchOffsetX) / currentScaleFactor}px`;
-        dragImage.style.top = `${(touch.clientY - playingField.getBoundingClientRect().top - touchOffsetY) / currentScaleFactor}px`;
+        var left = (touch.clientX - playingField.getBoundingClientRect().left - touchOffsetX) / currentScaleFactor;
+        var right = (touch.clientY - playingField.getBoundingClientRect().top - touchOffsetY) / currentScaleFactor;
+        dragImage.style.left = left + "px";
+        dragImage.style.top = right + "px";
     }
 
     var fieldRect = playingField.getBoundingClientRect();
@@ -547,7 +548,7 @@ function addCoins(amount) {
 function resizeGame() {
     var gameContainer = document.getElementById('game-container');
     scaleFactor = getScaleFactor();
-    gameContainer.style.transform = `scale(${scaleFactor})`;
+    gameContainer.style.transform = "scale(" + scaleFactor + ")";
 
     var coinContainer = document.getElementById('coin-container');
     coinContainer.style.transform = 'scale(' + scaleFactor + ')';
