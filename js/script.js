@@ -70,13 +70,13 @@ function createDragImage(shape, shapeOffsets, cellSize) {
     dragImage.style.position = 'absolute';
     dragImage.style.pointerEvents = 'none';
     dragImage.style.display = 'grid';
-    dragImage.style.gridTemplateRows = `repeat(${Math.max(...shapeOffsets.map(o => o.row)) + 1}, ${cellSize}px)`;
-    dragImage.style.gridTemplateColumns = `repeat(${Math.max(...shapeOffsets.map(o => o.col)) + 1}, ${cellSize}px)`;
-    dragImage.style.width = `${cellSize * (Math.max(...shapeOffsets.map(o => o.col)) + 1)}px`;
-    dragImage.style.height = `${cellSize * (Math.max(...shapeOffsets.map(o => o.row)) + 1)}px`;
+    dragImage.style.gridTemplateRows = 'repeat(' + (Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1) + ', ' + cellSize + 'px)';
+    dragImage.style.gridTemplateColumns = 'repeat(' + (Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1) + ', ' + cellSize + 'px)';
+    dragImage.style.width = (cellSize * (Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1)) + 'px';
+    dragImage.style.height = `${cellSize * (Math.max(...shapeOffsets.map(function (o) {return o.row;})) + 1)}px`;
     dragImage.style.zIndex = '1000';
 
-    dragImage.querySelectorAll('.block').forEach((block) => {
+    dragImage.querySelectorAll('.block').forEach(function (block) {
         block.style.width = `${cellSize}px`;
         block.style.height = `${cellSize}px`;
         var crystal = block.querySelector('.crystal');
@@ -95,7 +95,7 @@ function handleStart(event, isTouch = false) {
     var blocks = draggedShape.querySelectorAll('.block');
     shapeOffsets = [];
 
-    blocks.forEach((block) => {
+    blocks.forEach(function (block) {
         var row = parseInt(block.style.gridRowStart) - 1;
         var col = parseInt(block.style.gridColumnStart) - 1;
         shapeOffsets.push({
@@ -136,7 +136,7 @@ function handleStart(event, isTouch = false) {
     playingField.appendChild(dragImage);
     draggedShape.dragImage = dragImage;
 
-    requestAnimationFrame(() => {
+    requestAnimationFrame(function () {
         draggedShape.classList.add('dragging');
     });
 }
@@ -189,8 +189,8 @@ function createNewShape(randomType) {
     shape.addEventListener('drag', handleDragMove);
     shape.addEventListener('dragend', handleDragEnd);
 
-    randomType.shape.forEach((row, rowIndex) => {
-        row.forEach((cell, colIndex) => {
+    randomType.shape.forEach(function (row, rowIndex) {
+        row.forEach(function (cell, colIndex) {
             if (cell === 1) {
                 var block = document.createElement('div');
                 block.classList.add('block', randomType.color);
@@ -309,7 +309,7 @@ function handleDragEnd() {
     }
 }
 
-playingField.addEventListener('dragover', (e) => {
+playingField.addEventListener('dragover', function (e) {
     e.preventDefault();
     var targetCellIndex = Array.from(playingField.children).indexOf(e.target);
     if (targetCellIndex !== -1) {
@@ -317,12 +317,12 @@ playingField.addEventListener('dragover', (e) => {
     }
 });
 
-playingField.addEventListener('dragleave', (e) => {
+playingField.addEventListener('dragleave', function (e) {
     clearHighlight();
 });
 
 
-playingField.addEventListener('drop', (e) => {
+playingField.addEventListener('drop', function (e) {
     e.preventDefault();
     var targetCellIndex = Array.from(playingField.children).indexOf(e.target);
     if (targetCellIndex !== -1) {
@@ -335,7 +335,7 @@ function highlightCells(startIndex, isTouch = false) {
     currentHighlightCells = [];
     var canPlace = true;
 
-    shapeOffsets.forEach(offset => {
+    shapeOffsets.forEach(function (offset) {
         var targetIndex = startIndex + offset.row * 8 + offset.col;
         if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains('filled')) {
             canPlace = false;
@@ -343,7 +343,7 @@ function highlightCells(startIndex, isTouch = false) {
     });
 
     if (canPlace) {
-        shapeOffsets.forEach(offset => {
+        shapeOffsets.forEach(function (offset) {
             var targetIndex = startIndex + offset.row * 8 + offset.col;
             var cell = cells[targetIndex];
 
@@ -364,7 +364,7 @@ function highlightCells(startIndex, isTouch = false) {
 
 
 function clearHighlight() {
-    currentHighlightCells.forEach(cell => {
+    currentHighlightCells.forEach(function (cell) {
         var highlightDiv = cell.querySelector('.highlight');
         if (highlightDiv) {
             cell.removeChild(highlightDiv);
@@ -377,7 +377,7 @@ function placeShape(startIndex) {
     if (!draggedShape) return;
 
     var canPlace = true;
-    shapeOffsets.forEach(offset => {
+    shapeOffsets.forEach(function (offset) {
         var targetIndex = startIndex + offset.row * 8 + offset.col;
         if (!isValidCell(startIndex, offset, targetIndex) || cells[targetIndex].classList.contains('filled')) {
             canPlace = false;
@@ -385,7 +385,7 @@ function placeShape(startIndex) {
     });
 
     if (canPlace) {
-        shapeOffsets.forEach(offset => {
+        shapeOffsets.forEach(function (offset) {
             var targetIndex = startIndex + offset.row * 8 + offset.col;
             var cell = cells[targetIndex];
 
@@ -408,7 +408,7 @@ function placeShape(startIndex) {
         checkAndClearFullRowsOrColumns();
         draggedShape.style.visibility = 'hidden';
 
-        if ([...shapesContainer.children].every(shape => shape.style.visibility === 'hidden')) {
+        if ([...shapesContainer.children].every(function (shape) { shape.style.visibility === 'hidden';})) {
             regenerateShapes();
         }
 
@@ -434,7 +434,7 @@ function checkAndClearFullRowsOrColumns() {
     for (var i = 0; i < 8; i++) {
         var rowStart = i * 8;
         var rowEnd = rowStart + 7;
-        if (cells.slice(rowStart, rowEnd + 1).every(cell => cell.classList.contains('filled'))) {
+        if (cells.slice(rowStart, rowEnd + 1).every(function (cell) {cell.classList.contains('filled');})) {
             clearRowOrColumn(rowStart, rowEnd, 'row');
         }
 
@@ -464,14 +464,14 @@ function clearRowOrColumn(start, end, type) {
     }
 
     addCoins(10);
-    cellsToClear.forEach(cell => {
+    cellsToClear.forEach(function (cell) {
         if (cell.querySelector('.crystal')) {
             updateCrystalCount();
         }
 
         cell.classList.remove('filled');
         cell.block.classList.add('burn');
-        cell.block.addEventListener('animationend', () => {
+        cell.block.addEventListener('animationend', function (){
             cell.block.remove();
         }, { once: true });
     });
