@@ -408,7 +408,7 @@ function placeShape(startIndex) {
         checkAndClearFullRowsOrColumns();
         draggedShape.style.visibility = 'hidden';
 
-        if ([...shapesContainer.children].every(function (shape) { shape.style.visibility === 'hidden';})) {
+        if ([...shapesContainer.children].every(function (shape) {return shape.style.visibility === 'hidden';})) {
             regenerateShapes();
         }
 
@@ -434,7 +434,7 @@ function checkAndClearFullRowsOrColumns() {
     for (var i = 0; i < 8; i++) {
         var rowStart = i * 8;
         var rowEnd = rowStart + 7;
-        if (cells.slice(rowStart, rowEnd + 1).every(function (cell) {cell.classList.contains('filled');})) {
+        if (cells.slice(rowStart, rowEnd + 1).every(function (cell) {return cell.classList.contains('filled');})) {
             clearRowOrColumn(rowStart, rowEnd, 'row');
         }
 
@@ -500,27 +500,47 @@ function getScaleFactor() {
     return scaleFactor;
 }
 
+
+var currentDeltaAmount = 0;
+var activeDeltaElement = null;
+
 function addCoins(amount) {
     coinCount += amount;
+    currentDeltaAmount += amount; // Аккумулируем сумму
 
-    var deltaElement = document.createElement('div');
-    deltaElement.textContent = "+" + amount;
-    deltaElement.classList.add('coin-delta');
+    // Удаляем текущую анимацию, если она активна
+    if (activeDeltaElement) {
+        activeDeltaElement.remove();
+        activeDeltaElement = null;
+    }
+
+    // Создаём новый элемент для отображения дельты
+    activeDeltaElement = document.createElement('div');
+    activeDeltaElement.textContent = "+" + currentDeltaAmount;
+    activeDeltaElement.classList.add('coin-delta');
 
     var rect = coinCountElement.getBoundingClientRect();
-    deltaElement.style.left = (rect.left) + "px";
-    deltaElement.style.top = (rect.bottom + 10) + "px";
+    activeDeltaElement.style.left = (rect.left) + "px";
+    activeDeltaElement.style.top = (rect.bottom + 10) + "px";
 
-    document.body.appendChild(deltaElement);
+    document.body.appendChild(activeDeltaElement);
 
+    // Запускаем анимацию
     setTimeout(function () {
-        deltaElement.style.transform = 'translateY(-10px)';
-        deltaElement.style.opacity = '0';
+        activeDeltaElement.style.transform = 'translateY(-10px)';
+        activeDeltaElement.style.opacity = '0';
     }, 10);
 
+    // Обновляем счётчик монет
     coinCountElement.textContent = coinCount;
+
+    // Удаляем элемент и сбрасываем сумму после завершения анимации
     setTimeout(function () {
-        deltaElement.remove();
+        if (activeDeltaElement) {
+            activeDeltaElement.remove();
+            activeDeltaElement = null;
+        }
+        currentDeltaAmount = 0; // Сбрасываем накопленную сумму
     }, 1000);
 }
 
