@@ -66,21 +66,22 @@ function createDragImage(shape, shapeOffsets, cellSize) {
     dragImage.style.position = "absolute";
     dragImage.style.pointerEvents = "none";
     dragImage.style.display = "grid";
-    dragImage.style.gridTemplateRows = `repeat(${Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1}, ${cellSize}px)`;
-    dragImage.style.gridTemplateColumns = `repeat(${Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1}, ${cellSize}px)`;
-    dragImage.style.width = `${cellSize * (Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1)}px`;
-    dragImage.style.height = `${cellSize * (Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1)}px`;
+    dragImage.style.gridTemplateRows = 'repeat(' + (Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1) + ', ' + cellSize + 'px)';
+    dragImage.style.gridTemplateColumns = 'repeat(' + (Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1) + ', ' + cellSize + 'px)';
+    dragImage.style.width = (cellSize * (Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1)) + 'px';
+    dragImage.style.height = (cellSize * (Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1)) + 'px';
+
     dragImage.style.zIndex = "1000";
 
     var blocks = dragImage.querySelectorAll(".block");
     for (var i = 0; i < blocks.length; i++) {
         var block = blocks[i];
-        block.style.width = `${cellSize}px`;
-        block.style.height = `${cellSize}px`;
+        block.style.width = cellSize + "px";
+        block.style.height = cellSize + "px";
         var crystal = block.querySelector(".crystal");
         if (crystal) {
-            crystal.style.width = `${cellSize * 0.5}px`;
-            crystal.style.height = `${cellSize * 0.5}px`;
+            crystal.style.width = (cellSize * 0.5) + "px";
+            crystal.style.height = (cellSize * 0.5) + "px";
         }
     }
 
@@ -118,15 +119,15 @@ function handleStart(event, isTouch) {
         touchOffsetX = touch.clientX - rect.left;
         touchOffsetY = touch.clientY - rect.top;
 
-        dragImage.style.left = `${(touch.clientX - fieldRect.left - touchOffsetX) / currentScaleFactor}px`;
-        dragImage.style.top = `${(touch.clientY - fieldRect.top - touchOffsetY) / currentScaleFactor}px`;
+        dragImage.style.left = ((touch.clientX - fieldRect.left - touchOffsetX) / currentScaleFactor) + "px";
+        dragImage.style.top = ((touch.clientY - fieldRect.top - touchOffsetY) / currentScaleFactor) + "px";
     } else {
         var rect = draggedShape.getBoundingClientRect();
         var startX = event.clientX - rect.left;
         var startY = event.clientY - rect.top;
 
-        dragImage.style.left = `${(event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor}px`;
-        dragImage.style.top = `${(event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor}px`;
+        dragImage.style.left = ((event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
+        dragImage.style.top = ((event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
 
         var transparentPixel = new Image();
         transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAn8B9WYyDmMAAAAASUVORK5CYII=";
@@ -171,8 +172,8 @@ function handleDragMove(event) {
     var currentScaleFactor = getScaleFactor();
 
     if (dragImage) {
-        dragImage.style.left = `${(event.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor}px`;
-        dragImage.style.top = `${(event.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor}px`;
+        dragImage.style.left = ((event.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
+        dragImage.style.top = ((event.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
     }
 }
 
@@ -240,8 +241,8 @@ function handleTouchMove(event) {
     var dragImage = draggedShape.dragImage;
     var currentScaleFactor = getScaleFactor();
     if (dragImage) {
-        dragImage.style.left = `${(touch.clientX - playingField.getBoundingClientRect().left - touchOffsetX) / currentScaleFactor}px`;
-        dragImage.style.top = `${(touch.clientY - playingField.getBoundingClientRect().top - touchOffsetY) / currentScaleFactor}px`;
+        dragImage.style.left = ((touch.clientX - playingField.getBoundingClientRect().left - touchOffsetX) / currentScaleFactor) + 'px';
+        dragImage.style.top = ((touch.clientY - playingField.getBoundingClientRect().top - touchOffsetY) / currentScaleFactor) + 'px';
     }
 
     var fieldRect = playingField.getBoundingClientRect();
@@ -551,7 +552,7 @@ function addCoins(amount) {
 function resizeGame() {
     var gameContainer = document.getElementById("game-container");
     scaleFactor = getScaleFactor();
-    gameContainer.style.transform = `scale(${scaleFactor})`;
+    gameContainer.style.transform = 'scale(' + scaleFactor + ')';
 
     var coinContainer = document.getElementById("coin-container");
     coinContainer.style.transform = "scale(" + scaleFactor + ")";
