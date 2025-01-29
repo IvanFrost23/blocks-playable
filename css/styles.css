@@ -27,7 +27,6 @@ body {
     height: 1000px;
 }
 
-
 #coin-container {
     position: fixed;
     top: 20px;
@@ -85,11 +84,11 @@ body {
 
 #goals-container {
     position: absolute;
-    top: 160px;
+    top: 110px;
     left: 50%;
     transform: translateX(-50%);
-    width: 480px;
-    height: 60px;
+    width: 600px;
+    height: 75px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -101,7 +100,7 @@ body {
 .goal {
     display: flex;
     align-items: center;
-    font-size: 24px;
+    font-size: 28px;
 }
 
 .goal span {
@@ -109,8 +108,8 @@ body {
 }
 
 .goal-icon {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     margin-right: 5px;
     background-size: contain;
     background-image: url('../images/crystal.png');
@@ -118,11 +117,11 @@ body {
 
 #playing-field {
     position: absolute;
-    top: 250px;
+    top: 200px;
     left: 50%;
     transform: translateX(-50%);
-    width: 400px;
-    height: 400px;
+    width: 500px;
+    height: 500px;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
@@ -203,9 +202,9 @@ body {
 
 .highlight.blue {
     background-image: url('../images/blue.png');
-    background-size: contain; /* Чтобы картинка вписывалась в блок */
-    background-repeat: no-repeat; /* Чтобы не повторялась */
-    background-position: center; /* Центрировать картинку */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 .highlight.red {
     background-image: url('../images/red.png');
@@ -228,20 +227,19 @@ body {
     z-index: 1;
 }
 
-
 #shapes-container {
     position: absolute;
-    bottom: 180px; /* Расстояние от нижней границы */
-    left: 50%; /* Центрирование по горизонтали */
+    bottom: 100px;
+    left: 50%;
     transform: translateX(-50%);
-    width: 400px; /* Корректируйте под нужную ширину */
-    height: 100px;
+    width: 500px;
+    height: 125px;
     display: flex;
-    justify-content: space-around; /* Равномерное распределение фигур */
+    justify-content: space-around;
     align-items: center;
     background: url('../images/pieces_bg.png') no-repeat center center;
-    background-size: cover; /* Убедитесь, что фон заполняет контейнер */
-    padding: 10px 0; /* Дополнительное пространство вокруг */
+    background-size: cover;
+    padding: 10px 0;
 }
 
 .shape {
@@ -251,12 +249,12 @@ body {
     padding: 0;
     border: none;
     cursor: grab;
-    touch-action: none; /* Allow panning and zooming but not default touch actions on this element */
+    touch-action: none;
 }
 
 .shape .block {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     position: relative;
     background-size: contain;
     display: flex;
