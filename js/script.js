@@ -511,15 +511,17 @@ function isGameOver() {
 }
 
 function getScaleFactor() {
+    var gameContainer = document.getElementById("game-container");
     var widthToHeightRatio = 600 / 931;
-    var viewportWidth = window.innerWidth;
-    var viewportHeight = window.visualViewport.height;
+    var viewportWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+    var viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
     if (viewportWidth / viewportHeight < widthToHeightRatio) {
-        return viewportWidth / 600;
+        scaleFactor = viewportWidth / 600;
     } else {
-        return viewportHeight / 931;
+        scaleFactor = viewportHeight / 931;
     }
+    return scaleFactor;
 }
 
 
