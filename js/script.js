@@ -125,8 +125,12 @@ function handleStart(event, isTouch) {
         touchOffsetX = touch.clientX - rect.left;
         touchOffsetY = touch.clientY - rect.top;
 
-        dragImage.style.left = ((touch.clientX - fieldLeft - touchOffsetX - (dragWidth / 2)) / currentScaleFactor) + "px";
-        dragImage.style.top = ((touch.clientY - fieldTop - touchOffsetY + dragHeight / 2 + MOBILE_DRAG_OFFSET * currentScaleFactor) / currentScaleFactor) + "px";
+        var adjustedX = touch.clientX - fieldLeft - touchOffsetX - (dragWidth / 2);
+        var adjustedY = touch.clientY - fieldTop - touchOffsetY + (dragHeight / 2) + (MOBILE_DRAG_OFFSET * currentScaleFactor);
+
+        dragImage.style.left = (adjustedX / currentScaleFactor) + "px";
+        dragImage.style.top = (adjustedY / currentScaleFactor) + "px";
+
     } else {
         var rect = draggedShape.getBoundingClientRect();
         var startX = event.clientX - rect.left;
@@ -252,22 +256,50 @@ function handleTouchMove(event) {
     if (dragImage) {
         var dragWidth = parseInt(dragImage.style.width, 10);
         var dragHeight = parseInt(dragImage.style.height, 10);
-        var offsetX = touch.clientX - fieldRect.left - touchOffsetX - (dragWidth / 2) * currentScaleFactor;
-        var offsetY = touch.clientY - fieldRect.top - touchOffsetY + (dragHeight / 2) * currentScaleFactor + MOBILE_DRAG_OFFSET * currentScaleFactor;
+
+        var touchX = touch.clientX;
+        var touchY = touch.clientY;
+        var fieldLeft = fieldRect.left;
+        var fieldTop = fieldRect.top;
+        var dragHalfWidth = (dragWidth / 2) * currentScaleFactor;
+        var dragHalfHeight = (dragHeight / 2) * currentScaleFactor;
+        var mobileOffset = MOBILE_DRAG_OFFSET * currentScaleFactor;
+
+        var offsetX = touchX - fieldLeft - touchOffsetX - dragHalfWidth;
+        var offsetY = touchY - fieldTop - touchOffsetY + dragHalfHeight + mobileOffset;
+
 
         dragImage.style.left = (offsetX / currentScaleFactor) + 'px';
         dragImage.style.top = (offsetY / currentScaleFactor) + 'px';
     }
 
     var fieldRect = playingField.getBoundingClientRect();
-    var touchX = touch.clientX - fieldRect.left;
-    var touchY = touch.clientY - fieldRect.top;
+    var fieldLeft = fieldRect.left;
+    var fieldTop = fieldRect.top;
 
-    var cellWidth = playingField.offsetWidth / 8;
-    var cellHeight = playingField.offsetHeight / 8;
-    var gridX = Math.floor((touchX / currentScaleFactor - parseInt(dragImage.style.width) / 2) / cellWidth);
-    var gridY = Math.floor(((touchY + MOBILE_DRAG_OFFSET * currentScaleFactor + (dragHeight / 2) * currentScaleFactor) / currentScaleFactor) / cellHeight);
+    var touchX = touch.clientX - fieldLeft;
+    var touchY = touch.clientY - fieldTop;
+
+    var fieldWidth = playingField.offsetWidth;
+    var fieldHeight = playingField.offsetHeight;
+    var cellWidth = fieldWidth / 8;
+    var cellHeight = fieldHeight / 8;
+
+    var dragWidth = parseInt(dragImage.style.width);
+    var scaledDragHeight = dragHeight * currentScaleFactor;
+    var scaledDragOffset = MOBILE_DRAG_OFFSET * currentScaleFactor;
+
+    var scaledTouchX = touchX / currentScaleFactor;
+    var dragOffsetX = (scaledTouchX - dragWidth / 2) / cellWidth;
+
+    var scaledTouchY = (touchY + scaledDragOffset + (scaledDragHeight / 2)) / currentScaleFactor;
+    var dragOffsetY = scaledTouchY / cellHeight;
+
+    var gridX = Math.floor(dragOffsetX);
+    var gridY = Math.floor(dragOffsetY);
+
     var startIndex = gridY * 8 + gridX;
+
 
     if (startIndex >= 0 && startIndex < 64) {
         highlightCells(startIndex, true);
@@ -292,8 +324,15 @@ function handleTouchEnd(event) {
 
     var touch = event.changedTouches[0];
     var fieldRect = playingField.getBoundingClientRect();
-    var touchX = touch.clientX - fieldRect.left - shapeWidth * currentScaleFactor / 2;
-    var touchY = touch.clientY - fieldRect.top + MOBILE_DRAG_OFFSET * currentScaleFactor + shapeHeight / 2 * currentScaleFactor;
+    var offsetX = fieldRect.left;
+    var offsetY = fieldRect.top;
+    var scaledShapeWidth = shapeWidth * currentScaleFactor;
+    var scaledShapeHeight = shapeHeight * currentScaleFactor;
+    var dragOffset = MOBILE_DRAG_OFFSET * currentScaleFactor;
+
+    var touchX = touch.clientX - offsetX - (scaledShapeWidth / 2);
+    var touchY = touch.clientY - offsetY + dragOffset + (scaledShapeHeight / 2);
+
 
     var cellWidth = playingField.offsetWidth / 8;
     var cellHeight = playingField.offsetHeight / 8;
