@@ -513,7 +513,7 @@ function isGameOver() {
 function getScaleFactor() {
     var widthToHeightRatio = 600 / 931;
     var viewportWidth = window.innerWidth;
-    var viewportHeight = document.documentElement.clientHeight;
+    var viewportHeight = window.visualViewport.height;
 
     if (viewportWidth / viewportHeight < widthToHeightRatio) {
         return viewportWidth / 600;
@@ -575,5 +575,5 @@ function resizeGame() {
 window.addEventListener("resize", resizeGame);
 window.onload = function() {
     regenerateShapes();
-    setTimeout(resizeGame, 100);
+    resizeGame();
 }
