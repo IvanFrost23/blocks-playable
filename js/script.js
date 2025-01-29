@@ -1,5 +1,6 @@
 var scaleFactor = 1;
 var MOBILE_DRAG_OFFSET = -150;
+var lastDragX, lastDragY;
 
 var shapeTypes = [
     [[1]],
@@ -141,6 +142,9 @@ function handleStart(event, isTouch) {
         dragImage.style.left = ((event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
         dragImage.style.top = ((event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
 
+        startX = ((event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor);
+        startY = ((event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor);
+
         var transparentPixel = new Image();
         transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAn8B9WYyDmMAAAAASUVORK5CYII=";
         transparentPixel.width = 1;
@@ -151,9 +155,9 @@ function handleStart(event, isTouch) {
     playingField.appendChild(dragImage);
     draggedShape.dragImage = dragImage;
 
-    // requestAnimationFrame(function() {
-    //     draggedShape.classList.add("dragging");
-    // });
+    requestAnimationFrame(function() {
+        draggedShape.classList.add("dragging");
+    });
 }
 
 function handleTouchStart(event) {
@@ -168,6 +172,9 @@ function handleTouchStart(event) {
 }
 
 function handleDragStart(event) {
+    lastDragX = undefined;
+    lastDragY = undefined;
+
     if (!isGameOver()) {
         handleStart(event, false);
     } else {
@@ -185,9 +192,9 @@ function handleDragMove(event) {
     var dragImage = draggedShape.dragImage;
     var currentScaleFactor = getScaleFactor();
 
-    if (dragImage) {
-        dragImage.style.left = ((event.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
-        dragImage.style.top = ((event.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
+    if (dragImage && lastDragX !== undefined && lastDragY !== undefined) {
+        dragImage.style.left = ((lastDragX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
+        dragImage.style.top = ((lastDragY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
     }
 }
 
@@ -369,6 +376,11 @@ function handleDragEnd() {
         shapeOffsets = [];
     }
 }
+
+document.addEventListener("dragover", function(e) {
+    lastDragX = e.clientX;
+    lastDragY = e.clientY;
+});
 
 playingField.addEventListener("dragover", function(e) {
     e.preventDefault();
