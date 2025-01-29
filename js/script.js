@@ -575,5 +575,5 @@ function resizeGame() {
 window.addEventListener("resize", resizeGame);
 window.onload = function() {
     regenerateShapes();
-    resizeGame();
+    setTimeout(resizeGame, 100);
 }
