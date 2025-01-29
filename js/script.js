@@ -185,6 +185,8 @@ function handleDragMove(event) {
     var dragImage = draggedShape.dragImage;
     var currentScaleFactor = getScaleFactor();
 
+    console.log("coordinates: ", event.clientX, event.clientY);
+
     if (dragImage) {
         dragImage.style.left = ((event.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
         dragImage.style.top = ((event.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
