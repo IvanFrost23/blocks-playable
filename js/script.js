@@ -143,12 +143,13 @@ function handleStart(event, isTouch) {
 
         var transparentPixel = new Image();
         transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAn8B9WYyDmMAAAAASUVORK5CYII=";
+        transparentPixel.width = 1;
+        transparentPixel.height = 1;
         event.dataTransfer.setDragImage(transparentPixel, 0, 0);
     }
 
     playingField.appendChild(dragImage);
     draggedShape.dragImage = dragImage;
-
 }
 
 function handleTouchStart(event) {
