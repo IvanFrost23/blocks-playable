@@ -166,25 +166,10 @@ function handleTouchStart(event) {
         event.preventDefault();
     }
 }
-var isDragging = false;
-function handleMouseMove(event) {
-    // if (!isDragging || !draggedShape) return;
-    console.log("!KL!KL!K");
-    var dragImage = draggedShape.dragImage;
-    var currentScaleFactor = getScaleFactor();
-
-    dragImage.style.left = ((event.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
-    dragImage.style.top = ((event.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
-    event.preventDefault();
-}
-
 
 function handleDragStart(event) {
     if (!isGameOver()) {
         handleStart(event, false);
-        isDragging = true;
-        document.addEventListener("mousemove", handleMouseMove);
-        event.preventDefault();
     } else {
         if (isGameOver()) {
             alert("GAME OVER!");
@@ -199,8 +184,6 @@ function handleDragMove(event) {
     event.preventDefault();
     var dragImage = draggedShape.dragImage;
     var currentScaleFactor = getScaleFactor();
-
-    console.log("coordinates: ", event.clientX, event.clientY);
 
     if (dragImage) {
         dragImage.style.left = ((event.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
@@ -375,7 +358,6 @@ function handleTouchEnd(event) {
 
 function handleDragEnd() {
     var dragImage = draggedShape.dragImage;
-    document.removeEventListener("mousemove", handleMouseMove);
     if (dragImage) {
         playingField.removeChild(dragImage);
         draggedShape.dragImage = null;
