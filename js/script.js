@@ -192,7 +192,7 @@ function handleDragMove(event) {
 function createNewShape(randomType) {
     var shape = document.createElement("div");
     shape.classList.add("shape");
-    shape.setAttribute("draggable", true);
+    shape.setAttribute("draggable", "true");
     shape.addEventListener("touchstart", handleTouchStart);
     shape.addEventListener("touchmove", handleTouchMove);
     shape.addEventListener("touchend", handleTouchEnd);
