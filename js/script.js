@@ -89,9 +89,13 @@ function createDragImage(shape, shapeOffsets, cellSize) {
     return dragImage;
 }
 function handleStart(event, isTouch) {
+    if (isDragging) return;
+
     if (isTouch === void 0) { isTouch = false; }
     draggedShape = isTouch ? event.target.closest(".shape") : event.target;
     if (!draggedShape) return;
+
+    isDragging = true;
 
     var blocks = draggedShape.querySelectorAll(".block");
     shapeOffsets = [];
@@ -152,7 +156,10 @@ function handleStart(event, isTouch) {
     });
 }
 
+var isDragging = false;
 function handleTouchStart(event) {
+    if (isDragging) return;
+
     if (!isGameOver()) {
         handleStart(event, true);
     } else {
@@ -349,6 +356,7 @@ function handleTouchEnd(event) {
 
     draggedShape = null;
     shapeOffsets = [];
+    isDragging = false;
 }
 
 
