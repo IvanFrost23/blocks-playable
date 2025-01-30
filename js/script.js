@@ -146,7 +146,7 @@ function handleStart(event, isTouch) {
         startY = ((event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor);
 
         var transparentPixel = new Image();
-        transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAn8B9WYyDmMAAAAASUVORK5CYII=";
+        transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
         transparentPixel.width = 1;
         transparentPixel.height = 1;
         transparentPixel.setAttribute("draggable", "true");
