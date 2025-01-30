@@ -18,13 +18,13 @@
     // Обработчик события dragstart
     dragItem.addEventListener('dragstart', function(e) {
         console.log('Перетаскивание началось');
-        e.dataTransfer.setData('text/plain', 'Перетащено');
+       // e.dataTransfer.setData('text/plain', 'Перетащено');
         var transparentPixel = new Image();
         transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAn8B9WYyDmMAAAAASUVORK5CYII=";
         transparentPixel.width = 1;
         transparentPixel.height = 1;
         transparentPixel.setAttribute("draggable", "true");
-        event.dataTransfer.setDragImage(transparentPixel, 0, 0);
+        e.dataTransfer.setDragImage(transparentPixel, 0, 0);
     });
 
     // Обработчик события dragover (необходимо для корректной работы drag-and-drop)
