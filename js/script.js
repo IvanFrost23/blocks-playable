@@ -156,7 +156,9 @@ function handleStart(event, isTouch) {
     draggedShape.dragImage = dragImage;
 
     requestAnimationFrame(function() {
-        draggedShape.classList.add("dragging");
+        if (draggedShape) {
+            draggedShape.classList.add("dragging");
+        }
     });
 }
 
