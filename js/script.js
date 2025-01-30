@@ -159,6 +159,7 @@ function handleStart(event, isTouch) {
         if (draggedShape) {
             draggedShape.classList.add("dragging");
         }
+        event.preventDefault();
     });
 }
 
@@ -379,15 +380,11 @@ function handleDragEnd() {
     }
 }
 
-document.addEventListener("dragover", function(e) {
+document.body.addEventListener("dragover", function(e) {
     e.preventDefault();
     lastDragX = e.clientX;
     lastDragY = e.clientY;
     console.log("??", lastDragX, lastDragY);
-});
-
-playingField.addEventListener("dragover", function(e) {
-    e.preventDefault();
     var targetCellIndex = Array.from(playingField.children).indexOf(e.target);
     if (targetCellIndex !== -1) {
         highlightCells(targetCellIndex);
@@ -398,8 +395,7 @@ playingField.addEventListener("dragleave", function(e) {
     clearHighlight();
 });
 
-
-playingField.addEventListener("drop", function(e) {
+document.body.addEventListener("drop", function(e) {
     e.preventDefault();
     var targetCellIndex = Array.from(playingField.children).indexOf(e.target);
     if (targetCellIndex !== -1) {
