@@ -1,6 +1,5 @@
 var scaleFactor = 1;
 var MOBILE_DRAG_OFFSET = -150;
-var lastDragX, lastDragY;
 
 var shapeTypes = [
     [[1]],
@@ -176,9 +175,6 @@ function handleTouchStart(event) {
 }
 
 function handleDragStart(event) {
-    lastDragX = undefined;
-    lastDragY = undefined;
-
     if (!isGameOver()) {
         handleStart(event, false);
     } else {
@@ -186,19 +182,6 @@ function handleDragStart(event) {
             alert("GAME OVER!");
         }
         event.preventDefault();
-    }
-}
-
-function handleDragMove(event) {
-    if (!draggedShape) return;
-
-    event.preventDefault();
-    var dragImage = draggedShape.dragImage;
-    var currentScaleFactor = getScaleFactor();
-
-    if (dragImage && lastDragX !== undefined && lastDragY !== undefined) {
-        dragImage.style.left = ((lastDragX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
-        dragImage.style.top = ((lastDragY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
     }
 }
 
@@ -212,7 +195,6 @@ function createNewShape(randomType) {
     shape.addEventListener("touchcancel", handleTouchEnd);
 
     shape.addEventListener("dragstart", handleDragStart);
-  //  shape.addEventListener("drag", handleDragMove);
     shape.addEventListener("dragend", handleDragEnd);
 
     randomType.shape.forEach(function(row, rowIndex) {
@@ -383,18 +365,15 @@ function handleDragEnd() {
 
 document.body.addEventListener("dragover", function(e) {
     e.preventDefault();
-    lastDragX = e.clientX;
-    lastDragY = e.clientY;
 
     var dragImage = draggedShape.dragImage;
     var currentScaleFactor = getScaleFactor();
 
-    if (dragImage && lastDragX !== undefined && lastDragY !== undefined) {
-        dragImage.style.left = ((lastDragX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
-        dragImage.style.top = ((lastDragY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
+    if (dragImage) {
+        dragImage.style.left = ((e.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
+        dragImage.style.top = ((e.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
     }
 
-    console.log("??", lastDragX, lastDragY);
     var targetCellIndex = Array.from(playingField.children).indexOf(e.target);
     if (targetCellIndex !== -1) {
         highlightCells(targetCellIndex);
