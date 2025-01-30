@@ -134,15 +134,8 @@ function handleStart(event, isTouch) {
         dragImage.style.top = (adjustedY / currentScaleFactor) + "px";
 
     } else {
-        var rect = draggedShape.getBoundingClientRect();
-        var startX = event.clientX - rect.left;
-        var startY = event.clientY - rect.top;
-
         dragImage.style.left = ((event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
         dragImage.style.top = ((event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
-
-        startX = ((event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor);
-        startY = ((event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor);
 
         var transparentPixel = new Image();
         transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
@@ -369,24 +362,47 @@ document.body.addEventListener("dragover", function(e) {
     var dragImage = draggedShape.dragImage;
     var currentScaleFactor = getScaleFactor();
 
+    var width = parseInt(dragImage.style.width, 10) * currentScaleFactor;
+    var height = parseInt(dragImage.style.height, 10) * currentScaleFactor;
+
     if (dragImage) {
-        dragImage.style.left = ((e.clientX - playingField.getBoundingClientRect().left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
-        dragImage.style.top = ((e.clientY - playingField.getBoundingClientRect().top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
+        dragImage.style.left = ((e.clientX - playingField.getBoundingClientRect().left - width / 2) / currentScaleFactor) + 'px';
+        dragImage.style.top = ((e.clientY - playingField.getBoundingClientRect().top - height / 2) / currentScaleFactor) + 'px';
     }
 
-    var targetCellIndex = Array.from(playingField.children).indexOf(e.target);
-    if (targetCellIndex !== -1) {
-        highlightCells(targetCellIndex);
+    var startIndex = calcHighlightIndex(e.clientX, e.clientY);
+
+    if (startIndex >= 0 && startIndex < 64) {
+        highlightCells(startIndex, true);
+    } else {
+        clearHighlight();
     }
 });
 
-playingField.addEventListener("dragleave", function(e) {
-    clearHighlight();
-});
+function calcHighlightIndex (dragX, dragY) {
+    var dragImage = draggedShape.dragImage;
+    var currentScaleFactor = getScaleFactor();
+    var fieldRect = playingField.getBoundingClientRect();
+    var dragWidth = parseInt(dragImage.style.width) * currentScaleFactor;
+    var width = parseInt(dragImage.style.width, 10) * currentScaleFactor;
+    var height = parseInt(dragImage.style.height, 10) * currentScaleFactor;
+
+
+    var touchX = dragX - fieldRect.left;
+    var touchY = dragY - fieldRect.top;
+
+    var gridX = Math.round((touchX - width / 2) / (currentScaleFactor * playingField.offsetWidth / 8));
+    var gridY = Math.round((touchY - height / 2) / (currentScaleFactor * playingField.offsetHeight / 8));
+    if (gridX < 0 || gridY < 0 || gridX > 7 || gridY > 7) {
+        return -1;
+    }
+
+    return gridY * 8 + gridX;
+}
 
 document.body.addEventListener("drop", function(e) {
     e.preventDefault();
-    var targetCellIndex = Array.from(playingField.children).indexOf(e.target);
+    var targetCellIndex = calcHighlightIndex(e.clientX, e.clientY);
     if (targetCellIndex !== -1) {
         placeShape(targetCellIndex);
     }
