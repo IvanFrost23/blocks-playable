@@ -149,6 +149,7 @@ function handleStart(event, isTouch) {
         transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAn8B9WYyDmMAAAAASUVORK5CYII=";
         transparentPixel.width = 1;
         transparentPixel.height = 1;
+        transparentPixel.setAttribute("draggable", "true");
         event.dataTransfer.setDragImage(transparentPixel, 0, 0);
     }
 
