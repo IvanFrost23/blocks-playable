@@ -31,6 +31,12 @@
         transparentPixel.width = 1;
         transparentPixel.height = 1;
         transparentPixel.setAttribute("draggable", "true");
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 1;
+        canvas.height = 1;
+        ctx.clearRect(0, 0, 1, 1);  // Убедитесь, что оно прозрачное
+        e.dataTransfer.setDragImage(canvas, 0, 0);
        // e.dataTransfer.setDragImage(transparentPixel, 0, 0);
     });
 
