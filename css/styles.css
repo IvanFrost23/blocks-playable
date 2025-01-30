@@ -120,8 +120,8 @@ body {
     top: 200px;
     left: 50%;
     transform: translateX(-50%);
-    width: 500px;
-    height: 500px;
+    width: 504px;
+    height: 504px;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
@@ -232,7 +232,7 @@ body {
     bottom: 100px;
     left: 50%;
     transform: translateX(-50%);
-    width: 500px;
+    width: 520px;
     height: 125px;
     display: flex;
     justify-content: space-around;
