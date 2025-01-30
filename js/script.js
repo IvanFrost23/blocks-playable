@@ -380,6 +380,7 @@ function handleDragEnd() {
 }
 
 document.addEventListener("dragover", function(e) {
+    e.preventDefault();
     lastDragX = e.clientX;
     lastDragY = e.clientY;
     console.log("??", lastDragX, lastDragY);
