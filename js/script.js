@@ -382,6 +382,7 @@ function handleDragEnd() {
 document.addEventListener("dragover", function(e) {
     lastDragX = e.clientX;
     lastDragY = e.clientY;
+    console.log("??", lastDragX, lastDragY);
 });
 
 playingField.addEventListener("dragover", function(e) {
