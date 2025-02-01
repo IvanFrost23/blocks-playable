@@ -170,7 +170,7 @@ function handleTouchStart(event) {
     if (!isGameOver()) {
         handleStart(event, true);
     } else {
-        alert("GAME OVER!");
+        openStore();
         event.preventDefault();
     }
 }
