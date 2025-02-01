@@ -4,22 +4,25 @@ var MOBILE_DRAG_OFFSET = -150;
 var shapeTypes = [
     [[1]],
     [[1, 1]],
-    [[1], [1]],
-    [[1, 1], [1, 1]],
-    [[1, 0], [1, 1]],
+    [[1],[1]],
+    [[1, 1],[1, 1]],
+    [[1, 0],[1, 1]],
     [[1, 1, 1]],
     [[1, 1, 1, 1]],
-    [[1, 1, 1], [1, 0, 1]]
+    [[1, 1, 1],[1, 0, 1]]
 ];
+
 var colorTypes = ["blue", "red", "yellow"];
+
 var playingField = document.getElementById("playing-field");
 var cells = [];
 var shapesContainer = document.getElementById("shapes-container");
 var goal = document.getElementById("goal");
-var crystals = parseInt(goal.textContent);
-var step = 0;
 var coinCountElement = document.getElementById("coin-count");
+
+var crystals = parseInt(goal.textContent);
 var coinCount = parseInt(coinCountElement.textContent, 10);
+var step = 0;
 
 var initialFieldState = [
     0, 1, null, null, null, null, 2, 0,
@@ -33,45 +36,52 @@ var initialFieldState = [
 ];
 var initialCrystalsState = [0, 7, 12, 14, 17, 32, 48, 52, 62, 63];
 
-for (var i = 0; i < 64; i++) {
-    var cell = document.createElement("div");
-    cell.classList.add("cell");
-
-    if (initialFieldState[i] !== null) {
-        var block = document.createElement("div");
-        block.classList.add("block", colorTypes[initialFieldState[i]]);
-        cell.appendChild(block);
-        cell.block = block;
-
-
-        if (initialCrystalsState.indexOf(i) !== -1) {
-            var crystal = document.createElement("div");
-            crystal.classList.add("crystal", colorTypes[initialFieldState[i]]);
-            block.appendChild(crystal);
-        }
-
-        cell.classList.add("filled");
-    }
-
-    playingField.appendChild(cell);
-    cells.push(cell);
-}
-
 var draggedShape = null;
 var shapeOffsets = [];
 var touchOffsetX, touchOffsetY;
 var currentHighlightCells = [];
+
+function buildField() {
+    playingField.innerHTML = "";
+    cells = [];
+
+    for (var i = 0; i < 64; i++) {
+        var cell = document.createElement("div");
+        cell.classList.add("cell");
+
+        if (initialFieldState[i] !== null) {
+            var block = document.createElement("div");
+            block.classList.add("block", colorTypes[initialFieldState[i]]);
+            cell.appendChild(block);
+            cell.block = block;
+
+            if (initialCrystalsState.indexOf(i) !== -1) {
+                var crystal = document.createElement("div");
+                crystal.classList.add("crystal", colorTypes[initialFieldState[i]]);
+                block.appendChild(crystal);
+            }
+
+            cell.classList.add("filled");
+        }
+
+        playingField.appendChild(cell);
+        cells.push(cell);
+    }
+}
 
 function createDragImage(shape, shapeOffsets, cellSize) {
     var dragImage = shape.cloneNode(true);
     dragImage.style.position = "absolute";
     dragImage.style.pointerEvents = "none";
     dragImage.style.display = "grid";
-    dragImage.style.gridTemplateRows = 'repeat(' + (Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1) + ', ' + cellSize + 'px)';
-    dragImage.style.gridTemplateColumns = 'repeat(' + (Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1) + ', ' + cellSize + 'px)';
-    dragImage.style.width = (cellSize * (Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1)) + 'px';
-    dragImage.style.height = (cellSize * (Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1)) + 'px';
 
+    var maxRow = Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1;
+    var maxCol = Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1;
+
+    dragImage.style.gridTemplateRows = "repeat(" + maxRow + ", " + cellSize + "px)";
+    dragImage.style.gridTemplateColumns = "repeat(" + maxCol + ", " + cellSize + "px)";
+    dragImage.style.width = (cellSize * maxCol) + "px";
+    dragImage.style.height = (cellSize * maxRow) + "px";
     dragImage.style.zIndex = "1000";
 
     var blocks = dragImage.querySelectorAll(".block");
@@ -88,6 +98,7 @@ function createDragImage(shape, shapeOffsets, cellSize) {
 
     return dragImage;
 }
+
 function handleStart(event, isTouch) {
     if (draggedShape) return;
 
@@ -116,26 +127,25 @@ function handleStart(event, isTouch) {
 
     var fieldRect = playingField.getBoundingClientRect();
     var currentScaleFactor = getScaleFactor();
+
     if (isTouch) {
         var touch = event.touches[0];
         var rect = draggedShape.getBoundingClientRect();
         var dragWidth = parseInt(dragImage.style.width, 10) * currentScaleFactor;
         var dragHeight = parseInt(dragImage.style.height, 10) * currentScaleFactor;
-        var fieldLeft = fieldRect.left;
-        var fieldTop = fieldRect.top;
 
         touchOffsetX = touch.clientX - rect.left;
         touchOffsetY = touch.clientY - rect.top;
 
-        var adjustedX = touch.clientX - fieldLeft - touchOffsetX - (dragWidth / 2);
-        var adjustedY = touch.clientY - fieldTop - touchOffsetY + (dragHeight / 2) + (MOBILE_DRAG_OFFSET * currentScaleFactor);
+        var adjustedX = touch.clientX - fieldRect.left - touchOffsetX - (dragWidth / 2);
+        var adjustedY = touch.clientY - fieldRect.top - touchOffsetY + (dragHeight / 2) + (MOBILE_DRAG_OFFSET * currentScaleFactor);
 
         dragImage.style.left = (adjustedX / currentScaleFactor) + "px";
         dragImage.style.top = (adjustedY / currentScaleFactor) + "px";
 
     } else {
-        dragImage.style.left = ((event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor) + 'px';
-        dragImage.style.top = ((event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor) + 'px';
+        dragImage.style.left = ((event.clientX - fieldRect.left - draggedShape.offsetWidth / 2) / currentScaleFactor) + "px";
+        dragImage.style.top = ((event.clientY - fieldRect.top - draggedShape.offsetHeight / 2) / currentScaleFactor) + "px";
 
         var transparentPixel = new Image();
         transparentPixel.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
@@ -160,9 +170,7 @@ function handleTouchStart(event) {
     if (!isGameOver()) {
         handleStart(event, true);
     } else {
-        if (isGameOver()) {
-            alert("GAME OVER!");
-        }
+        alert("GAME OVER!");
         event.preventDefault();
     }
 }
@@ -171,9 +179,7 @@ function handleDragStart(event) {
     if (!isGameOver()) {
         handleStart(event, false);
     } else {
-        if (isGameOver()) {
-            alert("GAME OVER!");
-        }
+        alert("GAME OVER!");
         event.preventDefault();
     }
 }
@@ -182,6 +188,7 @@ function createNewShape(randomType) {
     var shape = document.createElement("div");
     shape.classList.add("shape");
     shape.setAttribute("draggable", "true");
+
     shape.addEventListener("touchstart", handleTouchStart);
     shape.addEventListener("touchmove", handleTouchMove);
     shape.addEventListener("touchend", handleTouchEnd);
@@ -258,38 +265,27 @@ function handleTouchMove(event) {
         var offsetX = touchX - fieldLeft - touchOffsetX - dragHalfWidth;
         var offsetY = touchY - fieldTop - touchOffsetY + dragHalfHeight + mobileOffset;
 
-
         dragImage.style.left = (offsetX / currentScaleFactor) + 'px';
         dragImage.style.top = (offsetY / currentScaleFactor) + 'px';
     }
-
-    var fieldRect = playingField.getBoundingClientRect();
-    var fieldLeft = fieldRect.left;
-    var fieldTop = fieldRect.top;
-
-    var touchX = touch.clientX - fieldLeft;
-    var touchY = touch.clientY - fieldTop;
 
     var fieldWidth = playingField.offsetWidth;
     var fieldHeight = playingField.offsetHeight;
     var cellWidth = fieldWidth / 8;
     var cellHeight = fieldHeight / 8;
 
-    var dragWidth = parseInt(dragImage.style.width);
-    var scaledDragHeight = dragHeight * currentScaleFactor;
+    var scaledDragHeight = parseInt(dragImage.style.height, 10) * currentScaleFactor;
     var scaledDragOffset = MOBILE_DRAG_OFFSET * currentScaleFactor;
 
-    var scaledTouchX = touchX / currentScaleFactor;
-    var dragOffsetX = (scaledTouchX - dragWidth / 2) / cellWidth;
+    var scaledTouchX = (touch.clientX - fieldRect.left) / currentScaleFactor;
+    var dragOffsetX = (scaledTouchX - (parseInt(dragImage.style.width, 10) / 2)) / cellWidth;
 
-    var scaledTouchY = (touchY + scaledDragOffset + (scaledDragHeight / 2)) / currentScaleFactor;
+    var scaledTouchY = ((touch.clientY - fieldRect.top) + scaledDragOffset + (scaledDragHeight / 2)) / currentScaleFactor;
     var dragOffsetY = scaledTouchY / cellHeight;
 
     var gridX = Math.floor(dragOffsetX);
     var gridY = Math.floor(dragOffsetY);
-
     var startIndex = gridY * 8 + gridX;
-
 
     if (startIndex >= 0 && startIndex < 64) {
         highlightCells(startIndex, true);
@@ -312,7 +308,6 @@ function handleTouchEnd(event) {
 
     draggedShape.classList.remove("dragging");
 
-    var touch = event.changedTouches[0];
     var fieldRect = playingField.getBoundingClientRect();
     var offsetX = fieldRect.left;
     var offsetY = fieldRect.top;
@@ -320,9 +315,9 @@ function handleTouchEnd(event) {
     var scaledShapeHeight = shapeHeight * currentScaleFactor;
     var dragOffset = MOBILE_DRAG_OFFSET * currentScaleFactor;
 
+    var touch = event.changedTouches[0];
     var touchX = touch.clientX - offsetX - (scaledShapeWidth / 2);
     var touchY = touch.clientY - offsetY + dragOffset + (scaledShapeHeight / 2);
-
 
     var cellWidth = playingField.offsetWidth / 8;
     var cellHeight = playingField.offsetHeight / 8;
@@ -341,9 +336,8 @@ function handleTouchEnd(event) {
     shapeOffsets = [];
 }
 
-
 function handleDragEnd() {
-    var dragImage = draggedShape.dragImage;
+    var dragImage = draggedShape && draggedShape.dragImage;
     if (dragImage) {
         playingField.removeChild(dragImage);
         draggedShape.dragImage = null;
@@ -358,20 +352,20 @@ function handleDragEnd() {
 
 document.body.addEventListener("dragover", function(e) {
     e.preventDefault();
+    if (!draggedShape) return;
 
     var dragImage = draggedShape.dragImage;
     var currentScaleFactor = getScaleFactor();
 
-    var width = parseInt(dragImage.style.width, 10) * currentScaleFactor;
-    var height = parseInt(dragImage.style.height, 10) * currentScaleFactor;
-
     if (dragImage) {
+        var width = parseInt(dragImage.style.width, 10) * currentScaleFactor;
+        var height = parseInt(dragImage.style.height, 10) * currentScaleFactor;
+
         dragImage.style.left = ((e.clientX - playingField.getBoundingClientRect().left - width / 2) / currentScaleFactor) + 'px';
         dragImage.style.top = ((e.clientY - playingField.getBoundingClientRect().top - height / 2) / currentScaleFactor) + 'px';
     }
 
     var startIndex = calcHighlightIndex(e.clientX, e.clientY);
-
     if (startIndex >= 0 && startIndex < 64) {
         highlightCells(startIndex, true);
     } else {
@@ -379,29 +373,31 @@ document.body.addEventListener("dragover", function(e) {
     }
 });
 
-function calcHighlightIndex (dragX, dragY) {
+function calcHighlightIndex(dragX, dragY) {
+    if (!draggedShape) return -1;
+
     var dragImage = draggedShape.dragImage;
     var currentScaleFactor = getScaleFactor();
     var fieldRect = playingField.getBoundingClientRect();
-    var dragWidth = parseInt(dragImage.style.width) * currentScaleFactor;
     var width = parseInt(dragImage.style.width, 10) * currentScaleFactor;
     var height = parseInt(dragImage.style.height, 10) * currentScaleFactor;
-
 
     var touchX = dragX - fieldRect.left;
     var touchY = dragY - fieldRect.top;
 
     var gridX = Math.round((touchX - width / 2) / (currentScaleFactor * playingField.offsetWidth / 8));
     var gridY = Math.round((touchY - height / 2) / (currentScaleFactor * playingField.offsetHeight / 8));
+
     if (gridX < 0 || gridY < 0 || gridX > 7 || gridY > 7) {
         return -1;
     }
-
     return gridY * 8 + gridX;
 }
 
 document.body.addEventListener("drop", function(e) {
     e.preventDefault();
+    if (!draggedShape) return;
+
     var targetCellIndex = calcHighlightIndex(e.clientX, e.clientY);
     if (targetCellIndex !== -1) {
         placeShape(targetCellIndex);
@@ -440,7 +436,6 @@ function highlightCells(startIndex, isTouch) {
         });
     }
 }
-
 
 function clearHighlight() {
     currentHighlightCells.forEach(function(cell) {
@@ -497,16 +492,16 @@ function placeShape(startIndex) {
     clearHighlight();
 }
 
-
 function isValidCell(startIndex, offset, targetIndex) {
     var startRow = Math.floor(startIndex / 8);
     var targetRow = Math.floor(targetIndex / 8);
     var startCol = startIndex % 8;
-
-    return targetIndex >= 0 &&
+    return (
+        targetIndex >= 0 &&
         targetIndex < 64 &&
         startRow + offset.row === targetRow &&
-        startCol + offset.col < 8;
+        startCol + offset.col < 8
+    );
 }
 
 function checkAndClearFullRowsOrColumns() {
@@ -555,7 +550,6 @@ function clearRowOrColumn(start, end, type) {
         if (cell.querySelector(".crystal")) {
             updateCrystalCount();
         }
-
         cell.classList.remove("filled");
         cell.block.classList.add("burn");
         cell.block.addEventListener("animationend", function() {
@@ -570,7 +564,7 @@ function updateCrystalCount() {
 }
 
 function isGameOver() {
-    return crystals === 0 || step > 3;
+    return (crystals === 0 || step > 3);
 }
 
 function getScaleFactor() {
@@ -586,7 +580,6 @@ function getScaleFactor() {
     }
     return scaleFactor;
 }
-
 
 var currentDeltaAmount = 0;
 var activeDeltaElement = null;
@@ -610,14 +603,14 @@ function addCoins(amount) {
 
     document.body.appendChild(activeDeltaElement);
 
-    setTimeout(function () {
+    setTimeout(function() {
         activeDeltaElement.style.transform = "translateY(-10px)";
         activeDeltaElement.style.opacity = "0";
     }, 10);
 
     coinCountElement.textContent = coinCount;
 
-    setTimeout(function () {
+    setTimeout(function() {
         if (activeDeltaElement) {
             activeDeltaElement.remove();
             activeDeltaElement = null;
@@ -629,7 +622,7 @@ function addCoins(amount) {
 function resizeGame() {
     var gameContainer = document.getElementById("game-container");
     scaleFactor = getScaleFactor();
-    gameContainer.style.transform = 'scale(' + scaleFactor + ')';
+    gameContainer.style.transform = "scale(" + scaleFactor + ")";
 
     var coinContainer = document.getElementById("coin-container");
     coinContainer.style.transform = "scale(" + scaleFactor + ")";
@@ -637,8 +630,13 @@ function resizeGame() {
     coinContainer.style.top = (20 * scaleFactor) + "px";
 }
 
-window.addEventListener("resize", resizeGame);
-window.onload = function() {
+function startGame() {
+    buildField();
+
     regenerateShapes();
+
     resizeGame();
+    window.addEventListener("resize", resizeGame);
 }
+
+window.startGame = startGame;
