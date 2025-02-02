@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function onMraidReady() {
+    if (window.gameStarted) {
+        return;
+    }
+
     window.startGame();
 }
 

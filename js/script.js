@@ -631,11 +631,12 @@ function resizeGame() {
 }
 
 function startGame() {
+    window.gameStarted = true;
+
     buildField();
-
     regenerateShapes();
-
     resizeGame();
+
     window.addEventListener("resize", resizeGame);
 }
 
