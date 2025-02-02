@@ -285,6 +285,12 @@ function handleTouchMove(event) {
 
     var gridX = Math.floor(dragOffsetX);
     var gridY = Math.floor(dragOffsetY);
+
+    if (gridX < 0 || gridY < 0 || gridX > 7 || gridY > 7) {
+        clearHighlight();
+        return;
+    }
+
     var startIndex = gridY * 8 + gridX;
 
     if (startIndex >= 0 && startIndex < 64) {
@@ -324,6 +330,12 @@ function handleTouchEnd(event) {
 
     var gridX = Math.floor((touchX / currentScaleFactor) / cellWidth);
     var gridY = Math.floor((touchY / currentScaleFactor) / cellHeight);
+
+    if (gridX < 0 || gridY < 0 || gridX > 7 || gridY > 7) {
+        clearHighlight();
+        return;
+    }
+
     var startIndex = gridY * 8 + gridX;
 
     if (startIndex >= 0 && startIndex < 64) {
