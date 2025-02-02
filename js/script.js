@@ -583,33 +583,55 @@ function getScaleFactor() {
 
 var currentDeltaAmount = 0;
 var activeDeltaElement = null;
+var accumulatedDelta = 0;
+var deltaTimeoutId = null;
 
 function addCoins(amount) {
     coinCount += amount;
 
-    var coinContainer = document.getElementById('coin-container');
     var coinCountElement = document.getElementById('coin-count');
-
-    var deltaElement = document.createElement('div');
-    deltaElement.textContent = "+" + amount;
-    deltaElement.classList.add('coin-delta');
-
-    var left = coinCountElement.offsetLeft;
-    var top = coinCountElement.offsetTop + coinCountElement.offsetHeight;
-    deltaElement.style.left = left + "px";
-    deltaElement.style.top = (top + 10) + "px";
-
-    coinContainer.appendChild(deltaElement);
-
-    setTimeout(function () {
-        deltaElement.style.transform = 'translateY(-10px)';
-        deltaElement.style.opacity = '0';
-    }, 10);
-
     coinCountElement.textContent = coinCount;
 
-    setTimeout(function () {
-        deltaElement.remove();
+    var coinContainer = document.getElementById('coin-container');
+
+    if (activeDeltaElement) {
+        accumulatedDelta += amount;
+        activeDeltaElement.textContent = "+" + accumulatedDelta;
+
+        clearTimeout(deltaTimeoutId);
+
+        activeDeltaElement.style.transform = 'translateY(0)';
+        activeDeltaElement.style.opacity = '1';
+
+        setTimeout(function () {
+            activeDeltaElement.style.transform = 'translateY(-10px)';
+            activeDeltaElement.style.opacity = '0';
+        }, 10);
+    } else {
+        accumulatedDelta = amount;
+        activeDeltaElement = document.createElement('div');
+        activeDeltaElement.textContent = "+" + accumulatedDelta;
+        activeDeltaElement.classList.add('coin-delta');
+
+        var left = coinCountElement.offsetLeft;
+        var top = coinCountElement.offsetTop + coinCountElement.offsetHeight;
+        activeDeltaElement.style.left = left + "px";
+        activeDeltaElement.style.top = (top + 10) + "px";
+
+        coinContainer.appendChild(activeDeltaElement);
+
+        setTimeout(function () {
+            activeDeltaElement.style.transform = 'translateY(-10px)';
+            activeDeltaElement.style.opacity = '0';
+        }, 10);
+    }
+
+    deltaTimeoutId = setTimeout(function () {
+        if (activeDeltaElement) {
+            activeDeltaElement.remove();
+            activeDeltaElement = null;
+            accumulatedDelta = 0;
+        }
     }, 1000);
 }
 
