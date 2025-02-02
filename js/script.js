@@ -586,36 +586,30 @@ var activeDeltaElement = null;
 
 function addCoins(amount) {
     coinCount += amount;
-    currentDeltaAmount += amount;
 
-    if (activeDeltaElement) {
-        activeDeltaElement.remove();
-        activeDeltaElement = null;
-    }
+    var coinContainer = document.getElementById('coin-container');
+    var coinCountElement = document.getElementById('coin-count');
 
-    activeDeltaElement = document.createElement("div");
-    activeDeltaElement.textContent = "+" + currentDeltaAmount;
-    activeDeltaElement.classList.add("coin-delta");
+    var deltaElement = document.createElement('div');
+    deltaElement.textContent = "+" + amount;
+    deltaElement.classList.add('coin-delta');
 
-    var rect = coinCountElement.getBoundingClientRect();
-    activeDeltaElement.style.left = (rect.left) + "px";
-    activeDeltaElement.style.top = (rect.bottom + 10) + "px";
+    var left = coinCountElement.offsetLeft;
+    var top = coinCountElement.offsetTop + coinCountElement.offsetHeight;
+    deltaElement.style.left = left + "px";
+    deltaElement.style.top = (top + 10) + "px";
 
-    document.body.appendChild(activeDeltaElement);
+    coinContainer.appendChild(deltaElement);
 
-    setTimeout(function() {
-        activeDeltaElement.style.transform = "translateY(-10px)";
-        activeDeltaElement.style.opacity = "0";
+    setTimeout(function () {
+        deltaElement.style.transform = 'translateY(-10px)';
+        deltaElement.style.opacity = '0';
     }, 10);
 
     coinCountElement.textContent = coinCount;
 
-    setTimeout(function() {
-        if (activeDeltaElement) {
-            activeDeltaElement.remove();
-            activeDeltaElement = null;
-        }
-        currentDeltaAmount = 0;
+    setTimeout(function () {
+        deltaElement.remove();
     }, 1000);
 }
 
