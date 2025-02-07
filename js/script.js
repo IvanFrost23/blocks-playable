@@ -170,7 +170,7 @@ function handleTouchStart(event) {
     if (!isGameOver()) {
         handleStart(event, true);
     } else {
-        openStore();
+        onCTAClick();
         event.preventDefault();
     }
 }
@@ -179,7 +179,7 @@ function handleDragStart(event) {
     if (!isGameOver()) {
         handleStart(event, false);
     } else {
-        alert("GAME OVER!");
+        onCTAClick();
         event.preventDefault();
     }
 }
