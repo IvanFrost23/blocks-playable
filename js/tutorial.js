@@ -70,7 +70,7 @@ function startTutorialAnimation() {
         // Set the transform origin to the center.
         finger.style.transformOrigin = "center center";
         // Use translate(-50%, -50%) to center the element at its left/top position and apply the scale.
-        finger.style.transform = "translate(-50%, -50%) scale(" + scaleFactor + ")";
+        finger.style.transform = "scale(" + scaleFactor + ")";
         void finger.offsetWidth;  // Force reflow.
 
         // Get the playing field's cell size.
@@ -106,7 +106,7 @@ function startTutorialAnimation() {
         scaledClone.style.transition = transitionStyle;
 
         // Start the translation while keeping the centering and scale.
-        finger.style.transform = `translate(${deltaX}px, ${deltaY}px) translate(-50%, -50%) scale(${scaleFactor})`;
+        finger.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
         scaledClone.style.transform = `translate(${deltaX}px, ${deltaY}px) translate(-50%, -50%) scale(${scaleFactor})`;
 
         // After 1 second (when translation is done), remove the clone immediately
