@@ -335,15 +335,14 @@ function handleTouchEnd(event) {
 
     if (gridX < 0 || gridY < 0 || gridX > 7 || gridY > 7) {
         clearHighlight();
-        return;
-    }
-
-    var startIndex = gridY * 8 + gridX;
-
-    if (startIndex >= 0 && startIndex < 64) {
-        placeShape(startIndex);
     } else {
-        clearHighlight();
+        var startIndex = gridY * 8 + gridX;
+
+        if (startIndex >= 0 && startIndex < 64) {
+            placeShape(startIndex);
+        } else {
+            clearHighlight();
+        }
     }
 
     draggedShape = null;
