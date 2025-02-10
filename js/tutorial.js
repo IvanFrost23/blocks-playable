@@ -47,23 +47,30 @@ function startTutorialAnimation() {
     }
 
     function animateCycle() {
+        // Obtain the playing field's scale factor.
+        const scaleFactor = getScaleFactor();
+
         // Determine the starting point: center of the shape.
         const shapeRect = shape.getBoundingClientRect();
         const startX = shapeRect.left + shapeRect.width / 2;
         const startY = shapeRect.top + shapeRect.height / 2;
 
-        // Pick a target cell (for example, cell index 59).
+        // Pick a target cell (e.g., cell index 59) and use its center.
         const targetCell = cells[59];
         const targetRect = targetCell.getBoundingClientRect();
         const endX = targetRect.left;
         const endY = targetRect.top;
 
-        // Reset the finger instantly.
+        // Reset the finger immediately.
         finger.style.transition = "none";
+        // Position the finger at the center.
         finger.style.left = startX + "px";
         finger.style.top = startY + "px";
-        finger.style.transform = "none";
         finger.style.opacity = "1";
+        // Set the transform origin to the center.
+        finger.style.transformOrigin = "center center";
+        // Use translate(-50%, -50%) to center the element at its left/top position and apply the scale.
+        finger.style.transform = "translate(-50%, -50%) scale(" + scaleFactor + ")";
         void finger.offsetWidth;  // Force reflow.
 
         // Get the playing field's cell size.
@@ -81,31 +88,28 @@ function startTutorialAnimation() {
         // Create a scaled clone (the tutorial shape) using the cell size.
         const scaledClone = createTutorialShape(shape, shapeOffsets, cellSize);
         scaledClone.style.opacity = "0.5";
-        const maxRow = Math.max(...shapeOffsets.map(o => o.row)) + 1;
-        const maxCol = Math.max(...shapeOffsets.map(o => o.col)) + 1;
-        const cloneWidth = cellSize * maxCol;
-        const cloneHeight = cellSize * maxRow;
-        // Position the clone so its center is at the starting point.
-        scaledClone.style.left = (startX - cloneWidth / 2) + "px";
-        scaledClone.style.top = (startY - cloneHeight / 2) + "px";
+        scaledClone.style.transformOrigin = "center center";
+        // Position the clone so its center is at (startX, startY).
+        scaledClone.style.left = startX + "px";
+        scaledClone.style.top = startY + "px";
+        scaledClone.style.transform = "translate(-50%, -50%) scale(" + scaleFactor + ")";
         document.body.appendChild(scaledClone);
         void scaledClone.offsetWidth;  // Force reflow for the clone.
 
-        // Compute translation differences.
+        // Compute translation differences (in absolute coordinates).
         const deltaX = endX - startX;
         const deltaY = endY - startY;
 
         // Set transitions on both the finger and the clone.
-        // Both transform and opacity transitions take 1 second.
         const transitionStyle = "transform 1s ease-out, opacity 1s ease-out";
         finger.style.transition = transitionStyle;
         scaledClone.style.transition = transitionStyle;
 
-        // Start the translation.
-        finger.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-        scaledClone.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        // Start the translation while keeping the centering and scale.
+        finger.style.transform = `translate(${deltaX}px, ${deltaY}px) translate(-50%, -50%) scale(${scaleFactor})`;
+        scaledClone.style.transform = `translate(${deltaX}px, ${deltaY}px) translate(-50%, -50%) scale(${scaleFactor})`;
 
-        // After 1 second (when the translation is done), immediately remove the clone
+        // After 1 second (when translation is done), remove the clone immediately
         // and start fading out the finger.
         setTimeout(() => {
             if (scaledClone.parentNode) {
@@ -114,7 +118,7 @@ function startTutorialAnimation() {
             finger.style.opacity = "0";
         }, 1000);
 
-        // Listen for the finger's fade-out (opacity transition) to complete before restarting.
+        // Listen for the finger's fade-out (opacity transition) to finish before restarting.
         function onFade(e) {
             if (e.propertyName === "opacity") {
                 finger.removeEventListener("transitionend", onFade);
