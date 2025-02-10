@@ -1,9 +1,6 @@
 function createTutorialShape(shape, shapeOffsets, cellSize) {
     var dragImage = shape.cloneNode(true);
-    dragImage.style.position = "absolute";
-    dragImage.style.pointerEvents = "none";
-    dragImage.style.display = "grid";
-
+    dragImage.classList.add("tutorial-shape");
     var maxRow = Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1;
     var maxCol = Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1;
     dragImage.style.gridTemplateRows = "repeat(" + maxRow + ", " + cellSize + "px)";
@@ -29,12 +26,8 @@ function startTutorialAnimation() {
     if (!shape) return;
     let finger = document.getElementById("tutorialFinger");
     if (!finger) {
-        finger = document.createElement('img');
-        finger.src = "../images/finger.png";
+        finger = document.createElement('div');
         finger.id = "tutorialFinger";
-        finger.style.position = "absolute";
-        finger.style.pointerEvents = "none";
-        finger.style.zIndex = "9999";
         document.body.appendChild(finger);
     }
     function animateCycle() {
@@ -51,7 +44,7 @@ function startTutorialAnimation() {
         finger.style.top = startY + "px";
         finger.style.opacity = "1";
         finger.style.transformOrigin = "center center";
-        finger.style.transform = "scale(" + scaleFactor + ")";
+        finger.style.transform = "translate(-50%, -50%) scale(" + scaleFactor + ")";
         void finger.offsetWidth;
         const cellSize = playingField.querySelector(".cell").offsetWidth;
         const blocks = shape.querySelectorAll(".block");
@@ -74,7 +67,7 @@ function startTutorialAnimation() {
         const transitionStyle = "transform 1s ease-out, opacity 1s ease-out";
         finger.style.transition = transitionStyle;
         scaledClone.style.transition = transitionStyle;
-        finger.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
+        finger.style.transform = `translate(${deltaX}px, ${deltaY}px) translate(-50%, -50%) scale(${scaleFactor})`;
         scaledClone.style.transform = `translate(${deltaX}px, ${deltaY}px) translate(-50%, -50%) scale(${scaleFactor})`;
         setTimeout(() => {
             if (scaledClone.parentNode) {
