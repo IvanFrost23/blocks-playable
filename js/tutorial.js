@@ -6,13 +6,10 @@ function createTutorialShape(shape, shapeOffsets, cellSize) {
 
     var maxRow = Math.max.apply(null, shapeOffsets.map(function(o) { return o.row; })) + 1;
     var maxCol = Math.max.apply(null, shapeOffsets.map(function(o) { return o.col; })) + 1;
-
     dragImage.style.gridTemplateRows = "repeat(" + maxRow + ", " + cellSize + "px)";
     dragImage.style.gridTemplateColumns = "repeat(" + maxCol + ", " + cellSize + "px)";
     dragImage.style.width = Math.ceil(cellSize * maxCol) + "px";
     dragImage.style.height = Math.ceil(cellSize * maxRow) + "px";
-    dragImage.style.zIndex = "1000";
-
     var blocks = dragImage.querySelectorAll(".block");
     for (var i = 0; i < blocks.length; i++) {
         var block = blocks[i];
@@ -24,59 +21,39 @@ function createTutorialShape(shape, shapeOffsets, cellSize) {
             crystal.style.height = (cellSize * 0.5) + "px";
         }
     }
-
     return dragImage;
 }
 
 function startTutorialAnimation() {
-    // Pick a shape from the shapes container.
     const shape = shapesContainer.querySelector('.shape');
     if (!shape) return;
-
-    // Create (or reuse) the finger element.
     let finger = document.getElementById("tutorialFinger");
     if (!finger) {
         finger = document.createElement('img');
-        finger.src = "../images/finger.png";  // Adjust the path as needed.
+        finger.src = "../images/finger.png";
         finger.id = "tutorialFinger";
         finger.style.position = "absolute";
         finger.style.pointerEvents = "none";
-        // Ensure the finger appears above everything.
         finger.style.zIndex = "9999";
         document.body.appendChild(finger);
     }
-
     function animateCycle() {
-        // Obtain the playing field's scale factor.
         const scaleFactor = getScaleFactor();
-
-        // Determine the starting point: center of the shape.
         const shapeRect = shape.getBoundingClientRect();
         const startX = shapeRect.left + shapeRect.width / 2;
         const startY = shapeRect.top + shapeRect.height / 2;
-
-        // Pick a target cell (e.g., cell index 59) and use its center.
         const targetCell = cells[59];
         const targetRect = targetCell.getBoundingClientRect();
         const endX = targetRect.left;
         const endY = targetRect.top;
-
-        // Reset the finger immediately.
         finger.style.transition = "none";
-        // Position the finger at the center.
         finger.style.left = startX + "px";
         finger.style.top = startY + "px";
         finger.style.opacity = "1";
-        // Set the transform origin to the center.
         finger.style.transformOrigin = "center center";
-        // Use translate(-50%, -50%) to center the element at its left/top position and apply the scale.
         finger.style.transform = "scale(" + scaleFactor + ")";
-        void finger.offsetWidth;  // Force reflow.
-
-        // Get the playing field's cell size.
+        void finger.offsetWidth;
         const cellSize = playingField.querySelector(".cell").offsetWidth;
-
-        // Compute shape offsets from its blocks.
         const blocks = shape.querySelectorAll(".block");
         let shapeOffsets = [];
         blocks.forEach(function(block) {
@@ -84,51 +61,35 @@ function startTutorialAnimation() {
             const col = parseInt(block.style.gridColumnStart) - 1;
             shapeOffsets.push({ row, col });
         });
-
-        // Create a scaled clone (the tutorial shape) using the cell size.
         const scaledClone = createTutorialShape(shape, shapeOffsets, cellSize);
         scaledClone.style.opacity = "0.5";
         scaledClone.style.transformOrigin = "center center";
-        // Position the clone so its center is at (startX, startY).
         scaledClone.style.left = startX + "px";
         scaledClone.style.top = startY + "px";
         scaledClone.style.transform = "translate(-50%, -50%) scale(" + scaleFactor + ")";
         document.body.appendChild(scaledClone);
-        void scaledClone.offsetWidth;  // Force reflow for the clone.
-
-        // Compute translation differences (in absolute coordinates).
+        void scaledClone.offsetWidth;
         const deltaX = endX - startX;
         const deltaY = endY - startY;
-
-        // Set transitions on both the finger and the clone.
         const transitionStyle = "transform 1s ease-out, opacity 1s ease-out";
         finger.style.transition = transitionStyle;
         scaledClone.style.transition = transitionStyle;
-
-        // Start the translation while keeping the centering and scale.
         finger.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleFactor})`;
         scaledClone.style.transform = `translate(${deltaX}px, ${deltaY}px) translate(-50%, -50%) scale(${scaleFactor})`;
-
-        // After 1 second (when translation is done), remove the clone immediately
-        // and start fading out the finger.
         setTimeout(() => {
             if (scaledClone.parentNode) {
                 scaledClone.parentNode.removeChild(scaledClone);
             }
             finger.style.opacity = "0";
         }, 1000);
-
-        // Listen for the finger's fade-out (opacity transition) to finish before restarting.
         function onFade(e) {
             if (e.propertyName === "opacity") {
                 finger.removeEventListener("transitionend", onFade);
-                // After a short delay, restart the animation cycle.
                 setTimeout(animateCycle, 500);
             }
         }
         finger.addEventListener("transitionend", onFade);
     }
-
     animateCycle();
 }
 
