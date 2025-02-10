@@ -667,7 +667,9 @@ function startGame() {
     regenerateShapes();
     resizeGame();
 
-    setTimeout(startTutorialAnimation, 50);
+    requestAnimationFrame(function() {
+        startTutorialAnimation();
+    });
 
     window.addEventListener("resize", resizeGame);
 }
