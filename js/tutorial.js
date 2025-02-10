@@ -26,8 +26,12 @@ function startTutorialAnimation() {
     if (!shape) return;
     let finger = document.getElementById("tutorialFinger");
     if (!finger) {
-        finger = document.createElement('div');
+        finger = document.createElement('img');
+        finger.src = "../images/finger.png";
         finger.id = "tutorialFinger";
+        finger.style.position = "absolute";
+        finger.style.pointerEvents = "none";
+        finger.style.zIndex = "9999";
         document.body.appendChild(finger);
     }
     function animateCycle() {
@@ -44,7 +48,7 @@ function startTutorialAnimation() {
         finger.style.top = startY + "px";
         finger.style.opacity = "1";
         finger.style.transformOrigin = "center center";
-        finger.style.transform = "translate(-50%, -50%) scale(" + scaleFactor + ")";
+        finger.style.transform = "translate(-50%, -50%) translate(" + (40 * scaleFactor) + "px, " + (50 * scaleFactor) + "px) scale(" + scaleFactor + ")";
         void finger.offsetWidth;
         const cellSize = playingField.querySelector(".cell").offsetWidth;
         const blocks = shape.querySelectorAll(".block");
@@ -55,6 +59,7 @@ function startTutorialAnimation() {
             shapeOffsets.push({ row, col });
         });
         const scaledClone = createTutorialShape(shape, shapeOffsets, cellSize);
+        scaledClone.id = "scaledClone";
         scaledClone.style.opacity = "0.5";
         scaledClone.style.transformOrigin = "center center";
         scaledClone.style.left = startX + "px";
@@ -67,7 +72,7 @@ function startTutorialAnimation() {
         const transitionStyle = "transform 1s ease-out, opacity 1s ease-out";
         finger.style.transition = transitionStyle;
         scaledClone.style.transition = transitionStyle;
-        finger.style.transform = `translate(${deltaX}px, ${deltaY}px) translate(-50%, -50%) scale(${scaleFactor})`;
+        finger.style.transform = `translate(${deltaX}px, ${deltaY}px) translate(-50%, -50%) translate(${40 * scaleFactor}px, ${50 * scaleFactor}px) scale(${scaleFactor})`;
         scaledClone.style.transform = `translate(${deltaX}px, ${deltaY}px) translate(-50%, -50%) scale(${scaleFactor})`;
         setTimeout(() => {
             if (scaledClone.parentNode) {
@@ -88,7 +93,8 @@ function startTutorialAnimation() {
 
 function stopTutorialAnimation() {
     const finger = document.getElementById("tutorialFinger");
-    if (finger) {
-        finger.remove();
-    }
+    const scaledClone = document.getElementById("scaledClone");
+
+    finger && finger.remove();
+    scaledClone && scaledClone.remove();
 }

@@ -106,6 +106,8 @@ function handleStart(event, isTouch) {
     draggedShape = isTouch ? event.target.closest(".shape") : event.target;
     if (!draggedShape) return;
 
+    stopTutorialAnimation();
+
     var blocks = draggedShape.querySelectorAll(".block");
     shapeOffsets = [];
 
