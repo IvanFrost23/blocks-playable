@@ -140,6 +140,7 @@ body {
     align-items: center;
     background-color: #371279;
     position: relative;
+    border: 1px solid #2a0e5d;
 }
 
 .cell.filled {
