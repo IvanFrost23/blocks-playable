@@ -199,6 +199,8 @@ function createNewShape(randomType) {
     shape.addEventListener("dragstart", handleDragStart);
     shape.addEventListener("dragend", handleDragEnd);
 
+    var candidateBlocks = [];
+
     randomType.shape.forEach(function(row, rowIndex) {
         row.forEach(function(cell, colIndex) {
             if (cell === 1) {
@@ -206,20 +208,27 @@ function createNewShape(randomType) {
                 block.classList.add("block", randomType.color);
                 block.dataset.color = randomType.color;
 
-                if (block.dataset.color === colorTypes[0] && Math.random() > 0.5) {
-                    var crystal = document.createElement("div");
-                    crystal.classList.add("crystal", randomType.color);
-                    block.appendChild(crystal);
-                    block.dataset.crystal = true;
-                }
-
                 block.style.gridRowStart = rowIndex + 1;
                 block.style.gridColumnStart = colIndex + 1;
 
                 shape.appendChild(block);
+
+                if (block.dataset.color === colorTypes[0]) {
+                    candidateBlocks.push(block);
+                }
             }
         });
     });
+
+    if (candidateBlocks.length > 0 && Math.random() < 0.5) {
+        var randomIndex = Math.floor(Math.random() * candidateBlocks.length);
+        var selectedBlock = candidateBlocks[randomIndex];
+
+        var crystal = document.createElement("div");
+        crystal.classList.add("crystal", randomType.color);
+        selectedBlock.appendChild(crystal);
+        selectedBlock.dataset.crystal = true;
+    }
 
     return shape;
 }
