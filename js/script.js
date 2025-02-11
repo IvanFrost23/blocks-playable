@@ -636,6 +636,7 @@ function startGame() {
     setTimeout(startTutorialAnimation, 500);
 
     window.addEventListener("resize", resizeGame);
+    window.addEventListener('load', resizeGame);
 }
 
 window.startGame = startGame;
