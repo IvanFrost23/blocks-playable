@@ -522,8 +522,10 @@ function clearRowOrColumn(start, end, type) {
     addCoins(10);
     cellsToClear.forEach(function(cell) {
         if (cell.querySelector(".crystal")) {
-            updateCrystalCount();
+            // Pass a flag (true) so that we know a crystal is flying.
+            animateTargetFlight(cell.block, true);
         }
+
         cell.classList.remove("filled");
         cell.block.classList.add("burn");
         cell.block.addEventListener("animationend", function() {
@@ -619,6 +621,63 @@ function resizeGame() {
     coinContainer.style.left = (20 * scaleFactor) + "px";
     coinContainer.style.top = (20 * scaleFactor) + "px";
 }
+
+function animateTargetFlight(startElement, hasCrystal) {
+    // Get the goal icon element from the goals container.
+    const goalIcon = document.querySelector('.goal-icon');
+    if (!goalIcon) return;
+
+    // Create the flying target element.
+    const flyingTarget = document.createElement('div');
+    flyingTarget.classList.add('flying-target');
+    document.body.appendChild(flyingTarget);
+
+    // Determine the starting center position from the burning block.
+    const startRect = startElement.getBoundingClientRect();
+    const startX = startRect.left + startRect.width / 2;
+    const startY = startRect.top + startRect.height / 2;
+
+    // Determine the target (goal icon) center position.
+    const goalRect = goalIcon.getBoundingClientRect();
+    const targetX = goalRect.left + goalRect.width / 2;
+    const targetY = goalRect.top + goalRect.height / 2;
+
+    // Set the flying target’s initial position.
+    flyingTarget.style.left = startX + 'px';
+    flyingTarget.style.top = startY + 'px';
+    flyingTarget.style.transform = 'translate(-50%, -50%)';
+
+    // Configure the CSS transition for movement and opacity.
+    flyingTarget.style.transition = 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out';
+
+    // Calculate the difference (delta) for the translation.
+    const deltaX = targetX - startX;
+    const deltaY = targetY - startY;
+
+    // Use requestAnimationFrame to ensure the style changes are rendered.
+    requestAnimationFrame(() => {
+        flyingTarget.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+        flyingTarget.style.opacity = '0';
+    });
+
+    // When the transition (flight) ends...
+    flyingTarget.addEventListener('transitionend', () => {
+        flyingTarget.remove();
+
+        // Animate the goal icon for visual feedback.
+        goalIcon.classList.add('target-hit');
+        goalIcon.addEventListener('animationend', function handler() {
+            goalIcon.classList.remove('target-hit');
+            goalIcon.removeEventListener('animationend', handler);
+        });
+
+        // If the flying target was triggered by a crystal, update the crystal count now.
+        if (hasCrystal) {
+            updateCrystalCount();
+        }
+    });
+}
+
 
 function startGame() {
     window.gameStarted = true;
