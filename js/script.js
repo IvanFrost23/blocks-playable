@@ -322,6 +322,8 @@ function handleDragEnd() {
         draggedShape = null;
         shapeOffsets = [];
     }
+
+    clearHighlight();
 }
 
 document.body.addEventListener("dragover", function(e) {
@@ -654,8 +656,7 @@ function animateTargetFlight(startElement, hasCrystal) {
     var deltaY = targetY - startY;
     var distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-    var duration =distance / 700;
-    console.log(distance);
+    var duration = distance / 700;
 
     flyingTarget.style.transition = `transform ${duration}s ease-in-out`;
 
