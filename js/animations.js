@@ -23,16 +23,19 @@ function animateCollect(startElement, finishElement, callback) {
     var angle = Math.atan2(deltaY, deltaX);
     var perpAngle = angle - Math.PI / 2;
 
-    var randomAngleOffset1 = (Math.random() - 0.5) * 0.35; // about ±20° in radians
-    var randomControlOffset1 = baseControlOffset * (0.8 + Math.random() * 0.4); // 80% to 120% of the base offset
+    var randomAngleOffset1 = (Math.random() - 0.5) * (Math.PI * 1.2);
+    var randomAngleOffset2 = (Math.random() - 0.5) * (Math.PI * 1.2);
 
-    var randomAngleOffset2 = (Math.random() - 0.5) * 0.35;
-    var randomControlOffset2 = baseControlOffset * (0.8 + Math.random() * 0.4);
+    var t1 = 0.25 + (Math.random() - 0.5) * 0.2;
+    var t2 = 0.75 + (Math.random() - 0.5) * 0.2;
 
-    var control1X = startX + deltaX * 0.25 + randomControlOffset1 * Math.cos(perpAngle + randomAngleOffset1);
-    var control1Y = startY + deltaY * 0.25 + randomControlOffset1 * Math.sin(perpAngle + randomAngleOffset1);
-    var control2X = startX + deltaX * 0.75 + randomControlOffset2 * Math.cos(perpAngle + randomAngleOffset2);
-    var control2Y = startY + deltaY * 0.75 + randomControlOffset2 * Math.sin(perpAngle + randomAngleOffset2);
+    var randomControlOffset1 = baseControlOffset * (0.1 + Math.random());
+    var randomControlOffset2 = baseControlOffset * (0.1 + Math.random());
+
+    var control1X = startX + deltaX * t1 + randomControlOffset1 * Math.cos(perpAngle + randomAngleOffset1);
+    var control1Y = startY + deltaY * t1 + randomControlOffset1 * Math.sin(perpAngle + randomAngleOffset1);
+    var control2X = startX + deltaX * t2 + randomControlOffset2 * Math.cos(perpAngle + randomAngleOffset2);
+    var control2Y = startY + deltaY * t2 + randomControlOffset2 * Math.sin(perpAngle + randomAngleOffset2);
 
     var path = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${targetX} ${targetY}`;
 
