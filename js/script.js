@@ -526,7 +526,7 @@ function clearRowOrColumn(start, end, type) {
         var crystal = cell.querySelector(".crystal");
 
         if (crystal) {
-            animateCollect(cell, document.querySelector('.goal-icon'), updateCrystalCount);
+            animateCollect(cell, document.querySelector('.goal-icon'), updateCrystalCount, getScaleFactor());
             crystal.style.visibility = 'hidden';
         }
 

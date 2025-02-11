@@ -1,6 +1,6 @@
-function animateCollect(startElement, finishElement, callback) {
+function animateCollect(startElement, finishElement, callback, gameScale) {
     var startRect = startElement.getBoundingClientRect();
-    var startX = startRect.left + startRect.width / 2;
+    var startX = startRect.left + startRect.width / 2 ;
     var startY = startRect.top + startRect.height / 2;
 
     var finishRect = finishElement.getBoundingClientRect();
@@ -14,10 +14,12 @@ function animateCollect(startElement, finishElement, callback) {
     flyingTarget.style.left = '0px';
     flyingTarget.style.top = '0px';
 
+    flyingTarget.style.transform = `scale(${gameScale})`;
+
     var deltaX = targetX - startX;
     var deltaY = targetY - startY;
     var distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    var duration = distance / 700;
+    var duration = distance / (1500 * gameScale) + 0.4;
 
     var baseControlOffset = Math.min(150, distance / 2);
     var angle = Math.atan2(deltaY, deltaX);
