@@ -523,8 +523,11 @@ function clearRowOrColumn(start, end, type) {
 
     addCoins(10);
     cellsToClear.forEach(function(cell) {
-        if (cell.querySelector(".crystal")) {
-            animateTargetFlight(cell.block, true);
+        var crystal = cell.querySelector(".crystal");
+
+        if (crystal) {
+            animateCollect(cell, document.querySelector('.goal-icon'), updateCrystalCount);
+            crystal.style.visibility = 'hidden';
         }
 
         cell.classList.remove("filled");
@@ -622,63 +625,6 @@ function resizeGame() {
     coinContainer.style.left = (20 * scaleFactor) + "px";
     coinContainer.style.top = (20 * scaleFactor) + "px";
 }
-
-function animateTargetFlight(startElement, hasCrystal) {
-    var goalIcon = document.querySelector('.goal-icon');
-
-    if (hasCrystal) {
-        var crystal = startElement.querySelector('.crystal');
-        if (crystal) {
-            crystal.style.visibility = 'hidden';
-        }
-    }
-
-
-    var cell = startElement.parentElement;
-    var cellRect = cell.getBoundingClientRect();
-    var startX = cellRect.left + cellRect.width / 2;
-    var startY = cellRect.top + cellRect.height / 2;
-
-    var goalRect = goalIcon.getBoundingClientRect();
-    var targetX = goalRect.left + goalRect.width / 2;
-    var targetY = goalRect.top + goalRect.height / 2;
-
-    var flyingTarget = document.createElement('div');
-    flyingTarget.classList.add('flying-target');
-    document.body.appendChild(flyingTarget);
-
-
-    flyingTarget.style.left = startX + 'px';
-    flyingTarget.style.top = startY + 'px';
-    flyingTarget.style.transform = 'translate(-50%, -50%)';
-
-    var deltaX = targetX - startX;
-    var deltaY = targetY - startY;
-    var distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-
-    var duration = distance / 700;
-
-    flyingTarget.style.transition = `transform ${duration}s ease-in-out`;
-
-    requestAnimationFrame(() => {
-        flyingTarget.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
-    });
-
-    flyingTarget.addEventListener('transitionend', () => {
-        flyingTarget.remove();
-
-        goalIcon.classList.add('target-hit');
-        goalIcon.addEventListener('animationend', function handler() {
-            goalIcon.classList.remove('target-hit');
-            goalIcon.removeEventListener('animationend', handler);
-        });
-
-        if (hasCrystal) {
-            updateCrystalCount();
-        }
-    });
-}
-
 
 function startGame() {
     window.gameStarted = true;

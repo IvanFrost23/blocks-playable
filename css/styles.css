@@ -290,24 +290,3 @@ body {
     display: grid;
     z-index: 1000;
 }
-
-
-.flying-target {
-    width: 40px;
-    height: 40px;
-    background: url('../images/crystal.png') no-repeat center center;
-    background-size: contain;
-    pointer-events: none;
-    position: absolute;
-    z-index: 1000;
-}
-
-.target-hit {
-    animation: targetHitAnimation 0.5s ease;
-}
-
-@keyframes targetHitAnimation {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-    100% { transform: scale(1); }
-}
