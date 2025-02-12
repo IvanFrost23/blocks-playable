@@ -15,6 +15,15 @@ function onMraidReady() {
         return;
     }
 
+    var music = document.getElementById('music');
+    mraid.addEventListener('pause', function() {
+        music && music.pause();
+    });
+
+    mraid.addEventListener('resume', function() {
+        music && music.play();
+    });
+
     window.startGame();
 }
 
