@@ -1,5 +1,6 @@
 var scaleFactor = 1;
 var MOBILE_DRAG_OFFSET = -75;
+var musicStarted = false;
 
 var shapeTypes = [
     [[1]],
@@ -100,6 +101,11 @@ function createDragImage(shape, shapeOffsets, cellSize) {
 
 function handleStart(event, isTouch) {
     if (draggedShape) return;
+
+    if (!musicStarted) {
+        document.getElementById('music').play();
+        musicStarted = true;
+    }
 
     if (isTouch === void 0) { isTouch = false; }
     draggedShape = isTouch ? event.target.closest(".shape") : event.target;
@@ -435,6 +441,7 @@ function placeShape(startIndex) {
     });
 
     if (canPlace) {
+        document.getElementById('place_piece_effect').play();
         shapeOffsets.forEach(function(offset) {
             var targetIndex = startIndex + offset.row * 8 + offset.col;
             var cell = cells[targetIndex];
@@ -522,6 +529,7 @@ function clearRowOrColumn(start, end, type) {
     }
 
     addCoins(10);
+    document.getElementById('burn_line_effect').play();
     cellsToClear.forEach(function(cell) {
         var crystal = cell.querySelector(".crystal");
 

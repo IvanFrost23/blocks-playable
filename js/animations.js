@@ -64,6 +64,7 @@ function animateCollect(startElement, finishElement, callback, gameScale) {
             flyingTarget.remove();
 
             finishElement.classList.add('target-hit');
+            document.getElementById('collect_effect').play();
             finishElement.addEventListener('animationend', function handler() {
                 finishElement.classList.remove('target-hit');
                 finishElement.removeEventListener('animationend', handler);
@@ -90,6 +91,7 @@ function animateCollect(startElement, finishElement, callback, gameScale) {
                 flyingTarget.remove();
 
                 finishElement.classList.add('target-hit');
+                document.getElementById('collect_effect').play();
                 finishElement.addEventListener('animationend', function handler() {
                     finishElement.classList.remove('target-hit');
                     finishElement.removeEventListener('animationend', handler);
