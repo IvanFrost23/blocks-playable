@@ -24,7 +24,7 @@ function animateCollect(startElement, finishElement, callback, gameScale) {
     var supportsMotionPath =
         'offsetPath' in flyingTarget.style || 'webkitOffsetPath' in flyingTarget.style;
 
-    if (0) {
+    if (supportsMotionPath) {
         var baseControlOffset = Math.min(150, distance / 2);
         var angle = Math.atan2(deltaY, deltaX);
         var perpAngle = angle - Math.PI / 2;
