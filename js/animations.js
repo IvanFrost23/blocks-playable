@@ -14,7 +14,7 @@ function animateCollect(startElement, finishElement, callback, gameScale) {
     flyingTarget.style.left = '0px';
     flyingTarget.style.top = '0px';
 
-    flyingTarget.style.transform = `scale(${gameScale})`;
+    flyingTarget.style.transform = 'scale(' + gameScale + ')';
 
     var deltaX = targetX - startX;
     var deltaY = targetY - startY;
@@ -47,21 +47,21 @@ function animateCollect(startElement, finishElement, callback, gameScale) {
         var control2Y =
             startY + deltaY * t2 + randomControlOffset2 * Math.sin(perpAngle + randomAngleOffset2);
 
-        var path = `M ${startX} ${startY} C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${targetX} ${targetY}`;
+        var path = 'M ' + startX + ' ' + startY + ' C ' + control1X + ' ' + control1Y + ', ' + control2X + ' ' + control2Y + ', ' + targetX + ' ' + targetY;
 
-        flyingTarget.style.offsetPath = `path('${path}')`;
-        flyingTarget.style.webkitOffsetPath = `path('${path}')`;
+        flyingTarget.style.offsetPath = 'path(\'' + path + '\')';
+        flyingTarget.style.webkitOffsetPath = 'path(\'' + path + '\')';
 
         flyingTarget.style.offsetDistance = '0%';
         flyingTarget.style.webkitOffsetDistance = '0%';
 
-        flyingTarget.style.transform = `scale(${gameScale})`;
+        flyingTarget.style.transform = 'scale(' + gameScale + ')';
 
-        flyingTarget.style.animation = `flyAnimation ${duration}s ease-in-out forwards`;
-        flyingTarget.style.webkitAnimation = `flyAnimation ${duration}s ease-in-out forwards`;
+        flyingTarget.style.animation = 'flyAnimation ' + duration + 's ease-in-out forwards';
+        flyingTarget.style.webkitAnimation = 'flyAnimation ' + duration + 's ease-in-out forwards';
 
         flyingTarget.addEventListener('animationend', function handleAnimationEnd() {
-            flyingTarget.remove();
+            flyingTarget.parentNode.removeChild(flyingTarget);
 
             finishElement.classList.add('target-hit');
             document.getElementById('collect_effect').play();
@@ -78,17 +78,17 @@ function animateCollect(startElement, finishElement, callback, gameScale) {
         flyingTarget.style.left = (startX - 20) + 'px';
         flyingTarget.style.top = (startY - 20) + 'px';
 
-        flyingTarget.style.transform = `translate(0px, 0px) scale(${gameScale})`;
+        flyingTarget.style.transform = 'translate(0px, 0px) scale(' + gameScale + ')';
 
         flyingTarget.offsetWidth;
 
-        flyingTarget.style.transition = `transform ${duration}s ease-in-out`;
+        flyingTarget.style.transition = 'transform ' + duration + 's ease-in-out';
 
-        flyingTarget.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${gameScale})`;
+        flyingTarget.style.transform = 'translate(' + deltaX + 'px, ' + deltaY + 'px) scale(' + gameScale + ')';
 
         flyingTarget.addEventListener('transitionend', function handleTransitionEnd(e) {
             if (e.propertyName === 'transform') {
-                flyingTarget.remove();
+                flyingTarget.parentNode.removeChild(flyingTarget);
 
                 finishElement.classList.add('target-hit');
                 document.getElementById('collect_effect').play();
