@@ -10,6 +10,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+document.addEventListener("visibilitychange", function() {
+    var music = document.getElementById('music');
+    if (document.hidden) {
+        music && music.pause();
+    } else {
+        music && music.play();
+    }
+});
+
 function onMraidReady() {
     if (window.gameStarted) {
         return;
@@ -23,6 +32,7 @@ function onMraidReady() {
     mraid.addEventListener('resume', function() {
         music && music.play();
     });
+
 
     window.startGame();
 }
