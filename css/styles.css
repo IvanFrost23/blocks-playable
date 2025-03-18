@@ -338,7 +338,7 @@ body {
     background: url('images/window_bg.png') no-repeat center center;
     background-size: contain;
     pointer-events: auto;
-    animation: light-shake 5s infinite;
+    animation: light-shake 3s infinite;
 }
 
 .update-popup-title {
@@ -362,7 +362,7 @@ body {
     top: 37%;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 26px;
+    font-size: 30px;
     color: #144983;
     text-align: center;
     width: 80%;
@@ -379,7 +379,7 @@ body {
     background-size: contain;
     border: none;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 30px;
     color: #fff;
     -webkit-appearance: none;
     outline: none;
@@ -411,21 +411,20 @@ body {
     }
 }
 
-/* Анимация легкого потряхивания: небольшое смещение по оси X */
 @keyframes light-shake {
-    0% {
+    0%, 80% {
         transform: translateX(0);
     }
-    5% {
+    85% {
         transform: translateX(-30px);
     }
-    10% {
+    90% {
         transform: translateX(30px);
     }
-    20% {
+    95% {
         transform: translateX(-30px);
     }
-    20%, 100% {
+    100% {
         transform: translateX(0);
     }
 }
