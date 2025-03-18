@@ -267,6 +267,15 @@ body {
     padding: 10px 0;
 }
 
+@keyframes scale-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
 .shape {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -275,6 +284,7 @@ body {
     border: none;
     cursor: grab;
     touch-action: none;
+    animation: scale-pulse 3s infinite;
 }
 
 .shape .block {
@@ -382,6 +392,7 @@ body {
     -webkit-appearance: none;
     outline: none;
     -webkit-tap-highlight-color: transparent;
+    animation: scale-pulse 3s infinite;
 }
 
 .update-popup-button:focus,
