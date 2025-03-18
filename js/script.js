@@ -13,7 +13,7 @@ var shapeTypes = [
     [[1, 1, 1],[1, 0, 1]]
 ];
 
-var colorTypes = ["blue", "red", "yellow"];
+var colorTypes = ["blue", "red", "yellow", "orange", "cyan"];
 
 var playingField = document.getElementById("playing-field");
 var cells = [];
@@ -30,16 +30,16 @@ var coinCount = parseInt(coinCountElement.textContent, 10);
 var step = 0;
 
 var initialFieldState = [
-    1, null, null, null, null, null, null, 1,
-    null, null, null, null, null, null, null, null,
-    null, 2, null, 0, 0, null, 2, null,
-    null, 1, 2, 1, 1, 2, 1, null,
-    null, null, 0, 1, 1, 0, null, null,
-    2, null, 0, 1, 1, 0, null, 2,
-    null, null, 0, 0, 0, 0, null, null,
-    null, null, null, 2, 2, null, null, null
+    null, null, null, 1, 3, null, null, null,
+    null, null, 1, null, null, 2, null, null,
+    null, null, 3, null, null, 4, null, null,
+    null, 3, 2, 2, 4, 0, 0, null,
+    null, 2, 2, null, null, 0, 0, null,
+    null, 2, 4, null, null, 0, 4, null,
+    null, 4, 0, 0, 0, 4, 2, null,
+    null, null, 0, 0, 4, 2, null, null
 ];
-var initialCrystalsState = [0, 7, 17, 19, 20, 22, 25, 26, 29, 30, 34, 35, 36, 37, 40, 42, 45, 47, 50, 51, 52, 53, 59, 60];
+var initialCrystalsState = [];
 
 function buildField() {
     playingField.innerHTML = "";

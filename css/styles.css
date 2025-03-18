@@ -117,7 +117,7 @@ body {
 }
 
 .goal-icon.blue {
-    background-image: url('images/crystal_blue3.png');
+    background-image: url('images/score.png');
 }
 
 .goal-icon.red {
@@ -194,6 +194,14 @@ body {
 
 .block.red {
     background-image: url('images/red.png');
+}
+
+.block.orange {
+    background-image: url('images/orange.png');
+}
+
+.block.cyan {
+    background-image: url('images/cyan.png');
 }
 
 .block.yellow {
