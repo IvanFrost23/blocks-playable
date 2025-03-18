@@ -343,7 +343,7 @@ body {
 
 .update-popup-title {
     position: absolute;
-    top: 3%;
+    top: 6%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 24px;
