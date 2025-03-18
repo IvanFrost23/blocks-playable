@@ -69,7 +69,6 @@ function buildField() {
     }
 }
 
-
 function createNewShape(randomType) {
     var shape = document.createElement("div");
     shape.classList.add("shape");
@@ -122,6 +121,34 @@ function regenerateShapes() {
         shapesContainer.appendChild(newShape);
     }
 }
+
+var musicStarted = false;
+function onRedButtonClick() {
+    if (!musicStarted) {
+        document.getElementById('music').play();
+        musicStarted = true;
+    }
+
+    var textElem = document.querySelector('.update-popup-text');
+    var originalText = textElem.innerHTML;
+
+    textElem.style.transition = "opacity 0.25s ease";
+    textElem.style.opacity = "0";
+
+    setTimeout(function() {
+        textElem.innerHTML = "This is required <br> to continue playing";
+        textElem.style.opacity = "1";
+
+        setTimeout(function() {
+            textElem.style.opacity = "0";
+            setTimeout(function() {
+                textElem.innerHTML = originalText;
+                textElem.style.opacity = "1";
+            }, 250);
+        }, 2000);
+    }, 250);
+}
+
 
 function getScaleFactor() {
     var gameContainer = document.getElementById("game-container");

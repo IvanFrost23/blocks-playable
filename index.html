@@ -36,28 +36,21 @@
     <div id="update-popup">
         <div id="update-popup-content">
             <div class="update-popup-title">
-                <span>the current version</span><br>
-                <span>is outdated</span>
+                <span>App is out of date!</span>
             </div>
             <div class="update-popup-text">
-                The old version will be <br> unavailable soon.
-                Please <br> install the new version.
+                Update to new version <br> that takes up less <br>
+                storage space?
             </div>
-            <button class="update-popup-button" onclick="onCTAClick()">Ok</button>
+            <div class="update-popup-buttons">
+                <button class="update-popup-button update-popup-button-red" onclick="onRedButtonClick()">No</button>
+                <button class="update-popup-button update-popup-button-green" onclick="onCTAClick()">Yes</button>
+            </div>
         </div>
     </div>
 
 </div>
 
-<audio id="burn_line_effect">
-    <source src="sounds/burn_line.mp3" type="audio/mpeg">
-</audio>
-<audio id="place_piece_effect">
-    <source src="sounds/place_piece.mp3" type="audio/mpeg">
-</audio>
-<audio id="collect_effect">
-    <source src="sounds/collect_effect.mp3" type="audio/mpeg">
-</audio>
 <audio loop id="music">
     <source src="sounds/music.mp3" type="audio/mpeg">
 </audio>
