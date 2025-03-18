@@ -18,10 +18,8 @@ var colorTypes = ["blue", "red", "yellow"];
 var playingField = document.getElementById("playing-field");
 var cells = [];
 var shapesContainer = document.getElementById("shapes-container");
-var goal = document.getElementById("goal");
 var coinCountElement = document.getElementById("coin-count");
 
-var crystals = parseInt(goal.textContent);
 var coinCount = parseInt(coinCountElement.textContent, 10);
 var step = 0;
 
@@ -35,7 +33,6 @@ var initialFieldState = [
     0, 2, null, null, 0, 1, 2, 1,
     1, 1, null, null, 2, 1, 0, 0
 ];
-var initialCrystalsState = [0, 7, 12, 14, 17, 32, 48, 52, 62, 63];
 
 var draggedShape = null;
 var shapeOffsets = [];
@@ -54,12 +51,6 @@ function buildField() {
             block.classList.add("block", colorTypes[initialFieldState[i]]);
             cell.appendChild(block);
             cell.block = block;
-
-            if (initialCrystalsState.indexOf(i) !== -1) {
-                var crystal = document.createElement("div");
-                crystal.classList.add("crystal", colorTypes[initialFieldState[i]]);
-                block.appendChild(crystal);
-            }
 
             cell.classList.add("filled");
         }
@@ -453,14 +444,9 @@ function placeShape(startIndex) {
                 block.classList.add("block", color);
                 cell.appendChild(block);
                 cell.block = block;
-
-                if (offset.hasCrystal) {
-                    var crystal = document.createElement("div");
-                    crystal.classList.add("crystal");
-                    block.appendChild(crystal);
-                }
             }
         });
+        updateProgress(shapeOffsets.length);
 
         checkAndClearFullRowsOrColumns();
         draggedShape.style.visibility = "hidden";
@@ -529,15 +515,9 @@ function clearRowOrColumn(start, end, type) {
     }
 
     addCoins(10);
+    updateProgress(10);
     document.getElementById('burn_line_effect').play();
     cellsToClear.forEach(function(cell) {
-        var crystal = cell.querySelector(".crystal");
-
-        if (crystal) {
-            animateCollect(cell, document.querySelector('.goal-icon'), updateCrystalCount, getScaleFactor());
-            crystal.style.visibility = 'hidden';
-        }
-
         cell.classList.remove("filled");
         cell.block.classList.add("burn");
         cell.block.addEventListener("animationend", function() {
@@ -546,13 +526,54 @@ function clearRowOrColumn(start, end, type) {
     });
 }
 
-function updateCrystalCount() {
-    crystals = Math.max(0, crystals - 1);
-    goal.textContent = crystals;
+function canPlaceShape(shape) {
+    var blocks = shape.querySelectorAll(".block");
+    var shapeOffsets = [];
+    blocks.forEach(function(block) {
+        var row = parseInt(block.style.gridRowStart) - 1;
+        var col = parseInt(block.style.gridColumnStart) - 1;
+        shapeOffsets.push({ row: row, col: col });
+    });
+
+
+    for (var startIndex = 0; startIndex < 64; startIndex++) {
+        var startRow = Math.floor(startIndex / 8);
+        var startCol = startIndex % 8;
+        var canPlace = true;
+        for (var j = 0; j < shapeOffsets.length; j++) {
+            var offset = shapeOffsets[j];
+            var targetRow = startRow + offset.row;
+            var targetCol = startCol + offset.col;
+
+            if (targetRow > 7 || targetCol > 7) {
+                canPlace = false;
+                break;
+            }
+            var targetIndex = targetRow * 8 + targetCol;
+
+            if (cells[targetIndex].classList.contains("filled")) {
+                canPlace = false;
+                break;
+            }
+        }
+        if (canPlace) return true;
+    }
+    return false;
 }
 
 function isGameOver() {
-    return (crystals === 0 || step > 3);
+    if (progress >= goalProgress) {
+        return true;
+    }
+
+    var shapes = shapesContainer.children;
+    for (var i = 0; i < shapes.length; i++) {
+        if (shapes[i].style.visibility !== "hidden" && canPlaceShape(shapes[i])) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 function getScaleFactor() {
@@ -621,6 +642,28 @@ function addCoins(amount) {
             accumulatedDelta = 0;
         }
     }, 1000);
+}
+
+var progress = 0;
+var goalProgress = 368;
+function updateProgress(amount) {
+    var fill = document.getElementById("progressbar-fill");
+    var scoreGreen = document.getElementById("score-green");
+    var scoreGreenText = document.getElementById("score-green-text");
+    var scoreEndText = document.getElementById("score-end-text");
+
+    progress += amount;
+
+    var percentage = (progress / goalProgress) * 100;
+    percentage = Math.max(0, Math.min(100, percentage));
+
+    fill.style.width = percentage + "%";
+
+    scoreGreen.style.left = 'calc(' + percentage + '% - 30px)';
+
+    scoreGreenText.textContent = progress;
+
+    scoreEndText.textContent = goalProgress;
 }
 
 function resizeGame() {

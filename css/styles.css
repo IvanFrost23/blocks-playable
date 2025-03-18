@@ -83,39 +83,6 @@ body {
     z-index: 1000;
 }
 
-#goals-container {
-    position: absolute;
-    top: 110px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 75px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: url('images/goals_bg.png') no-repeat center center;
-    background-size: contain;
-    padding: 0 10px;
-}
-
-.goal {
-    display: flex;
-    align-items: center;
-    font-size: 28px;
-}
-
-.goal span {
-    color: white;
-}
-
-.goal-icon {
-    width: 40px;
-    height: 40px;
-    margin-right: 5px;
-    background-size: contain;
-    background-image: url('images/crystal.png');
-}
-
 #playing-field {
     position: absolute;
     top: 200px;
@@ -290,3 +257,64 @@ body {
     display: grid;
     z-index: 1000;
 }
+
+#progress-bar-container {
+    position: absolute;
+    top: 110px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 360px;
+    height: 50px;
+    background: url("images/progressbar_back.png") no-repeat center center;
+    background-size: 100% 100%;
+    border: none;
+}
+
+#progressbar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 100%;
+    background: url("images/progressbar_green.png") no-repeat left center;
+    background-size: 100% 100%;
+    transition: width 0.5s ease-in-out;
+    border: none;
+}
+
+#score-green {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: url("images/score_green.png") no-repeat center center;
+    background-size: contain;
+    pointer-events: none;
+    transition: left 0.5s ease-in-out;
+}
+
+#score-end {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+    width: 60px;
+    height: 60px;
+    background: url("images/score_end.png") no-repeat center center;
+    background-size: contain;
+    pointer-events: none;
+}
+
+.score-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #fff;
+    font-size: 18px;
+    user-select: none;
+}
+
