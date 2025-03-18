@@ -115,7 +115,6 @@ function handleStart(event, isTouch) {
     draggedShape = isTouch ? event.target.closest(".shape") : event.target;
     if (!draggedShape) return;
 
-    stopTutorialAnimation();
 
     var blocks = draggedShape.querySelectorAll(".block");
     shapeOffsets = [];
@@ -640,8 +639,6 @@ function startGame() {
     buildField();
     regenerateShapes();
     resizeGame();
-
-    setTimeout(startTutorialAnimation, 500);
 
     window.addEventListener("resize", resizeGame);
     window.addEventListener('load', resizeGame);
