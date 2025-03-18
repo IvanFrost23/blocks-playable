@@ -646,6 +646,10 @@ function addCoins(amount) {
 
 var progress = 0;
 var goalProgress = 368;
+// Допустим, progress и goalProgress объявлены глобально
+var progress = 0;
+var goalProgress = 368;
+
 function updateProgress(amount) {
     var fill = document.getElementById("progressbar-fill");
     var scoreGreen = document.getElementById("score-green");
@@ -654,17 +658,20 @@ function updateProgress(amount) {
 
     progress += amount;
 
-    var percentage = (progress / goalProgress) * 100;
-    percentage = Math.max(0, Math.min(100, percentage));
+    progress = Math.max(0, Math.min(goalProgress, progress));
 
+    var percentage = (progress / goalProgress) * 100;
     fill.style.width = percentage + "%";
 
-    scoreGreen.style.left = 'calc(' + percentage + '% - 30px)';
+    var containerWidth = 360; // px
+    var circleWidth = 60; // px
+    var newLeft = (progress / goalProgress) * (containerWidth - circleWidth);
+    scoreGreen.style.left = newLeft + "px";
 
     scoreGreenText.textContent = progress;
-
     scoreEndText.textContent = goalProgress;
 }
+
 
 function resizeGame() {
     var gameContainer = document.getElementById("game-container");

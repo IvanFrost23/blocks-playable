@@ -265,8 +265,7 @@ body {
     transform: translateX(-50%);
     width: 360px;
     height: 50px;
-    background: url("images/progressbar_back.png") no-repeat center center;
-    background-size: 100% 100%;
+    background-color: #ccc; /* Цвет фона прогресс-бара, можно изменить */
     border: none;
 }
 
@@ -276,8 +275,7 @@ body {
     left: 0;
     width: 0%;
     height: 100%;
-    background: url("images/progressbar_green.png") no-repeat left center;
-    background-size: 100% 100%;
+    background-color: #4CAF50; /* Цвет заполненной части */
     transition: width 0.5s ease-in-out;
     border: none;
 }
@@ -317,4 +315,3 @@ body {
     font-size: 18px;
     user-select: none;
 }
-
