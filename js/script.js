@@ -18,24 +18,28 @@ var colorTypes = ["blue", "red", "yellow"];
 var playingField = document.getElementById("playing-field");
 var cells = [];
 var shapesContainer = document.getElementById("shapes-container");
-var goal = document.getElementById("goal");
-var coinCountElement = document.getElementById("coin-count");
 
-var crystals = parseInt(goal.textContent);
+var crystalGoals = {
+    blue: 40,
+    red: 40,
+    yellow: 40
+};
+
+var coinCountElement = document.getElementById("coin-count");
 var coinCount = parseInt(coinCountElement.textContent, 10);
 var step = 0;
 
 var initialFieldState = [
-    0, 1, null, null, null, null, 2, 0,
-    2, 1, null, null, 0, null, 0, 2,
-    2, 0, null, null, null, null, 1, 2,
-    2, null, null, null, null, null, null, null,
-    0, null, null, null, 2, null, null, null,
+    1, null, null, null, null, null, null, 1,
     null, null, null, null, null, null, null, null,
-    0, 2, null, null, 0, 1, 2, 1,
-    1, 1, null, null, 2, 1, 0, 0
+    null, 2, null, 0, 0, null, 2, null,
+    null, 1, 2, 1, 1, 2, 1, null,
+    null, null, 0, 1, 1, 0, null, null,
+    2, null, 0, 1, 1, 0, null, 2,
+    null, null, 0, 0, 0, 0, null, null,
+    null, null, null, 2, 2, null, null, null
 ];
-var initialCrystalsState = [0, 7, 12, 14, 17, 32, 48, 52, 62, 63];
+var initialCrystalsState = [0, 7, 17, 19, 20, 22, 25, 26, 29, 30, 34, 35, 36, 37, 40, 42, 45, 47, 50, 51, 52, 53, 59, 60];
 
 var draggedShape = null;
 var shapeOffsets = [];
@@ -191,15 +195,6 @@ function handleDragStart(event) {
 function createNewShape(randomType) {
     var shape = document.createElement("div");
     shape.classList.add("shape");
-    shape.setAttribute("draggable", "true");
-
-    shape.addEventListener("touchstart", handleTouchStart);
-    shape.addEventListener("touchmove", handleTouchMove);
-    shape.addEventListener("touchend", handleTouchEnd);
-    shape.addEventListener("touchcancel", handleTouchEnd);
-
-    shape.addEventListener("dragstart", handleDragStart);
-    shape.addEventListener("dragend", handleDragEnd);
 
     var candidateBlocks = [];
 
@@ -209,15 +204,10 @@ function createNewShape(randomType) {
                 var block = document.createElement("div");
                 block.classList.add("block", randomType.color);
                 block.dataset.color = randomType.color;
-
                 block.style.gridRowStart = rowIndex + 1;
                 block.style.gridColumnStart = colIndex + 1;
-
                 shape.appendChild(block);
-
-                if (block.dataset.color === colorTypes[0]) {
-                    candidateBlocks.push(block);
-                }
+                candidateBlocks.push(block);
             }
         });
     });
@@ -225,9 +215,10 @@ function createNewShape(randomType) {
     if (candidateBlocks.length > 0 && Math.random() < 0.5) {
         var randomIndex = Math.floor(Math.random() * candidateBlocks.length);
         var selectedBlock = candidateBlocks[randomIndex];
-
         var crystal = document.createElement("div");
         crystal.classList.add("crystal", randomType.color);
+        crystal.style.width = "20px";
+        crystal.style.height = "20px";
         selectedBlock.appendChild(crystal);
         selectedBlock.dataset.crystal = true;
     }
@@ -409,7 +400,7 @@ function highlightCells(startIndex, isTouch) {
                 highlightDiv.classList.add("highlight", offset.color);
                 if (offset.hasCrystal) {
                     var crystal = document.createElement("div");
-                    crystal.classList.add("crystal");
+                    crystal.classList.add("crystal", offset.color);
                     highlightDiv.appendChild(crystal);
                 }
                 cell.appendChild(highlightDiv);
@@ -456,7 +447,7 @@ function placeShape(startIndex) {
 
                 if (offset.hasCrystal) {
                     var crystal = document.createElement("div");
-                    crystal.classList.add("crystal");
+                    crystal.classList.add("crystal", color);
                     block.appendChild(crystal);
                 }
             }
@@ -532,27 +523,38 @@ function clearRowOrColumn(start, end, type) {
     document.getElementById('burn_line_effect').play();
     cellsToClear.forEach(function(cell) {
         var crystal = cell.querySelector(".crystal");
-
         if (crystal) {
-            animateCollect(cell, document.querySelector('.goal-icon'), updateCrystalCount, getScaleFactor());
+            var crystalColor = "";
+            if (crystal.classList.contains("blue")) {
+                crystalColor = "blue";
+            } else if (crystal.classList.contains("red")) {
+                crystalColor = "red";
+            } else if (crystal.classList.contains("yellow")) {
+                crystalColor = "yellow";
+            }
+            animateCollect(cell, document.getElementById('goal-icon-' + crystalColor), function() {
+                updateCrystalCount(crystalColor);
+            }, getScaleFactor());
             crystal.style.visibility = 'hidden';
         }
 
         cell.classList.remove("filled");
-        cell.block.classList.add("burn");
-        cell.block.addEventListener("animationend", function() {
-            cell.block.remove();
-        }, { once: true });
+        if(cell.block) {
+            cell.block.classList.add("burn");
+            cell.block.addEventListener("animationend", function() {
+                cell.block.remove();
+            }, { once: true });
+        }
     });
 }
 
-function updateCrystalCount() {
-    crystals = Math.max(0, crystals - 1);
-    goal.textContent = crystals;
+function updateCrystalCount(color) {
+    crystalGoals[color] = Math.max(0, crystalGoals[color] - 1);
+    document.getElementById('goal-' + color).textContent = crystalGoals[color];
 }
 
 function isGameOver() {
-    return (crystals === 0 || step > 3);
+    return crystalGoals.blue === 0 && crystalGoals.red === 0 && crystalGoals.yellow === 0;
 }
 
 function getScaleFactor() {
@@ -576,8 +578,6 @@ var deltaTimeoutId = null;
 
 function addCoins(amount) {
     coinCount += amount;
-
-    var coinCountElement = document.getElementById('coin-count');
     coinCountElement.textContent = coinCount;
 
     var coinContainer = document.getElementById('coin-container');

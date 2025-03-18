@@ -89,19 +89,20 @@ body {
     left: 50%;
     transform: translateX(-50%);
     width: 600px;
-    height: 75px;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: url('images/goals_bg.png') no-repeat center center;
     background-size: contain;
     padding: 0 10px;
+    gap: 30px;
 }
 
 .goal {
     display: flex;
     align-items: center;
-    font-size: 28px;
+    font-size: 25px;
 }
 
 .goal span {
@@ -109,11 +110,22 @@ body {
 }
 
 .goal-icon {
-    width: 40px;
-    height: 40px;
-    margin-right: 5px;
+    width: 45px;
+    height: 45px;
+    margin-right: 10px;
     background-size: contain;
-    background-image: url('images/crystal.png');
+}
+
+.goal-icon.blue {
+    background-image: url('images/crystal_blue3.png');
+}
+
+.goal-icon.red {
+    background-image: url('images/crystal_pink2.png');
+}
+
+.goal-icon.yellow {
+    background-image: url('images/crystal_orange1.png');
 }
 
 #playing-field {
@@ -153,7 +165,18 @@ body {
     height: 50%;
     background-size: contain;
     z-index: 1;
-    background-image: url('images/crystal.png');
+}
+
+.crystal.blue {
+    background-image: url('images/crystal_orange1.png');
+}
+
+.crystal.red {
+    background-image: url('images/crystal_blue3.png');
+}
+
+.crystal.yellow {
+    background-image: url('images/crystal_pink2.png');
 }
 
 .block {
@@ -255,8 +278,8 @@ body {
 }
 
 .shape .block {
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     position: relative;
     background-size: contain;
     display: flex;
