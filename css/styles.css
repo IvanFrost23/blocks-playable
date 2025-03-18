@@ -267,15 +267,6 @@ body {
     padding: 10px 0;
 }
 
-@keyframes scale-pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-}
-
 .shape {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -347,6 +338,7 @@ body {
     background: url('images/window_bg.png') no-repeat center center;
     background-size: contain;
     pointer-events: auto;
+    animation: light-shake 5s infinite;
 }
 
 .update-popup-title {
@@ -392,11 +384,48 @@ body {
     -webkit-appearance: none;
     outline: none;
     -webkit-tap-highlight-color: transparent;
-    animation: scale-pulse 3s infinite;
+    animation: scale-pulse-button 3s infinite;
 }
 
 .update-popup-button:focus,
 .update-popup-button:active {
     outline: none;
     box-shadow: none;
+}
+
+@keyframes scale-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+@keyframes scale-pulse-button {
+    0%, 100% {
+        transform: translateX(-50%) scale(1);
+    }
+    50% {
+        transform: translateX(-50%) scale(1.2);
+    }
+}
+
+/* Анимация легкого потряхивания: небольшое смещение по оси X */
+@keyframes light-shake {
+    0% {
+        transform: translateX(0);
+    }
+    5% {
+        transform: translateX(-30px);
+    }
+    10% {
+        transform: translateX(30px);
+    }
+    20% {
+        transform: translateX(-30px);
+    }
+    20%, 100% {
+        transform: translateX(0);
+    }
 }
