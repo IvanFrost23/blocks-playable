@@ -160,9 +160,9 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 2; /* Убедитесь, что подсветка сверху */
-    pointer-events: none; /* Позволяет кликать на ячейки за подсветкой */
-    opacity: 0.5; /* Полупрозрачность */
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.5;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -263,10 +263,11 @@ body {
     top: 110px;
     left: 50%;
     transform: translateX(-50%);
-    width: 360px;
-    height: 50px;
-    background-color: #ccc; /* Цвет фона прогресс-бара, можно изменить */
+    width: 300px;
+    height: 30px;
+    background-color: #371279;
     border: none;
+    border-radius: 7px;
 }
 
 #progressbar-fill {
@@ -275,9 +276,10 @@ body {
     left: 0;
     width: 0%;
     height: 100%;
-    background-color: #4CAF50; /* Цвет заполненной части */
+    background-color: #8ec515;
     transition: width 0.5s ease-in-out;
     border: none;
+    border-radius: 7px;
 }
 
 #score-green {
@@ -285,8 +287,8 @@ body {
     top: 50%;
     left: 0;
     transform: translate(-50%, -50%);
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     background: url("images/score_green.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
@@ -298,8 +300,8 @@ body {
     top: 50%;
     right: 0;
     transform: translate(50%, -50%);
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     background: url("images/score_end.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
