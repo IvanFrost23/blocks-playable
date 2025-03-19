@@ -41,7 +41,7 @@ function startTutorialAnimation() {
         var shapeRect = shape.getBoundingClientRect();
         var startX = shapeRect.left + shapeRect.width / 2;
         var startY = shapeRect.top + shapeRect.height / 2;
-        var targetCell = cells[59];
+        var targetCell = cells[58];
         var targetRect = targetCell.getBoundingClientRect();
         var endX = targetRect.left;
         var endY = targetRect.top;
