@@ -164,18 +164,12 @@ function handleStart(event, isTouch) {
 function handleTouchStart(event) {
     if (!isGameOver()) {
         handleStart(event, true);
-    } else {
-        onCTAClick();
-        event.preventDefault();
     }
 }
 
 function handleDragStart(event) {
     if (!isGameOver()) {
         handleStart(event, false);
-    } else {
-        onCTAClick();
-        event.preventDefault();
     }
 }
 
@@ -451,6 +445,10 @@ function placeShape(startIndex) {
         checkAndClearFullRowsOrColumns();
         draggedShape.style.visibility = "hidden";
 
+        if (isGameOver()) {
+            setTimeout(showEndGameUI, 500);
+        }
+
         if (Array.prototype.every.call(shapesContainer.children, function(shape) { return shape.style.visibility === "hidden"; })) {
             regenerateShapes();
         }
@@ -645,10 +643,7 @@ function addCoins(amount) {
 }
 
 var progress = 0;
-var goalProgress = 368;
-// Допустим, progress и goalProgress объявлены глобально
-var progress = 0;
-var goalProgress = 368;
+var goalProgress = 30;
 
 function updateProgress(amount) {
     var fill = document.getElementById("progressbar-fill");
@@ -689,6 +684,15 @@ function showEndGameUI() {
         document.getElementById("lose-score-text").textContent = progress + " / " + goalProgress;
     }
 }
+
+document.getElementById("btn-next-level").addEventListener("click", function() {
+    onCTAClick();
+});
+
+document.getElementById("btn-retry").addEventListener("click", function() {
+    onCTAClick();
+});
+
 
 function resizeGame() {
     var gameContainer = document.getElementById("game-container");
