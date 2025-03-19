@@ -445,12 +445,12 @@ function placeShape(startIndex) {
         checkAndClearFullRowsOrColumns();
         draggedShape.style.visibility = "hidden";
 
-        if (isGameOver()) {
-            setTimeout(showEndGameUI, 1000);
-        }
-
         if (Array.prototype.every.call(shapesContainer.children, function(shape) { return shape.style.visibility === "hidden"; })) {
             regenerateShapes();
+        }
+
+        if (isGameOver()) {
+            setTimeout(showEndGameUI, 1000);
         }
 
         step++;
@@ -646,22 +646,18 @@ var progress = 0;
 var goalProgress = 30;
 
 function updateProgress(amount) {
+    var container = document.getElementById("progress-bar-container");
     var fill = document.getElementById("progressbar-fill");
     var scoreGreen = document.getElementById("score-green");
     var scoreGreenText = document.getElementById("score-green-text");
     var scoreEndText = document.getElementById("score-end-text");
 
     progress += amount;
-
     progress = Math.max(0, Math.min(goalProgress, progress));
 
-    var percentage = (progress / goalProgress) * 100;
+    var percentage = Math.min(100, (progress / goalProgress) * 100);
     fill.style.width = percentage + "%";
-
-    var containerWidth = 360; // px
-    var circleWidth = 60; // px
-    var newLeft = (progress / goalProgress) * (containerWidth - circleWidth);
-    scoreGreen.style.left = newLeft + "px";
+    scoreGreen.style.left = percentage + "%";
 
     scoreGreenText.textContent = progress;
     scoreEndText.textContent = goalProgress;
@@ -681,6 +677,13 @@ function showEndGameUI() {
 
         var percent = (progress / goalProgress) * 100;
         document.getElementById("lose-progress-fill").style.width = percent + "%";
+
+        var loseProgressBar = document.getElementById("lose-progress-bar");
+        var loseScoreGreen = document.getElementById("lose-score-green");
+        loseScoreGreen.style.left = percent + "%";
+
+        document.getElementById("lose-score-green-text").textContent = progress;
+        document.getElementById("lose-score-end-text").textContent = goalProgress;
     }
 }
 

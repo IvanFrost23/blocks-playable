@@ -293,6 +293,7 @@ body {
     background-size: contain;
     pointer-events: none;
     transition: left 0.5s ease-in-out;
+    z-index: 10000;
 }
 
 #score-end {
@@ -300,11 +301,12 @@ body {
     top: 50%;
     right: 0;
     transform: translate(50%, -50%);
-    width: 50px;
-    height: 50px;
-    background: url("images/score_end.png") no-repeat center center;
+    width: 48px;
+    height: 48px;
+    background-color: #371279;
     background-size: contain;
     pointer-events: none;
+    border-radius: 24px;
 }
 
 .score-text {
@@ -409,36 +411,61 @@ body {
     background-image: url('images/reload.png');
 }
 
-.lose-subtitle {
-    position: absolute;
-    left: 50%;
-    top: 32%;
-    transform: translateX(-50%);
-    font-size: 50px;
-}
-
 #lose-progress-bar {
     position: absolute;
+    top: 50%;
     left: 50%;
-    top: 500px;
     transform: translateX(-50%);
     width: 300px;
     height: 30px;
-    background: #ccc;
-    border-radius: 15px;
-    overflow: hidden;
+    background-color: #371279;
+    border: none;
+    border-radius: 7px;
 }
 
 #lose-progress-fill {
-    height: 100%;
-    background: #4caf50;
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 0%;
+    height: 100%;
+    background-color: #8ec515;
+    transition: width 0.5s ease-in-out;
+    border: none;
+    border-radius: 7px;
+}
+
+#lose-score-green {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: url("images/score_green.png") no-repeat center center;
+    background-size: contain;
+    pointer-events: none;
+    transition: left 0.5s ease-in-out;
+    z-index: 10000;
+}
+
+#lose-score-end {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(50%, -50%);
+    width: 48px;
+    height: 48px;
+    background-color: #371279;
+    background-size: contain;
+    pointer-events: none;
+    border-radius: 24px;
 }
 
 #lose-score-text {
     position: absolute;
     left: 50%;
-    top: 45%;
+    top: 43%;
     transform: translateX(-50%);
-    font-size: 20px;
+    font-size: 26px;
 }
