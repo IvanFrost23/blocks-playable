@@ -364,8 +364,10 @@ body {
 }
 
 .end-button {
-    display: block;
-    margin: 50px auto;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    margin: 30px auto;
     width: 220px;
     height: 65px;
     background-image: url('images/button_green.png');
@@ -373,8 +375,31 @@ body {
     background-position: center center;
     background-size: 100% 100%;
     cursor: pointer;
+    line-height: 65px;
+    font-size: 25px;
+    color: #fff;
+    position: relative;
 }
 
+#btn-next-level::before,
+#btn-retry::before {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#btn-next-level::before {
+    background-image: url('images/play.png');
+}
+
+#btn-retry::before {
+    background-image: url('images/reload.png');
+}
 
 .lose-subtitle {
     font-size: 28px;
