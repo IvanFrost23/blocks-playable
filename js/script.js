@@ -23,6 +23,9 @@ var coinCountElement = document.getElementById("coin-count");
 var coinCount = parseInt(coinCountElement.textContent, 10);
 var step = 0;
 
+var progress = 0;
+var goalProgress = parseInt(document.getElementById("score-end-text").textContent);
+
 var initialFieldState = [
     0, 1, null, null, null, null, 2, 0,
     2, 1, null, null, 0, null, 0, 2,
@@ -206,16 +209,6 @@ function createNewShape(randomType) {
             }
         });
     });
-
-    if (candidateBlocks.length > 0 && Math.random() < 0.5) {
-        var randomIndex = Math.floor(Math.random() * candidateBlocks.length);
-        var selectedBlock = candidateBlocks[randomIndex];
-
-        var crystal = document.createElement("div");
-        crystal.classList.add("crystal", randomType.color);
-        selectedBlock.appendChild(crystal);
-        selectedBlock.dataset.crystal = true;
-    }
 
     return shape;
 }
@@ -641,9 +634,6 @@ function addCoins(amount) {
         }
     }, 1000);
 }
-
-var progress = 0;
-var goalProgress = 30;
 
 function updateProgress(amount) {
     var container = document.getElementById("progress-bar-container");
