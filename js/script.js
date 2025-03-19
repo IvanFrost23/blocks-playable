@@ -446,7 +446,7 @@ function placeShape(startIndex) {
         draggedShape.style.visibility = "hidden";
 
         if (isGameOver()) {
-            setTimeout(showEndGameUI, 500);
+            setTimeout(showEndGameUI, 1000);
         }
 
         if (Array.prototype.every.call(shapesContainer.children, function(shape) { return shape.style.visibility === "hidden"; })) {
@@ -681,7 +681,6 @@ function showEndGameUI() {
 
         var percent = (progress / goalProgress) * 100;
         document.getElementById("lose-progress-fill").style.width = percent + "%";
-        document.getElementById("lose-score-text").textContent = progress + " / " + goalProgress;
     }
 }
 
@@ -701,6 +700,8 @@ function resizeGame() {
 
     var winScreen = document.getElementById("win-screen");
     winScreen.style.transform = "scale(" + scaleFactor + ")";
+    var loseScreen = document.getElementById("lose-screen");
+    loseScreen.style.transform = "scale(" + scaleFactor + ")";
 
     var coinContainer = document.getElementById("coin-container");
     coinContainer.style.transform = "scale(" + scaleFactor + ")";
