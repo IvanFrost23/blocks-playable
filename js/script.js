@@ -672,11 +672,31 @@ function updateProgress(amount) {
     scoreEndText.textContent = goalProgress;
 }
 
+function showEndGameUI() {
+    document.getElementById("game-container").style.display = "none";
+    document.getElementById("coin-container").style.display = "none";
+
+    if (progress >= goalProgress) {
+        var winScreen = document.getElementById("win-screen");
+        winScreen.style.display = "block";
+        document.getElementById("win-score-text").textContent = progress;
+    } else {
+        var loseScreen = document.getElementById("lose-screen");
+        loseScreen.style.display = "block";
+
+        var percent = (progress / goalProgress) * 100;
+        document.getElementById("lose-progress-fill").style.width = percent + "%";
+        document.getElementById("lose-score-text").textContent = progress + " / " + goalProgress;
+    }
+}
 
 function resizeGame() {
     var gameContainer = document.getElementById("game-container");
     scaleFactor = getScaleFactor();
     gameContainer.style.transform = "scale(" + scaleFactor + ")";
+
+    var winScreen = document.getElementById("win-screen");
+    winScreen.style.transform = "scale(" + scaleFactor + ")";
 
     var coinContainer = document.getElementById("coin-container");
     coinContainer.style.transform = "scale(" + scaleFactor + ")";

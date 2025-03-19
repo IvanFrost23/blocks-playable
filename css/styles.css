@@ -315,3 +315,89 @@ body {
     font-size: 18px;
     user-select: none;
 }
+
+.end-screen {
+    position: relative;
+    top: 0;
+    width: 600px;
+    height: 1000px;
+    display: none;
+    z-index: 99999;
+    text-align: center;
+    color: #fff;
+    padding-top: 170px;
+    box-sizing: border-box;
+}
+
+.logo {
+    width: 600px;
+    height: 160px;
+    margin: 0 auto 50px auto;
+    background-image: url('images/logo_en.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+#win-score-label {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+#win-score-circle {
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 20px auto;
+    border-radius: 50%;
+    background-image: url('images/score_end.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#win-score-text {
+    font-size: 32px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.end-button {
+    display: block;
+    margin: 50px auto;
+    width: 220px;
+    height: 65px;
+    background-image: url('images/button_green.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100% 100%;
+    cursor: pointer;
+}
+
+
+.lose-subtitle {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+#lose-progress-bar {
+    width: 300px;
+    height: 30px;
+    margin: 0 auto;
+    background: #ccc;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+#lose-progress-fill {
+    height: 100%;
+    background: #4caf50;
+    width: 0%;
+}
+
+#lose-score-text {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
