@@ -544,6 +544,11 @@ function showLineClearDelta(reference, bonus) {
         left = cellRect.left - fieldRect.left + cellRect.width / 2;
         top = cellRect.top - fieldRect.top + cellRect.height / 2;
     }
+
+    var scaleFactor = getScaleFactor();
+    left = left / scaleFactor;
+    top = top / scaleFactor;
+
     deltaElement.style.position = 'absolute';
     deltaElement.style.left = left + "px";
     deltaElement.style.top = top + "px";
@@ -585,7 +590,6 @@ function clearRowOrColumn(start, end, type) {
         }, { once: true });
     });
 }
-
 
 function canPlaceShape(shape) {
     var blocks = shape.querySelectorAll(".block");
