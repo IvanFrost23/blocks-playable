@@ -204,8 +204,12 @@ body {
     width: 520px;
     height: 125px;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     background: url('images/pieces_bg.png') no-repeat center center;
     background-size: cover;
+    padding: 0 20px;
+    box-sizing: border-box;
 }
 
 .shape {
@@ -219,10 +223,14 @@ body {
 }
 
 .shape-slot {
-    flex: 1;
+    flex: 1 1 0%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0 10px;
+    min-width: 120px;
+    box-sizing: border-box;
 }
 
 .shape .block {

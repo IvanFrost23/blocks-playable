@@ -181,6 +181,7 @@ function createNewShape(randomType) {
     shape.classList.add("shape");
     shape.setAttribute("draggable", "true");
 
+
     shape.addEventListener("touchstart", handleTouchStart);
     shape.addEventListener("touchmove", handleTouchMove);
     shape.addEventListener("touchend", handleTouchEnd);
@@ -188,42 +189,40 @@ function createNewShape(randomType) {
     shape.addEventListener("dragstart", handleDragStart);
     shape.addEventListener("dragend", handleDragEnd);
 
-    var minRow = Infinity, maxRow = -Infinity;
-    var minCol = Infinity, maxCol = -Infinity;
-
-    randomType.shape.forEach((row, rowIndex) => {
-        row.forEach((cell, colIndex) => {
-            if (cell === 1) {
-                if (rowIndex < minRow) minRow = rowIndex;
-                if (rowIndex > maxRow) maxRow = rowIndex;
-                if (colIndex < minCol) minCol = colIndex;
-                if (colIndex > maxCol) maxCol = colIndex;
+    var minRow = Infinity, maxRow = -Infinity, minCol = Infinity, maxCol = -Infinity;
+    for (var i = 0; i < randomType.shape.length; i++) {
+        for (var j = 0; j < randomType.shape[i].length; j++) {
+            if (randomType.shape[i][j] === 1) {
+                if (i < minRow) { minRow = i; }
+                if (i > maxRow) { maxRow = i; }
+                if (j < minCol) { minCol = j; }
+                if (j > maxCol) { maxCol = j; }
             }
-        });
-    });
-
+        }
+    }
     var rowCount = maxRow - minRow + 1;
     var colCount = maxCol - minCol + 1;
+
+    shape.rowCount = rowCount;
+    shape.colCount = colCount;
 
     shape.style.display = "grid";
     shape.style.gridTemplateRows = "repeat(" + rowCount + ", 30px)";
     shape.style.gridTemplateColumns = "repeat(" + colCount + ", 30px)";
 
-    randomType.shape.forEach((row, rowIndex) => {
-        row.forEach((cell, colIndex) => {
-            if (cell === 1) {
+    for (i = 0; i < randomType.shape.length; i++) {
+        for (var j = 0; j < randomType.shape[i].length; j++) {
+            if (randomType.shape[i][j] === 1) {
                 var block = document.createElement("div");
-                block.classList.add("block", randomType.color);
+                block.className = "block " + randomType.color;
                 block.dataset.color = randomType.color;
 
-                block.style.gridRowStart = (rowIndex - minRow) + 1;
-                block.style.gridColumnStart = (colIndex - minCol) + 1;
-
+                block.style.gridRowStart = (i - minRow + 1);
+                block.style.gridColumnStart = (j - minCol + 1);
                 shape.appendChild(block);
             }
-        });
-    });
-
+        }
+    }
     return shape;
 }
 
@@ -232,16 +231,16 @@ var startShapes = [3, 7, 6];
 
 function regenerateShapes() {
     shapesContainer.innerHTML = "";
-
+    var slots = [];
     for (var i = 0; i < 3; i++) {
         var slot = document.createElement("div");
-        slot.classList.add("shape-slot");
+        slot.className = "shape-slot";
         shapesContainer.appendChild(slot);
+        slots.push(slot);
     }
 
-    var slots = shapesContainer.querySelectorAll(".shape-slot");
-
-    for (var i = 0; i < 3; i++) {
+    var shapes = [];
+    for (i = 0; i < 3; i++) {
         var shapeDef = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
         var shapeColor = colorTypes[Math.floor(Math.random() * colorTypes.length)];
 
@@ -249,12 +248,33 @@ function regenerateShapes() {
             shapeDef = shapeTypes[startShapes[i]];
         }
 
-        var newShape = createNewShape({
-            shape: shapeDef,
-            color: shapeColor
-        });
-
+        var newShape = createNewShape({ shape: shapeDef, color: shapeColor });
+        shapes.push(newShape);
         slots[i].appendChild(newShape);
+    }
+
+    var globalBlockSize = Infinity;
+    for (i = 0; i < shapes.length; i++) {
+        var shape = shapes[i];
+        var availableWidth = slots[i].clientWidth;
+        var availableHeight = slots[i].clientHeight;
+        var candidateSize = Math.min( availableWidth / shape.colCount, availableHeight / shape.rowCount );
+        if (candidateSize < globalBlockSize) {
+            globalBlockSize = candidateSize;
+        }
+    }
+
+    globalBlockSize = Math.min(globalBlockSize, 45);
+
+    for (i = 0; i < shapes.length; i++) {
+        shape = shapes[i];
+        shape.style.gridTemplateRows = "repeat(" + shape.rowCount + ", " + globalBlockSize + "px)";
+        shape.style.gridTemplateColumns = "repeat(" + shape.colCount + ", " + globalBlockSize + "px)";
+        var blocks = shape.getElementsByClassName("block");
+        for (var j = 0; j < blocks.length; j++) {
+            blocks[j].style.width = globalBlockSize + "px";
+            blocks[j].style.height = globalBlockSize + "px";
+        }
     }
 }
 
@@ -660,7 +680,7 @@ function isGameOver() {
         return true;
     }
 
-    var shapes = shapesContainer.children;
+    var shapes = shapesContainer.querySelectorAll(".shape");
     for (var i = 0; i < shapes.length; i++) {
         if (shapes[i].style.visibility !== "hidden" && canPlaceShape(shapes[i])) {
             return false;
