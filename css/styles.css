@@ -208,7 +208,7 @@ body {
     align-items: center;
     background: url('images/pieces_bg.png') no-repeat center center;
     background-size: cover;
-    padding: 0 20px;
+    padding: 10px 20px;
     box-sizing: border-box;
 }
 
