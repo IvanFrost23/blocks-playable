@@ -465,32 +465,101 @@ function isValidCell(startIndex, offset, targetIndex) {
 }
 
 function checkAndClearFullRowsOrColumns() {
+    var linesCleared = 0;
+    var clearedLines = [];
+
     for (var i = 0; i < 8; i++) {
         var rowStart = i * 8;
         var rowEnd = rowStart + 7;
         var rowCells = cells.slice(rowStart, rowEnd + 1);
-        var rowFilled = true;
-        for (var k = 0; k < rowCells.length; k++) {
-            if (!rowCells[k].classList.contains("filled")) {
-                rowFilled = false;
-                break;
-            }
-        }
+        var rowFilled = rowCells.every(function(cell) {
+            return cell.classList.contains("filled");
+        });
         if (rowFilled) {
             clearRowOrColumn(rowStart, rowEnd, "row");
+            linesCleared++;
+            var middleCell = rowCells[Math.floor(rowCells.length / 2)];
+            clearedLines.push(middleCell);
         }
+    }
 
+    for (var i = 0; i < 8; i++) {
         var colFilled = true;
+        var colCells = [];
         for (var j = 0; j < 8; j++) {
-            if (!cells[i + j * 8].classList.contains("filled")) {
+            var cell = cells[i + j * 8];
+            colCells.push(cell);
+            if (!cell.classList.contains("filled")) {
                 colFilled = false;
                 break;
             }
         }
         if (colFilled) {
             clearRowOrColumn(i, i + 56, "column");
+            linesCleared++;
+            var middleCell = colCells[Math.floor(colCells.length / 2)];
+            clearedLines.push(middleCell);
         }
     }
+
+    if (linesCleared > 0) {
+        var totalBonus = linesCleared * 10;
+        addCoins(totalBonus);
+        updateProgress(totalBonus);
+
+        var totalX = 0, totalY = 0;
+        clearedLines.forEach(function(cell) {
+            var rect = cell.getBoundingClientRect();
+            totalX += rect.left + rect.width / 2;
+            totalY += rect.top + rect.height / 2;
+        });
+        var avgX = totalX / clearedLines.length;
+        var avgY = totalY / clearedLines.length;
+
+        var fieldRect = playingField.getBoundingClientRect();
+        var deltaX = avgX - fieldRect.left;
+        var deltaY = avgY - fieldRect.top;
+
+        showLineClearDelta({ x: deltaX, y: deltaY }, totalBonus);
+    }
+}
+
+function showLineClearDelta(reference, bonus) {
+    var deltaElement = document.createElement('div');
+    deltaElement.textContent = "+" + bonus;
+    deltaElement.classList.add('line-clear-delta');
+
+    deltaElement.style.fontSize = "24px";
+    deltaElement.style.fontWeight = "bold";
+    deltaElement.style.color = "#fff";
+    deltaElement.style.textShadow = "1px 1px 3px rgba(0,0,0,0.5)";
+
+    var left, top;
+    if (reference.x !== undefined && reference.y !== undefined) {
+        left = reference.x;
+        top = reference.y;
+    } else {
+        var cellRect = reference.getBoundingClientRect();
+        var fieldRect = playingField.getBoundingClientRect();
+        left = cellRect.left - fieldRect.left + cellRect.width / 2;
+        top = cellRect.top - fieldRect.top + cellRect.height / 2;
+    }
+    deltaElement.style.position = 'absolute';
+    deltaElement.style.left = left + "px";
+    deltaElement.style.top = top + "px";
+    deltaElement.style.transform = 'translate(-50%, -50%)';
+
+    playingField.appendChild(deltaElement);
+
+    deltaElement.animate([
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+        { transform: 'translate(-50%, -50%) scale(1.5)', opacity: 0 }
+    ], {
+        duration: 500,
+        easing: 'ease-out'
+    }).onfinish = function() {
+        deltaElement.remove();
+    };
 }
 
 function clearRowOrColumn(start, end, type) {
@@ -505,17 +574,18 @@ function clearRowOrColumn(start, end, type) {
         }
     }
 
-    addCoins(10);
-    updateProgress(10);
     document.getElementById('burn_line_effect').play();
+
     cellsToClear.forEach(function(cell) {
         cell.classList.remove("filled");
-        cell.block.classList.add("burn");
+        cell.block.classList.add("burn-scale");
+        cell.block.style.animationDuration = "200ms";
         cell.block.addEventListener("animationend", function() {
             cell.block.remove();
         }, { once: true });
     });
 }
+
 
 function canPlaceShape(shape) {
     var blocks = shape.querySelectorAll(".block");
@@ -525,7 +595,6 @@ function canPlaceShape(shape) {
         var col = parseInt(block.style.gridColumnStart) - 1;
         shapeOffsets.push({ row: row, col: col });
     });
-
 
     for (var startIndex = 0; startIndex < 64; startIndex++) {
         var startRow = Math.floor(startIndex / 8);
@@ -687,7 +756,7 @@ document.getElementById("btn-retry").addEventListener("click", function() {
 
 function showStartOverlay() {
     document.getElementById('start-message-overlay').style.display = 'flex';
-    setTimeout(() => {
+    setTimeout(function () {
         animateScoreCircleToProgressBar();
     }, 1000);
 }
@@ -717,7 +786,7 @@ function animateScoreCircleToProgressBar() {
         duration: 250,
         easing: 'ease-in-out',
         fill: 'forwards'
-    }).onfinish = () => {
+    }).onfinish = function () {
         document.getElementById('start-message-overlay').style.display = 'none';
     };
 }

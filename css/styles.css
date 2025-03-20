@@ -144,11 +144,11 @@ body {
     background-image: url('images/yellow.png');
 }
 
-.burn {
-    animation: burnAnimation 0.5s ease-in-out;
+.burn-scale {
+    animation: burnScaleEffect 200ms ease-out forwards;
 }
 
-@keyframes burnAnimation {
+@keyframes burnScaleEffect {
     0% { transform: scale(1); opacity: 1; }
     50% { transform: scale(1.2); opacity: 0.5; }
     100% { transform: scale(0); opacity: 0; }
