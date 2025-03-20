@@ -204,11 +204,8 @@ body {
     width: 520px;
     height: 125px;
     display: flex;
-    justify-content: space-around;
-    align-items: center;
     background: url('images/pieces_bg.png') no-repeat center center;
     background-size: cover;
-    padding: 10px 0;
 }
 
 .shape {
@@ -219,6 +216,13 @@ body {
     border: none;
     cursor: grab;
     touch-action: none;
+}
+
+.shape-slot {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .shape .block {

@@ -185,27 +185,41 @@ function createNewShape(randomType) {
     shape.addEventListener("touchmove", handleTouchMove);
     shape.addEventListener("touchend", handleTouchEnd);
     shape.addEventListener("touchcancel", handleTouchEnd);
-
     shape.addEventListener("dragstart", handleDragStart);
     shape.addEventListener("dragend", handleDragEnd);
 
-    var candidateBlocks = [];
+    var minRow = Infinity, maxRow = -Infinity;
+    var minCol = Infinity, maxCol = -Infinity;
 
-    randomType.shape.forEach(function(row, rowIndex) {
-        row.forEach(function(cell, colIndex) {
+    randomType.shape.forEach((row, rowIndex) => {
+        row.forEach((cell, colIndex) => {
+            if (cell === 1) {
+                if (rowIndex < minRow) minRow = rowIndex;
+                if (rowIndex > maxRow) maxRow = rowIndex;
+                if (colIndex < minCol) minCol = colIndex;
+                if (colIndex > maxCol) maxCol = colIndex;
+            }
+        });
+    });
+
+    var rowCount = maxRow - minRow + 1;
+    var colCount = maxCol - minCol + 1;
+
+    shape.style.display = "grid";
+    shape.style.gridTemplateRows = "repeat(" + rowCount + ", 30px)";
+    shape.style.gridTemplateColumns = "repeat(" + colCount + ", 30px)";
+
+    randomType.shape.forEach((row, rowIndex) => {
+        row.forEach((cell, colIndex) => {
             if (cell === 1) {
                 var block = document.createElement("div");
                 block.classList.add("block", randomType.color);
                 block.dataset.color = randomType.color;
 
-                block.style.gridRowStart = rowIndex + 1;
-                block.style.gridColumnStart = colIndex + 1;
+                block.style.gridRowStart = (rowIndex - minRow) + 1;
+                block.style.gridColumnStart = (colIndex - minCol) + 1;
 
                 shape.appendChild(block);
-
-                if (block.dataset.color === colorTypes[0]) {
-                    candidateBlocks.push(block);
-                }
             }
         });
     });
@@ -213,22 +227,34 @@ function createNewShape(randomType) {
     return shape;
 }
 
+
 var startShapes = [3, 7, 6];
 
 function regenerateShapes() {
     shapesContainer.innerHTML = "";
 
     for (var i = 0; i < 3; i++) {
-        var shape = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        var slot = document.createElement("div");
+        slot.classList.add("shape-slot");
+        shapesContainer.appendChild(slot);
+    }
+
+    var slots = shapesContainer.querySelectorAll(".shape-slot");
+
+    for (var i = 0; i < 3; i++) {
+        var shapeDef = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+        var shapeColor = colorTypes[Math.floor(Math.random() * colorTypes.length)];
+
         if (step === 0) {
-            shape = shapeTypes[startShapes[i]];
+            shapeDef = shapeTypes[startShapes[i]];
         }
 
         var newShape = createNewShape({
-            shape: shape,
-            color: colorTypes[Math.floor(Math.random() * colorTypes.length)]
+            shape: shapeDef,
+            color: shapeColor
         });
-        shapesContainer.appendChild(newShape);
+
+        slots[i].appendChild(newShape);
     }
 }
 
@@ -437,10 +463,14 @@ function placeShape(startIndex) {
 
         checkAndClearFullRowsOrColumns();
         draggedShape.style.visibility = "hidden";
+        var shapes = shapesContainer.querySelectorAll(".shape");
 
-        if (Array.prototype.every.call(shapesContainer.children, function(shape) { return shape.style.visibility === "hidden"; })) {
+        if (Array.prototype.every.call(shapes, function(shape) {
+            return shape.style.visibility === "hidden";
+        })) {
             regenerateShapes();
         }
+
 
         if (isGameOver()) {
             setTimeout(showEndGameUI, 1000);
