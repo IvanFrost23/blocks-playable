@@ -256,9 +256,9 @@ function regenerateShapes() {
         var shapeDef = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
         var shapeColor = colorTypes[Math.floor(Math.random() * colorTypes.length)];
 
-        // if (step === 0) {
-        //     shapeDef = shapeTypes[startShapes[i]];
-        // }
+        if (step === 0) {
+            shapeDef = shapeTypes[startShapes[i]];
+        }
 
         var newShape = createNewShape({ shape: shapeDef, color: shapeColor });
         shapes.push(newShape);
