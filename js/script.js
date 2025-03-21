@@ -817,7 +817,7 @@ document.getElementById("btn-next-level").addEventListener("click", function() {
 });
 
 document.getElementById("btn-retry").addEventListener("click", function() {
-    onCTAClick();
+    resetGame();
 });
 
 function showStartOverlay() {
@@ -871,6 +871,23 @@ function resizeGame() {
     coinContainer.style.transform = "scale(" + scaleFactor + ")";
     coinContainer.style.left = (20 * scaleFactor) + "px";
     coinContainer.style.top = (20 * scaleFactor) + "px";
+}
+
+function resetGame() {
+    document.getElementById("win-screen").style.display = "none";
+    document.getElementById("lose-screen").style.display = "none";
+
+    document.getElementById("game-container").style.display = "block";
+    document.getElementById("coin-container").style.display = "flex";
+
+    progress = 0;
+    coinCount = 0;
+    step = 0;
+
+    updateProgress(0);
+
+    buildField();
+    regenerateShapes();
 }
 
 function startGame() {
