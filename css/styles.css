@@ -299,9 +299,9 @@ body {
     top: 50%;
     left: 0;
     transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    background: url("images/score_green.png") no-repeat center center;
+    width: 50px;
+    height: 50px;
+    background: url("images/brain_gray.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     transition: left 0.5s ease-in-out;
@@ -315,7 +315,7 @@ body {
     transform: translate(50%, -50%);
     width: 60px;
     height: 60px;
-    background: url("images/einstein.png") no-repeat center center;
+    background: url("images/brain_color.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     border-radius: 24px;
@@ -336,17 +336,6 @@ body {
 .score-text-green {
     position: absolute;
     top: -30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: bold;
-    color: #fff;
-    font-size: 18px;
-    user-select: none;
-}
-
-.iq-text {
-    position: absolute;
-    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
@@ -382,30 +371,38 @@ body {
 #win-score-label {
     position: absolute;
     left: 50%;
-    top: 39%;
+    top: 38%;
     transform: translateX(-50%);
     font-size: 28px;
 }
 
-#win-score-circle {
+#score-container {
     position: absolute;
-    left: 50%;
-    top: 43%;
-    transform: translateX(-50%);
-    width: 173px;
-    height: 173px;
-    border-radius: 50%;
-    background: url('images/einstein.png') center / contain no-repeat;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    gap: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 46%;
 }
+#win-score-age {
+    font-size: 56px;
+}
+
+#win-score-circle {
+    width: 125px;
+    height: 125px;
+    border-radius: 50%;
+    background: url('images/brain_color.png') center / contain no-repeat;
+}
+
 
 #win-score-text {
     position: absolute;
     left: 50%;
-    top: 43%;
-    font-size: 60px;
+    top: 40%;
+    font-size: 90px;
     font-weight: bold;
     color: #f09b1c;
 }
@@ -457,9 +454,9 @@ body {
     top: 50%;
     left: 0;
     transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    background: url("images/score_green.png") no-repeat center center;
+    width: 50px;
+    height: 50px;
+    background: url("images/brain_gray.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     transition: left 0.5s ease-in-out;
@@ -473,12 +470,13 @@ body {
     transform: translate(50%, -50%);
     width: 60px;
     height: 60px;
-    background: url("images/einstein.png") no-repeat center center;
+    background: url("images/brain_color.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     border-radius: 24px;
     z-index: 10001;
 }
+
 
 #lose-subtitle {
     position: absolute;
@@ -499,17 +497,6 @@ body {
 .lose-score-text-green {
     position: absolute;
     top: -30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-weight: bold;
-    color: #fff;
-    font-size: 18px;
-    user-select: none;
-}
-
-.lose-iq-text {
-    position: absolute;
-    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;

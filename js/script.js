@@ -35,8 +35,8 @@ var coinCountElement = document.getElementById("coin-count");
 var coinCount = parseInt(coinCountElement.textContent, 10);
 var step = 0;
 
-var progress = 0;
-var goalProgress = parseInt(document.getElementById("score-end-text").textContent);
+var progress = 100;
+var goalProgress = 25;
 
 var initialFieldState = [
     null, null, null, 2, 2, null, null, null,
@@ -688,7 +688,7 @@ function canPlaceShape(shape) {
 }
 
 function isGameOver() {
-    if (progress >= goalProgress) {
+    if (progress <= goalProgress) {
         return true;
     }
 
@@ -777,17 +777,17 @@ function updateProgress(amount) {
     var scoreGreenText = document.getElementById("score-green-text");
     var scoreEndText = document.getElementById("score-end-text");
 
-    progress += amount;
-    progress = Math.max(0, Math.min(goalProgress, progress));
+    progress -= amount;
+    progress = Math.max(25, Math.max(goalProgress, progress));
 
-    var percentage = Math.min(100, (progress / goalProgress) * 100);
+    var percentage = Math.min(100, (75 - (progress - goalProgress)) / 75 * 100);
     fill.style.width = percentage + "%";
     scoreGreen.style.left = percentage + "%";
 
     scoreGreenText.textContent = progress;
     scoreEndText.textContent = goalProgress;
 
-    if (progress >= goalProgress) {
+    if (progress <= goalProgress) {
         scoreGreenText.textContent = '';
     }
 }
@@ -796,14 +796,14 @@ function showEndGameUI() {
     document.getElementById("game-container").style.display = "none";
     document.getElementById("coin-container").style.display = "none";
 
-    if (progress >= goalProgress) {
+    if (progress <= goalProgress) {
         var winScreen = document.getElementById("win-screen");
         winScreen.style.display = "block";
     } else {
         var loseScreen = document.getElementById("lose-screen");
         loseScreen.style.display = "block";
 
-        var percent = (progress / goalProgress) * 100;
+        var percent = (75 - (progress - goalProgress)) / 75 * 100;
         document.getElementById("lose-progress-fill").style.width = percent + "%";
 
         var loseProgressBar = document.getElementById("lose-progress-bar");
