@@ -786,6 +786,10 @@ function updateProgress(amount) {
 
     scoreGreenText.textContent = progress;
     scoreEndText.textContent = goalProgress;
+
+    if (progress >= goalProgress) {
+        scoreGreenText.textContent = '';
+    }
 }
 
 function showEndGameUI() {
@@ -795,7 +799,6 @@ function showEndGameUI() {
     if (progress >= goalProgress) {
         var winScreen = document.getElementById("win-screen");
         winScreen.style.display = "block";
-        document.getElementById("win-score-text").textContent = progress;
     } else {
         var loseScreen = document.getElementById("lose-screen");
         loseScreen.style.display = "block";

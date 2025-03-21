@@ -275,7 +275,7 @@ body {
     top: 110px;
     left: 50%;
     transform: translateX(-50%);
-    width: 300px;
+    width: 270px;
     height: 30px;
     background-color: #371279;
     border: none;
@@ -299,8 +299,8 @@ body {
     top: 50%;
     left: 0;
     transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     background: url("images/score_green.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
@@ -313,15 +313,38 @@ body {
     top: 50%;
     right: 0;
     transform: translate(50%, -50%);
-    width: 48px;
-    height: 48px;
-    background-color: #371279;
+    width: 60px;
+    height: 60px;
+    background: url("images/einstein.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     border-radius: 24px;
+    z-index: 10001;
 }
 
 .score-text {
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #fff;
+    font-size: 18px;
+    user-select: none;
+}
+
+.score-text-green {
+    position: absolute;
+    top: -30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #fff;
+    font-size: 18px;
+    user-select: none;
+}
+
+.iq-text {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -372,14 +395,16 @@ body {
     width: 173px;
     height: 173px;
     border-radius: 50%;
-    background: url('images/score_end.png') center / contain no-repeat;
+    background: url('images/einstein.png') center / contain no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-
 #win-score-text {
+    position: absolute;
+    left: 50%;
+    top: 43%;
     font-size: 60px;
     font-weight: bold;
     color: #f09b1c;
@@ -403,32 +428,12 @@ body {
     color: #fff;
 }
 
-#btn-next-level::before,
-#btn-retry::before {
-    content: "";
-    display: inline-block;
-    vertical-align: middle;
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    background-size: contain;
-    background-repeat: no-repeat;
-}
-
-#btn-next-level::before {
-    background-image: url('images/play.png');
-}
-
-#btn-retry::before {
-    background-image: url('images/reload.png');
-}
-
 #lose-progress-bar {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translateX(-50%);
-    width: 300px;
+    width: 270px;
     height: 30px;
     background-color: #371279;
     border: none;
@@ -452,8 +457,8 @@ body {
     top: 50%;
     left: 0;
     transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     background: url("images/score_green.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
@@ -466,12 +471,21 @@ body {
     top: 50%;
     right: 0;
     transform: translate(50%, -50%);
-    width: 48px;
-    height: 48px;
-    background-color: #371279;
+    width: 60px;
+    height: 60px;
+    background: url("images/einstein.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     border-radius: 24px;
+    z-index: 10001;
+}
+
+#lose-subtitle {
+    position: absolute;
+    left: 50%;
+    top: 35%;
+    transform: translateX(-50%);
+    font-size: 45px;
 }
 
 #lose-score-text {
@@ -479,7 +493,49 @@ body {
     left: 50%;
     top: 43%;
     transform: translateX(-50%);
-    font-size: 26px;
+    font-size: 22px;
+}
+
+.lose-score-text-green {
+    position: absolute;
+    top: -30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #fff;
+    font-size: 18px;
+    user-select: none;
+}
+
+.lose-iq-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #fff;
+    font-size: 18px;
+    user-select: none;
+}
+
+#btn-next-level::before,
+#btn-retry::before {
+    content: "";
+    display: inline-block;
+    vertical-align: middle;
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#btn-next-level::before {
+    background-image: url('images/play.png');
+}
+
+#btn-retry::before {
+    background-image: url('images/reload.png');
 }
 
 #bottom-stripe {
