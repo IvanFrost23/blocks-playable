@@ -481,9 +481,10 @@ body {
 #lose-subtitle {
     position: absolute;
     left: 50%;
-    top: 35%;
+    top: 32%;
     transform: translateX(-50%);
     font-size: 45px;
+    white-space: nowrap;
 }
 
 #lose-score-text {
