@@ -14,7 +14,7 @@ body {
     height: 100vh;
     background-color: #f3f3f3;
     font-family: Arial, sans-serif;
-    background-image: url('images/background.png');
+    background-image: url('../images/background.png');
     background-size: cover;
     background-position: center;
     overflow: hidden;
@@ -34,7 +34,7 @@ body {
     transform-origin: top left;
     width: 120px;
     height: 30px;
-    background: url('images/menubar_bg.png') no-repeat center center;
+    background: url('../images/menubar_bg.png') no-repeat center center;
     background-size: contain;
     display: flex;
     align-items: center;
@@ -48,7 +48,7 @@ body {
     height: 50px;
     margin-right: 0;
     transform: translateX(-20px);
-    background-image: url('images/coin.png');
+    background-image: url('../images/coin.png');
     background-size: cover;
     background-position: center;
 }
@@ -120,7 +120,7 @@ body {
     height: 50%;
     background-size: contain;
     z-index: 1;
-    background-image: url('images/crystal.png');
+    background-image: url('../images/crystal.png');
 }
 
 .block {
@@ -133,15 +133,15 @@ body {
 }
 
 .block.blue {
-    background-image: url('images/blue.png');
+    background-image: url('../images/blue.png');
 }
 
 .block.red {
-    background-image: url('images/red.png');
+    background-image: url('../images/red.png');
 }
 
 .block.yellow {
-    background-image: url('images/yellow.png');
+    background-image: url('../images/yellow.png');
 }
 
 .burn-scale {
@@ -170,19 +170,19 @@ body {
 
 
 .highlight.blue {
-    background-image: url('images/blue.png');
+    background-image: url('../images/blue.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }
 .highlight.red {
-    background-image: url('images/red.png');
+    background-image: url('../images/red.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }
 .highlight.yellow {
-    background-image: url('images/yellow.png');
+    background-image: url('../images/yellow.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -206,7 +206,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: url('images/pieces_bg.png') no-repeat center center;
+    background: url('../images/pieces_bg.png') no-repeat center center;
     background-size: cover;
     padding: 10px 20px;
     box-sizing: border-box;
@@ -259,7 +259,7 @@ body {
     z-index: 9999;
     width: 117px;
     height: 123px;
-    background-image: url("images/finger.png");
+    background-image: url("../images/finger.png");
     background-size: contain;
     background-repeat: no-repeat;
 }
@@ -301,7 +301,7 @@ body {
     transform: translate(-50%, -50%);
     width: 50px;
     height: 50px;
-    background: url("images/score_green.png") no-repeat center center;
+    background: url("../images/score_green.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     transition: left 0.5s ease-in-out;
@@ -352,7 +352,7 @@ body {
     transform: translateX(-50%);
     width: 800px;
     height: 213px;
-    background: url('images/logo_en.png') center / contain no-repeat;
+    background: url('../images/logo_en.png') center / contain no-repeat;
 }
 
 
@@ -372,7 +372,7 @@ body {
     width: 173px;
     height: 173px;
     border-radius: 50%;
-    background: url('images/score_end.png') center / contain no-repeat;
+    background: url('../images/score_end.png') center / contain no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -392,7 +392,7 @@ body {
     transform: translateX(-50%);
     width: 292px;
     height: 86px;
-    background-image: url('images/button_green.png');
+    background-image: url('../images/button_green.png');
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 100% 100%;
@@ -416,11 +416,11 @@ body {
 }
 
 #btn-next-level::before {
-    background-image: url('images/play.png');
+    background-image: url('../images/play.png');
 }
 
 #btn-retry::before {
-    background-image: url('images/reload.png');
+    background-image: url('../images/reload.png');
 }
 
 #lose-progress-bar {
@@ -454,7 +454,7 @@ body {
     transform: translate(-50%, -50%);
     width: 50px;
     height: 50px;
-    background: url("images/score_green.png") no-repeat center center;
+    background: url("../images/score_green.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     transition: left 0.5s ease-in-out;
@@ -507,13 +507,13 @@ body {
 #bottom-stripe .free-label .free-icon {
     width: 40px;
     height: 40px;
-    background: url('images/icon_block.png') no-repeat center center;
+    background: url('../images/icon_block.png') no-repeat center center;
     background-size: cover;
     margin-right: 10px;
 }
 
 #bottom-stripe .install-btn button {
-    background: url('images/button_green.png') no-repeat center center;
+    background: url('../images/button_green.png') no-repeat center center;
     background-size: cover;
     width: 120px;
     height: 40px;

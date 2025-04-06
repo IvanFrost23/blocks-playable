@@ -1,7 +1,7 @@
 .flying-target {
     width: 40px;
     height: 40px;
-    background: url('images/crystal.png') no-repeat center center;
+    background: url('../images/crystal.png') no-repeat center center;
     background-size: contain;
     pointer-events: none;
     position: absolute;
