@@ -144,6 +144,22 @@ body {
     background-image: url('../images/yellow.png');
 }
 
+.block.cyan {
+    background-image: url('../images/cyan.png');
+}
+
+.block.green {
+    background-image: url('../images/green.png');
+}
+
+.block.orange {
+    background-image: url('../images/orange.png');
+}
+
+.block.purple {
+    background-image: url('../images/purple.png');
+}
+
 .burn-scale {
     animation: burnScaleEffect 200ms ease-out forwards;
 }
@@ -166,26 +182,31 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
-
 
 .highlight.blue {
     background-image: url('../images/blue.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
 }
 .highlight.red {
     background-image: url('../images/red.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
 }
 .highlight.yellow {
     background-image: url('../images/yellow.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+}
+.highlight.cyan {
+    background-image: url('../images/cyan.png');
+}
+.highlight.green {
+    background-image: url('../images/green.png');
+}
+.highlight.orange {
+    background-image: url('../images/orange.png');
+}
+.highlight.purple {
+    background-image: url('../images/purple.png');
 }
 
 .highlight .crystal {

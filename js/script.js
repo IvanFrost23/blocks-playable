@@ -25,7 +25,7 @@ var shapeTypes = [
     [[0, 1], [1, 1], [1, 0]]
 ];
 
-var colorTypes = ["blue", "red", "yellow"];
+var colorTypes = ["blue", "red", "yellow", "cyan", "green", "orange", "purple"];
 
 var playingField = document.getElementById("playing-field");
 var cells = [];
