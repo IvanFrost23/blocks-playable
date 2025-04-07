@@ -238,7 +238,6 @@ function createNewShape(randomType) {
     return shape;
 }
 
-
 var startShapes = [3, 7, 6];
 
 function regenerateShapes() {
@@ -252,7 +251,7 @@ function regenerateShapes() {
     }
 
     var shapes = [];
-    for (i = 0; i < 3; i++) {
+    for (var i = 0; i < 3; i++) {
         var shapeDef = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
         var shapeColor = colorTypes[Math.floor(Math.random() * colorTypes.length)];
 
@@ -261,16 +260,21 @@ function regenerateShapes() {
         }
 
         var newShape = createNewShape({ shape: shapeDef, color: shapeColor });
+        newShape.classList.add("pop-in");
+        newShape.addEventListener("animationend", function() {
+            this.classList.remove("pop-in");
+        });
+
         shapes.push(newShape);
         slots[i].appendChild(newShape);
     }
 
     var globalBlockSize = Infinity;
-    for (i = 0; i < shapes.length; i++) {
+    for (var i = 0; i < shapes.length; i++) {
         var shape = shapes[i];
         var availableWidth = slots[i].clientWidth;
         var availableHeight = slots[i].clientHeight;
-        var candidateSize = Math.min( availableWidth / shape.colCount, availableHeight / shape.rowCount );
+        var candidateSize = Math.min(availableWidth / shape.colCount, availableHeight / shape.rowCount);
         if (candidateSize < globalBlockSize) {
             globalBlockSize = candidateSize;
         }
@@ -278,7 +282,7 @@ function regenerateShapes() {
 
     globalBlockSize = Math.min(globalBlockSize, 45);
 
-    for (i = 0; i < shapes.length; i++) {
+    for (var i = 0; i < shapes.length; i++) {
         shape = shapes[i];
         shape.style.gridTemplateRows = "repeat(" + shape.rowCount + ", " + globalBlockSize + "px)";
         shape.style.gridTemplateColumns = "repeat(" + shape.colCount + ", " + globalBlockSize + "px)";
