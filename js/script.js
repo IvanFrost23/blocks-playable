@@ -591,10 +591,10 @@ function showLineClearDelta(reference, bonus) {
     deltaElement.textContent = "+" + bonus;
     deltaElement.classList.add('line-clear-delta');
 
-    deltaElement.style.fontSize = "24px";
+    deltaElement.style.fontSize = "40px";
     deltaElement.style.fontWeight = "bold";
-    deltaElement.style.color = "#fff";
-    deltaElement.style.textShadow = "1px 1px 3px rgba(0,0,0,0.5)";
+    deltaElement.style.color = "#e3be16";
+    deltaElement.style.textShadow = "2px 2px 4px rgba(0,0,0,0.6)";
 
     var left, top;
     if (reference.x !== undefined && reference.y !== undefined) {
@@ -619,11 +619,13 @@ function showLineClearDelta(reference, bonus) {
     playingField.appendChild(deltaElement);
 
     deltaElement.animate([
-        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
-        { transform: 'translate(-50%, -50%) scale(1.5)', opacity: 0 }
+        { transform: 'translate(-50%, -50%) scale(0.5)', opacity: 0, offset: 0 },
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: 0.1429 },
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: 0.8571 },
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 0, offset: 1 }
     ], {
-        duration: 500,
-        easing: 'ease-out'
+        duration: 1000,
+        easing: 'ease'
     }).onfinish = function() {
         deltaElement.remove();
     };
