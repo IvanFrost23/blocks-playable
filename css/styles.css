@@ -170,7 +170,7 @@ body {
     100% { transform: scale(0); opacity: 0; }
 }
 
-.highlight {
+.highlight, .burn-highlight {
     position: absolute;
     top: 0;
     left: 0;
@@ -187,29 +187,33 @@ body {
     background-position: center;
 }
 
-.highlight.blue {
+.burn-highlight {
+    opacity: 1;
+}
+
+.highlight.blue, .burn-highlight.blue {
     background-image: url('../images/blue.png');
 }
-.highlight.red {
+.highlight.red, .burn-highlight.red {
     background-image: url('../images/red.png');
 }
-.highlight.yellow {
+.highlight.yellow, .burn-highlight.yellow {
     background-image: url('../images/yellow.png');
 }
-.highlight.cyan {
+.highlight.cyan, .burn-highlight.cyan {
     background-image: url('../images/cyan.png');
 }
-.highlight.green {
+.highlight.green, .burn-highlight.green {
     background-image: url('../images/green.png');
 }
-.highlight.orange {
+.highlight.orange, .burn-highlight.orange {
     background-image: url('../images/orange.png');
 }
-.highlight.purple {
+.highlight.purple, .burn-highlight.purple {
     background-image: url('../images/purple.png');
 }
 
-.highlight .crystal {
+.highlight.crystal, .burn-highlight.crystal {
     position: relative;
     width: 50%;
     height: 50%;

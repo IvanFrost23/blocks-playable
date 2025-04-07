@@ -426,6 +426,65 @@ document.body.addEventListener("drop", function(e) {
     }
 });
 
+function highlightBurnLines(startIndex) {
+    var boardState = [];
+    for (var i = 0; i < 64; i++) {
+        boardState[i] = cells[i].classList.contains("filled");
+    }
+
+    shapeOffsets.forEach(function(offset) {
+        var targetIndex = startIndex + offset.row * 8 + offset.col;
+        if (targetIndex >= 0 && targetIndex < 64) {
+            boardState[targetIndex] = true;
+        }
+    });
+
+    var shapeColor = shapeOffsets.length > 0 ? shapeOffsets[0].color : "blue";
+
+    for (var row = 0; row < 8; row++) {
+        var rowStart = row * 8;
+        var isFull = true;
+        for (var col = 0; col < 8; col++) {
+            if (!boardState[rowStart + col]) {
+                isFull = false;
+                break;
+            }
+        }
+        if (isFull) {
+            for (var col = 0; col < 8; col++) {
+                var cell = cells[rowStart + col];
+                var burnHighlight = document.createElement("div");
+                burnHighlight.classList.add("burn-highlight", shapeColor);
+                cell.appendChild(burnHighlight);
+                if (currentHighlightCells.indexOf(cell) === -1) {
+                    currentHighlightCells.push(cell);
+                }
+            }
+        }
+    }
+
+    for (var col = 0; col < 8; col++) {
+        var isFull = true;
+        for (var row = 0; row < 8; row++) {
+            if (!boardState[row * 8 + col]) {
+                isFull = false;
+                break;
+            }
+        }
+        if (isFull) {
+            for (var row = 0; row < 8; row++) {
+                var cell = cells[row * 8 + col];
+                var burnHighlight = document.createElement("div");
+                burnHighlight.classList.add("burn-highlight", shapeColor);
+                cell.appendChild(burnHighlight);
+                if (currentHighlightCells.indexOf(cell) === -1) {
+                    currentHighlightCells.push(cell);
+                }
+            }
+        }
+    }
+}
+
 function highlightCells(startIndex, isTouch) {
     if (isTouch === void 0) { isTouch = false; }
     clearHighlight();
@@ -456,8 +515,10 @@ function highlightCells(startIndex, isTouch) {
                 currentHighlightCells.push(cell);
             }
         });
+        highlightBurnLines(startIndex);
     }
 }
+
 
 function clearHighlight() {
     currentHighlightCells.forEach(function(cell) {
@@ -465,8 +526,19 @@ function clearHighlight() {
         if (highlightDiv) {
             cell.removeChild(highlightDiv);
         }
+
+        var burnHighlightDiv = cell.querySelector(".burn-highlight");
+        if (burnHighlightDiv) {
+            cell.removeChild(burnHighlightDiv);
+        }
     });
     currentHighlightCells = [];
+    cells.forEach(function(cell) {
+        var burnHighlightDiv = cell.querySelector(".burn-highlight");
+        if (burnHighlightDiv) {
+            cell.removeChild(burnHighlightDiv);
+        }
+    });
 }
 
 function placeShape(startIndex) {
@@ -497,7 +569,7 @@ function placeShape(startIndex) {
         });
         updateProgress(shapeOffsets.length);
 
-        checkAndClearFullRowsOrColumns();
+        checkAndClearFullRowsOrColumns(shapeOffsets[0].color);
         draggedShape.style.visibility = "hidden";
         var shapes = shapesContainer.querySelectorAll(".shape");
 
@@ -530,7 +602,7 @@ function isValidCell(startIndex, offset, targetIndex) {
     );
 }
 
-function checkAndClearFullRowsOrColumns() {
+function checkAndClearFullRowsOrColumns(color) {
     var linesCleared = 0;
     var clearedLines = [];
 
@@ -542,7 +614,7 @@ function checkAndClearFullRowsOrColumns() {
             return cell.classList.contains("filled");
         });
         if (rowFilled) {
-            clearRowOrColumn(rowStart, rowEnd, "row");
+            clearRowOrColumn(rowStart, rowEnd, "row", color);
             linesCleared++;
             var middleCell = rowCells[Math.floor(rowCells.length / 2)];
             clearedLines.push(middleCell);
@@ -561,7 +633,7 @@ function checkAndClearFullRowsOrColumns() {
             }
         }
         if (colFilled) {
-            clearRowOrColumn(i, i + 56, "column");
+            clearRowOrColumn(i, i + 56, "column", color);
             linesCleared++;
             var middleCell = colCells[Math.floor(colCells.length / 2)];
             clearedLines.push(middleCell);
@@ -635,7 +707,7 @@ function showLineClearDelta(reference, bonus) {
     };
 }
 
-function clearRowOrColumn(start, end, type) {
+function clearRowOrColumn(start, end, type, color) {
     var cellsToClear = [];
     if (type === "row") {
         for (var i = start; i <= end; i++) {
@@ -650,6 +722,12 @@ function clearRowOrColumn(start, end, type) {
     document.getElementById('burn_line_effect').play();
 
     cellsToClear.forEach(function(cell) {
+        cell.block && cell.removeChild(cell.block);
+        var block = document.createElement("div");
+        block.classList.add("block", color);
+        cell.appendChild(block);
+        cell.block = block;
+
         cell.classList.remove("filled");
         cell.block.classList.add("burn-scale");
         cell.block.style.animationDuration = "200ms";
