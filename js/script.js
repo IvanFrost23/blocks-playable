@@ -601,7 +601,7 @@ function showPiecesOverlay() {
 
     overlay.style.zIndex = "100";
 
-    overlay.textContent = "No Space Left";
+    overlay.textContent = progress >= goalProgress ? "You win" : "No Space Left";
     overlay.style.color = "#fff";
     overlay.style.fontSize = "2em";
     overlay.style.fontWeight = "bold";
