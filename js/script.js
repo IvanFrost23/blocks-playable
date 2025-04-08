@@ -541,6 +541,37 @@ function clearHighlight() {
     });
 }
 
+function showPiecesOverlay() {
+    var shapesContainer = document.getElementById("shapes-container");
+
+    var overlay = document.createElement("div");
+    overlay.id = "game-over-overlay";
+
+    overlay.style.position = "absolute";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+
+    overlay.style.backgroundColor = "rgba(0, 0, 0, 0.3)";
+
+    overlay.style.display = "flex";
+    overlay.style.justifyContent = "center";
+    overlay.style.alignItems = "center";
+
+    overlay.style.zIndex = "100";
+
+    overlay.textContent = "No Space Left";
+    overlay.style.color = "#fff";
+    overlay.style.fontSize = "2em";
+    overlay.style.fontWeight = "bold";
+
+    overlay.style.pointerEvents = "none";
+
+    shapesContainer.appendChild(overlay);
+}
+
+
 function placeShape(startIndex) {
     if (!draggedShape) return;
 
@@ -579,8 +610,8 @@ function placeShape(startIndex) {
             regenerateShapes();
         }
 
-
         if (isGameOver()) {
+            showPiecesOverlay();
             setTimeout(showEndGameUI, 1000);
         }
 

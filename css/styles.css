@@ -223,7 +223,7 @@ body {
 
 #shapes-container {
     position: absolute;
-    bottom: 100px;
+    bottom: 120px;
     left: 50%;
     transform: translateX(-50%);
     width: 520px;
@@ -231,8 +231,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: url('../images/pieces_bg.png') no-repeat center center;
-    background-size: cover;
     padding: 10px 20px;
     box-sizing: border-box;
 }
