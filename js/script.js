@@ -8,12 +8,11 @@ var shapeTypes = [
     [[1],[1]],
     [[1, 1],[1, 1]],
     [[1, 0],[1, 1]],
+    [[1, 0],[0, 1]],
+    [[0, 1],[1, 0]],
     [[1, 1, 1]],
-    [[1, 1, 1, 1]],
     [[0, 1], [1, 1]],
     [[1], [1], [1]],
-    [[1], [1], [1], [1]],
-    [[1, 1, 1], [1, 1, 1]],
     [[1, 1], [1, 1], [1, 1]],
     [[1, 0], [1, 0], [1, 1]],
     [[0, 1], [0, 1], [1, 1]],
@@ -21,7 +20,6 @@ var shapeTypes = [
     [[1, 1, 0], [0, 1, 1]],
     [[0, 1, 1], [1, 1, 0]],
     [[1, 0], [1, 1], [0, 1]],
-    [[1, 1, 1], [0, 0, 1]],
     [[0, 1], [1, 1], [1, 0]]
 ];
 
@@ -241,23 +239,50 @@ function createNewShape(randomType) {
 
 var startShapes = [3, 7, 6];
 
-function regenerateShapes() {
+function createShapeSlots(count) {
     shapesContainer.innerHTML = "";
     var slots = [];
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < count; i++) {
         var slot = document.createElement("div");
         slot.className = "shape-slot";
         shapesContainer.appendChild(slot);
         slots.push(slot);
     }
+    return slots;
+}
 
+function getValidCandidates() {
+    var validCandidates = [];
+    for (var i = 0; i < shapeTypes.length; i++) {
+        var candidateShape = createNewShape({ shape: shapeTypes[i], color: colorTypes[0] });
+        if (canPlaceShape(candidateShape)) {
+            validCandidates.push(shapeTypes[i]);
+        }
+    }
+    return validCandidates;
+}
+
+function generateShapesForSlots(slots, validCandidates) {
     var shapes = [];
-    for (var i = 0; i < 3; i++) {
-        var shapeDef = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+    var numSlots = slots.length;
+    for (var i = 0; i < numSlots; i++) {
+        var shapeDef;
         var shapeColor = colorTypes[Math.floor(Math.random() * colorTypes.length)];
 
         if (step === 0) {
             shapeDef = shapeTypes[startShapes[i]];
+        } else {
+            var remainingSlots = numSlots - i;
+
+            if (validCandidates.length >= remainingSlots) {
+                var index = Math.floor(Math.random() * validCandidates.length);
+                shapeDef = validCandidates.splice(index, 1)[0];
+            } else if (validCandidates.length > 0) {
+                var index = Math.floor(Math.random() * validCandidates.length);
+                shapeDef = validCandidates.splice(index, 1)[0];
+            } else {
+                shapeDef = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+            }
         }
 
         var newShape = createNewShape({ shape: shapeDef, color: shapeColor });
@@ -265,12 +290,15 @@ function regenerateShapes() {
         newShape.addEventListener("animationend", function() {
             this.classList.remove("pop-in");
         });
-
         shapes.push(newShape);
         slots[i].appendChild(newShape);
     }
+    return shapes;
+}
 
+function adjustShapeSizes(shapes, slots) {
     var globalBlockSize = Infinity;
+
     for (var i = 0; i < shapes.length; i++) {
         var shape = shapes[i];
         var availableWidth = slots[i].clientWidth;
@@ -280,11 +308,10 @@ function regenerateShapes() {
             globalBlockSize = candidateSize;
         }
     }
-
     globalBlockSize = Math.min(globalBlockSize, 45);
 
     for (var i = 0; i < shapes.length; i++) {
-        shape = shapes[i];
+        var shape = shapes[i];
         shape.style.gridTemplateRows = "repeat(" + shape.rowCount + ", " + globalBlockSize + "px)";
         shape.style.gridTemplateColumns = "repeat(" + shape.colCount + ", " + globalBlockSize + "px)";
         var blocks = shape.getElementsByClassName("block");
@@ -293,6 +320,14 @@ function regenerateShapes() {
             blocks[j].style.height = globalBlockSize + "px";
         }
     }
+}
+
+function regenerateShapes() {
+    var slots = createShapeSlots(3);
+    var validCandidates = (step !== 0 ? getValidCandidates() : []);
+    var shapes = generateShapesForSlots(slots, validCandidates);
+
+    adjustShapeSizes(shapes, slots);
 }
 
 function handleTouchMove(event) {
@@ -639,8 +674,7 @@ function isValidCell(startIndex, offset, targetIndex) {
 }
 
 function checkAndClearFullRowsOrColumns(color) {
-    var linesCleared = 0;
-    var clearedLines = [];
+    var linesToClear = [];
 
     for (var i = 0; i < 8; i++) {
         var rowStart = i * 8;
@@ -650,16 +684,19 @@ function checkAndClearFullRowsOrColumns(color) {
             return cell.classList.contains("filled");
         });
         if (rowFilled) {
-            clearRowOrColumn(rowStart, rowEnd, "row", color);
-            linesCleared++;
             var middleCell = rowCells[Math.floor(rowCells.length / 2)];
-            clearedLines.push(middleCell);
+            linesToClear.push({
+                start: rowStart,
+                end: rowEnd,
+                type: "row",
+                middleCell: middleCell
+            });
         }
     }
 
     for (var i = 0; i < 8; i++) {
-        var colFilled = true;
         var colCells = [];
+        var colFilled = true;
         for (var j = 0; j < 8; j++) {
             var cell = cells[i + j * 8];
             colCells.push(cell);
@@ -669,26 +706,35 @@ function checkAndClearFullRowsOrColumns(color) {
             }
         }
         if (colFilled) {
-            clearRowOrColumn(i, i + 56, "column", color);
-            linesCleared++;
             var middleCell = colCells[Math.floor(colCells.length / 2)];
-            clearedLines.push(middleCell);
+            linesToClear.push({
+                start: i,
+                end: i + 56,
+                type: "column",
+                middleCell: middleCell
+            });
         }
     }
 
+    var linesCleared = linesToClear.length;
+
     if (linesCleared > 0) {
+        linesToClear.forEach(function(line) {
+            clearRowOrColumn(line.start, line.end, line.type, color);
+        });
+
         var totalBonus = linesCleared * 10;
         addCoins(totalBonus);
         updateProgress(totalBonus);
 
         var totalX = 0, totalY = 0;
-        clearedLines.forEach(function(cell) {
-            var rect = cell.getBoundingClientRect();
+        linesToClear.forEach(function(line) {
+            var rect = line.middleCell.getBoundingClientRect();
             totalX += rect.left + rect.width / 2;
             totalY += rect.top + rect.height / 2;
         });
-        var avgX = totalX / clearedLines.length;
-        var avgY = totalY / clearedLines.length;
+        var avgX = totalX / linesCleared;
+        var avgY = totalY / linesCleared;
 
         var fieldRect = playingField.getBoundingClientRect();
         var deltaX = avgX - fieldRect.left;
