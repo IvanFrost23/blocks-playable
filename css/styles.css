@@ -88,8 +88,8 @@ body {
     top: 200px;
     left: 50%;
     transform: translateX(-50%);
-    width: 504px;
-    height: 504px;
+    width: 560px;
+    height: 560px;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
@@ -223,11 +223,11 @@ body {
 
 #shapes-container {
     position: absolute;
-    bottom: 120px;
+    bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
-    width: 520px;
-    height: 125px;
+    width: 624px;
+    height: 150px;
     display: flex;
     justify-content: space-between;
     align-items: center;
