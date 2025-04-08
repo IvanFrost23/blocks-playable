@@ -617,10 +617,9 @@ function placeShape(startIndex) {
 
         if (isGameOver()) {
             showPiecesOverlay();
-            animateFieldFill();
-            setTimeout(showEndGameUI, 1000);
+            setTimeout(animateFieldFill, 1000);
+            setTimeout(showEndGameUI, 2500);
         }
-
         step++;
     }
 
