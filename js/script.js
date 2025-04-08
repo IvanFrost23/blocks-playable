@@ -105,13 +105,15 @@ function createDragImage(shape, shapeOffsets, cellSize) {
     return dragImage;
 }
 
-function handleStart(event, isTouch) {
-    if (draggedShape) return;
-
+function startMusic () {
     if (!musicStarted) {
         document.getElementById('music').play();
         musicStarted = true;
     }
+}
+
+function handleStart(event, isTouch) {
+    if (draggedShape) return;
 
     if (isTouch === void 0) { isTouch = false; }
     draggedShape = isTouch ? event.target.closest(".shape") : event.target;
@@ -192,7 +194,6 @@ function createNewShape(randomType) {
     var shape = document.createElement("div");
     shape.classList.add("shape");
     shape.setAttribute("draggable", "true");
-
 
     shape.addEventListener("touchstart", handleTouchStart);
     shape.addEventListener("touchmove", handleTouchMove);
@@ -354,6 +355,8 @@ function handleTouchEnd(event) {
 
     draggedShape = null;
     shapeOffsets = [];
+
+    startMusic();
 }
 
 function handleDragEnd() {
@@ -370,6 +373,8 @@ function handleDragEnd() {
     }
 
     clearHighlight();
+
+    startMusic();
 }
 
 document.body.addEventListener("dragover", function(e) {
@@ -612,6 +617,7 @@ function placeShape(startIndex) {
 
         if (isGameOver()) {
             showPiecesOverlay();
+            animateFieldFill();
             setTimeout(showEndGameUI, 1000);
         }
 
@@ -903,6 +909,34 @@ function updateProgress(amount) {
     scoreEndText.textContent = goalProgress;
 }
 
+function animateFieldFill() {
+    var currentRow = 7;
+
+    document.getElementById('lose_animation_effect').play();
+
+    var rowInterval = setInterval(function () {
+        if (currentRow < 0) {
+            clearInterval(rowInterval);
+            return;
+        }
+
+        for (var col = 0; col < 8; col++) {
+            var index = currentRow * 8 + col;
+            var cell = cells[index];
+
+            if (!cell.classList.contains("filled")) {
+                cell.classList.add("filled");
+                var block = document.createElement("div");
+                var randomColor = colorTypes[Math.floor(Math.random() * colorTypes.length)];
+                block.classList.add("block", randomColor);
+                cell.appendChild(block);
+            }
+        }
+
+        currentRow--;
+    }, 100);
+}
+
 function showEndGameUI() {
     document.getElementById("game-container").style.display = "none";
     document.getElementById("coin-container").style.display = "none";
@@ -924,6 +958,9 @@ function showEndGameUI() {
 
         document.getElementById("lose-score-green-text").textContent = progress;
         document.getElementById("lose-score-end-text").textContent = goalProgress;
+
+        document.getElementById('music').pause();
+        document.getElementById('lose_effect').play();
     }
 }
 
