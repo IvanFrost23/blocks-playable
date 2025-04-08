@@ -951,7 +951,6 @@ function showEndGameUI() {
         var percent = (progress / goalProgress) * 100;
         document.getElementById("lose-progress-fill").style.width = percent + "%";
 
-        var loseProgressBar = document.getElementById("lose-progress-bar");
         var loseScoreGreen = document.getElementById("lose-score-green");
         loseScoreGreen.style.left = percent + "%";
 

@@ -382,9 +382,9 @@ body {
 #win-score-label {
     position: absolute;
     left: 50%;
-    top: 39%;
+    top: 37%;
     transform: translateX(-50%);
-    font-size: 28px;
+    font-size: 36px;
 }
 
 #win-score-circle {
@@ -497,6 +497,14 @@ body {
     border-radius: 24px;
 }
 
+#lose-subtitle {
+    position: absolute;
+    left: 50%;
+    top: 35%;
+    transform: translateX(-50%);
+    font-size: 40px;
+}
+
 #lose-score-text {
     position: absolute;
     left: 50%;
@@ -504,6 +512,89 @@ body {
     transform: translateX(-50%);
     font-size: 26px;
 }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: translateX(-50%) scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+}
+
+#win-screen {
+    display: none;
+}
+
+#win-screen .logo {
+    opacity: 0;
+    animation: scaleIn 0.5s ease forwards;
+    animation-delay: 0.3s;
+}
+
+#win-screen #win-score-label {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 0.8s;
+}
+
+#win-screen #win-score-circle {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 1.3s;
+}
+
+#win-screen .end-button {
+    opacity: 0;
+    animation: scaleIn 0.5s ease forwards;
+    animation-delay: 1.8s;
+}
+
+#lose-screen {
+    display: none;
+}
+
+#lose-screen .logo {
+    opacity: 0;
+    animation: scaleIn 0.5s ease forwards;
+    animation-delay: 0.3s;
+}
+
+#lose-screen #lose-subtitle {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 0.8s;
+}
+
+#lose-screen #lose-progress-bar {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 1.8s;
+}
+
+#lose-screen #lose-score-text {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 1.3s;
+}
+
+#lose-screen .end-button {
+    opacity: 0;
+    animation: scaleIn 0.5s ease forwards;
+    animation-delay: 2.3s;
+}
+
 
 #bottom-stripe {
     position: fixed;
