@@ -236,6 +236,12 @@ body {
     box-sizing: border-box;
 }
 
+@media (max-width: 450px) {
+    #shapes-container {
+        bottom: 0vh;
+    }
+}
+
 .shape {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
