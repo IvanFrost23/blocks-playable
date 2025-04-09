@@ -1,6 +1,5 @@
 var scaleFactor = 1;
 var MOBILE_DRAG_OFFSET = -75;
-var musicStarted = false;
 
 var shapeTypes = [
     [[1]],
@@ -8,12 +7,11 @@ var shapeTypes = [
     [[1],[1]],
     [[1, 1],[1, 1]],
     [[1, 0],[1, 1]],
+    [[1, 0],[0, 1]],
+    [[0, 1],[1, 0]],
     [[1, 1, 1]],
-    [[1, 1, 1, 1]],
     [[0, 1], [1, 1]],
     [[1], [1], [1]],
-    [[1], [1], [1], [1]],
-    [[1, 1, 1], [1, 1, 1]],
     [[1, 1], [1, 1], [1, 1]],
     [[1, 0], [1, 0], [1, 1]],
     [[0, 1], [0, 1], [1, 1]],
@@ -21,11 +19,10 @@ var shapeTypes = [
     [[1, 1, 0], [0, 1, 1]],
     [[0, 1, 1], [1, 1, 0]],
     [[1, 0], [1, 1], [0, 1]],
-    [[1, 1, 1], [0, 0, 1]],
     [[0, 1], [1, 1], [1, 0]]
 ];
 
-var colorTypes = ["blue", "red", "yellow"];
+var colorTypes = ["blue", "red", "yellow", "cyan", "green", "orange", "purple"];
 
 var playingField = document.getElementById("playing-field");
 var cells = [];
@@ -108,11 +105,6 @@ function createDragImage(shape, shapeOffsets, cellSize) {
 function handleStart(event, isTouch) {
     if (draggedShape) return;
 
-    if (!musicStarted) {
-        document.getElementById('music').play();
-        musicStarted = true;
-    }
-
     if (isTouch === void 0) { isTouch = false; }
     draggedShape = isTouch ? event.target.closest(".shape") : event.target;
     if (!draggedShape) return;
@@ -193,7 +185,6 @@ function createNewShape(randomType) {
     shape.classList.add("shape");
     shape.setAttribute("draggable", "true");
 
-
     shape.addEventListener("touchstart", handleTouchStart);
     shape.addEventListener("touchmove", handleTouchMove);
     shape.addEventListener("touchend", handleTouchEnd);
@@ -238,48 +229,81 @@ function createNewShape(randomType) {
     return shape;
 }
 
-
 var startShapes = [3, 7, 6];
 
-function regenerateShapes() {
+function createShapeSlots(count) {
     shapesContainer.innerHTML = "";
     var slots = [];
-    for (var i = 0; i < 3; i++) {
+    for (var i = 0; i < count; i++) {
         var slot = document.createElement("div");
         slot.className = "shape-slot";
         shapesContainer.appendChild(slot);
         slots.push(slot);
     }
+    return slots;
+}
 
+function getValidCandidates() {
+    var validCandidates = [];
+    for (var i = 0; i < shapeTypes.length; i++) {
+        var candidateShape = createNewShape({ shape: shapeTypes[i], color: colorTypes[0] });
+        if (canPlaceShape(candidateShape)) {
+            validCandidates.push(shapeTypes[i]);
+        }
+    }
+    return validCandidates;
+}
+
+function generateShapesForSlots(slots, validCandidates) {
     var shapes = [];
-    for (i = 0; i < 3; i++) {
-        var shapeDef = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+    var numSlots = slots.length;
+    for (var i = 0; i < numSlots; i++) {
+        var shapeDef;
         var shapeColor = colorTypes[Math.floor(Math.random() * colorTypes.length)];
 
         if (step === 0) {
             shapeDef = shapeTypes[startShapes[i]];
+        } else {
+            var remainingSlots = numSlots - i;
+
+            if (validCandidates.length >= remainingSlots) {
+                var index = Math.floor(Math.random() * validCandidates.length);
+                shapeDef = validCandidates.splice(index, 1)[0];
+            } else if (validCandidates.length > 0) {
+                var index = Math.floor(Math.random() * validCandidates.length);
+                shapeDef = validCandidates.splice(index, 1)[0];
+            } else {
+                shapeDef = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+            }
         }
 
         var newShape = createNewShape({ shape: shapeDef, color: shapeColor });
+        newShape.classList.add("pop-in");
+        newShape.addEventListener("animationend", function() {
+            this.classList.remove("pop-in");
+        });
         shapes.push(newShape);
         slots[i].appendChild(newShape);
     }
+    return shapes;
+}
 
+function adjustShapeSizes(shapes, slots) {
     var globalBlockSize = Infinity;
-    for (i = 0; i < shapes.length; i++) {
+
+    for (var i = 0; i < shapes.length; i++) {
         var shape = shapes[i];
         var availableWidth = slots[i].clientWidth;
         var availableHeight = slots[i].clientHeight;
-        var candidateSize = Math.min( availableWidth / shape.colCount, availableHeight / shape.rowCount );
+        var candidateSize = Math.min(availableWidth / shape.colCount, availableHeight / shape.rowCount);
         if (candidateSize < globalBlockSize) {
             globalBlockSize = candidateSize;
         }
     }
-
     globalBlockSize = Math.min(globalBlockSize, 45);
 
-    for (i = 0; i < shapes.length; i++) {
-        shape = shapes[i];
+    for (var i = 0; i < shapes.length; i++) {
+        var shape = shapes[i];
         shape.style.gridTemplateRows = "repeat(" + shape.rowCount + ", " + globalBlockSize + "px)";
         shape.style.gridTemplateColumns = "repeat(" + shape.colCount + ", " + globalBlockSize + "px)";
         var blocks = shape.getElementsByClassName("block");
@@ -288,6 +312,14 @@ function regenerateShapes() {
             blocks[j].style.height = globalBlockSize + "px";
         }
     }
+}
+
+function regenerateShapes() {
+    var slots = createShapeSlots(3);
+    var validCandidates = (step !== 0 ? getValidCandidates() : []);
+    var shapes = generateShapesForSlots(slots, validCandidates);
+
+    adjustShapeSizes(shapes, slots);
 }
 
 function handleTouchMove(event) {
@@ -422,6 +454,65 @@ document.body.addEventListener("drop", function(e) {
     }
 });
 
+function highlightBurnLines(startIndex) {
+    var boardState = [];
+    for (var i = 0; i < 64; i++) {
+        boardState[i] = cells[i].classList.contains("filled");
+    }
+
+    shapeOffsets.forEach(function(offset) {
+        var targetIndex = startIndex + offset.row * 8 + offset.col;
+        if (targetIndex >= 0 && targetIndex < 64) {
+            boardState[targetIndex] = true;
+        }
+    });
+
+    var shapeColor = shapeOffsets.length > 0 ? shapeOffsets[0].color : "blue";
+
+    for (var row = 0; row < 8; row++) {
+        var rowStart = row * 8;
+        var isFull = true;
+        for (var col = 0; col < 8; col++) {
+            if (!boardState[rowStart + col]) {
+                isFull = false;
+                break;
+            }
+        }
+        if (isFull) {
+            for (var col = 0; col < 8; col++) {
+                var cell = cells[rowStart + col];
+                var burnHighlight = document.createElement("div");
+                burnHighlight.classList.add("burn-highlight", shapeColor);
+                cell.appendChild(burnHighlight);
+                if (currentHighlightCells.indexOf(cell) === -1) {
+                    currentHighlightCells.push(cell);
+                }
+            }
+        }
+    }
+
+    for (var col = 0; col < 8; col++) {
+        var isFull = true;
+        for (var row = 0; row < 8; row++) {
+            if (!boardState[row * 8 + col]) {
+                isFull = false;
+                break;
+            }
+        }
+        if (isFull) {
+            for (var row = 0; row < 8; row++) {
+                var cell = cells[row * 8 + col];
+                var burnHighlight = document.createElement("div");
+                burnHighlight.classList.add("burn-highlight", shapeColor);
+                cell.appendChild(burnHighlight);
+                if (currentHighlightCells.indexOf(cell) === -1) {
+                    currentHighlightCells.push(cell);
+                }
+            }
+        }
+    }
+}
+
 function highlightCells(startIndex, isTouch) {
     if (isTouch === void 0) { isTouch = false; }
     clearHighlight();
@@ -452,8 +543,10 @@ function highlightCells(startIndex, isTouch) {
                 currentHighlightCells.push(cell);
             }
         });
+        highlightBurnLines(startIndex);
     }
 }
+
 
 function clearHighlight() {
     currentHighlightCells.forEach(function(cell) {
@@ -461,8 +554,59 @@ function clearHighlight() {
         if (highlightDiv) {
             cell.removeChild(highlightDiv);
         }
+
+        var burnHighlightDiv = cell.querySelector(".burn-highlight");
+        if (burnHighlightDiv) {
+            cell.removeChild(burnHighlightDiv);
+        }
     });
     currentHighlightCells = [];
+    cells.forEach(function(cell) {
+        var burnHighlightDiv = cell.querySelector(".burn-highlight");
+        if (burnHighlightDiv) {
+            cell.removeChild(burnHighlightDiv);
+        }
+    });
+}
+
+function showPiecesOverlay() {
+    var shapesContainer = document.getElementById("shapes-container");
+
+    var overlay = document.createElement("div");
+    overlay.id = "game-over-overlay";
+
+    overlay.style.position = "absolute";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100%";
+    overlay.style.height = "100%";
+
+    overlay.style.backgroundColor = "rgba(0, 0, 0, 0.3)";
+
+    overlay.style.display = "flex";
+    overlay.style.justifyContent = "center";
+    overlay.style.alignItems = "center";
+
+    overlay.style.zIndex = "100";
+
+    var text, sound;
+    if (progress >= goalProgress) {
+        text = "You win";
+        sound = "win_sound";
+    } else {
+        text = "No Space Left";
+        sound = "lose_sound";
+    }
+
+    document.getElementById(sound).play();
+    overlay.textContent = text;
+    overlay.style.color = "#fff";
+    overlay.style.fontSize = "2em";
+    overlay.style.fontWeight = "bold";
+
+    overlay.style.pointerEvents = "none";
+
+    shapesContainer.appendChild(overlay);
 }
 
 function placeShape(startIndex) {
@@ -493,7 +637,7 @@ function placeShape(startIndex) {
         });
         updateProgress(shapeOffsets.length);
 
-        checkAndClearFullRowsOrColumns();
+        checkAndClearFullRowsOrColumns(shapeOffsets[0].color);
         draggedShape.style.visibility = "hidden";
         var shapes = shapesContainer.querySelectorAll(".shape");
 
@@ -503,11 +647,11 @@ function placeShape(startIndex) {
             regenerateShapes();
         }
 
-
         if (isGameOver()) {
-            setTimeout(showEndGameUI, 1000);
+            showPiecesOverlay();
+            setTimeout(animateFieldFill, 1000);
+            setTimeout(showEndGameUI, 2500);
         }
-
         step++;
     }
 
@@ -526,9 +670,8 @@ function isValidCell(startIndex, offset, targetIndex) {
     );
 }
 
-function checkAndClearFullRowsOrColumns() {
-    var linesCleared = 0;
-    var clearedLines = [];
+function checkAndClearFullRowsOrColumns(color) {
+    var linesToClear = [];
 
     for (var i = 0; i < 8; i++) {
         var rowStart = i * 8;
@@ -538,16 +681,19 @@ function checkAndClearFullRowsOrColumns() {
             return cell.classList.contains("filled");
         });
         if (rowFilled) {
-            clearRowOrColumn(rowStart, rowEnd, "row");
-            linesCleared++;
             var middleCell = rowCells[Math.floor(rowCells.length / 2)];
-            clearedLines.push(middleCell);
+            linesToClear.push({
+                start: rowStart,
+                end: rowEnd,
+                type: "row",
+                middleCell: middleCell
+            });
         }
     }
 
     for (var i = 0; i < 8; i++) {
-        var colFilled = true;
         var colCells = [];
+        var colFilled = true;
         for (var j = 0; j < 8; j++) {
             var cell = cells[i + j * 8];
             colCells.push(cell);
@@ -557,26 +703,35 @@ function checkAndClearFullRowsOrColumns() {
             }
         }
         if (colFilled) {
-            clearRowOrColumn(i, i + 56, "column");
-            linesCleared++;
             var middleCell = colCells[Math.floor(colCells.length / 2)];
-            clearedLines.push(middleCell);
+            linesToClear.push({
+                start: i,
+                end: i + 56,
+                type: "column",
+                middleCell: middleCell
+            });
         }
     }
 
+    var linesCleared = linesToClear.length;
+
     if (linesCleared > 0) {
+        linesToClear.forEach(function(line) {
+            clearRowOrColumn(line.start, line.end, line.type, color);
+        });
+
         var totalBonus = linesCleared * 10;
         addCoins(totalBonus);
         updateProgress(totalBonus);
 
         var totalX = 0, totalY = 0;
-        clearedLines.forEach(function(cell) {
-            var rect = cell.getBoundingClientRect();
+        linesToClear.forEach(function(line) {
+            var rect = line.middleCell.getBoundingClientRect();
             totalX += rect.left + rect.width / 2;
             totalY += rect.top + rect.height / 2;
         });
-        var avgX = totalX / clearedLines.length;
-        var avgY = totalY / clearedLines.length;
+        var avgX = totalX / linesCleared;
+        var avgY = totalY / linesCleared;
 
         var fieldRect = playingField.getBoundingClientRect();
         var deltaX = avgX - fieldRect.left;
@@ -591,10 +746,10 @@ function showLineClearDelta(reference, bonus) {
     deltaElement.textContent = "+" + bonus;
     deltaElement.classList.add('line-clear-delta');
 
-    deltaElement.style.fontSize = "24px";
+    deltaElement.style.fontSize = "40px";
     deltaElement.style.fontWeight = "bold";
-    deltaElement.style.color = "#fff";
-    deltaElement.style.textShadow = "1px 1px 3px rgba(0,0,0,0.5)";
+    deltaElement.style.color = "#e3be16";
+    deltaElement.style.textShadow = "2px 2px 4px rgba(0,0,0,0.6)";
 
     var left, top;
     if (reference.x !== undefined && reference.y !== undefined) {
@@ -619,17 +774,19 @@ function showLineClearDelta(reference, bonus) {
     playingField.appendChild(deltaElement);
 
     deltaElement.animate([
-        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
-        { transform: 'translate(-50%, -50%) scale(1.5)', opacity: 0 }
+        { transform: 'translate(-50%, -50%) scale(0.5)', opacity: 0, offset: 0 },
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: 0.1429 },
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: 0.8571 },
+        { transform: 'translate(-50%, -50%) scale(1)', opacity: 0, offset: 1 }
     ], {
-        duration: 500,
-        easing: 'ease-out'
+        duration: 1000,
+        easing: 'ease'
     }).onfinish = function() {
         deltaElement.remove();
     };
 }
 
-function clearRowOrColumn(start, end, type) {
+function clearRowOrColumn(start, end, type, color) {
     var cellsToClear = [];
     if (type === "row") {
         for (var i = start; i <= end; i++) {
@@ -644,6 +801,12 @@ function clearRowOrColumn(start, end, type) {
     document.getElementById('burn_line_effect').play();
 
     cellsToClear.forEach(function(cell) {
+        cell.block && cell.removeChild(cell.block);
+        var block = document.createElement("div");
+        block.classList.add("block", color);
+        cell.appendChild(block);
+        cell.block = block;
+
         cell.classList.remove("filled");
         cell.block.classList.add("burn-scale");
         cell.block.style.animationDuration = "200ms";
@@ -703,7 +866,6 @@ function isGameOver() {
 }
 
 function getScaleFactor() {
-    var gameContainer = document.getElementById("game-container");
     var widthToHeightRatio = 600 / 931;
     var viewportWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
     var viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
@@ -788,6 +950,34 @@ function updateProgress(amount) {
     scoreEndText.textContent = goalProgress;
 }
 
+function animateFieldFill() {
+    var currentRow = 7;
+
+    document.getElementById('fill_grid').play();
+
+    var rowInterval = setInterval(function () {
+        if (currentRow < 0) {
+            clearInterval(rowInterval);
+            return;
+        }
+
+        for (var col = 0; col < 8; col++) {
+            var index = currentRow * 8 + col;
+            var cell = cells[index];
+
+            if (!cell.classList.contains("filled")) {
+                cell.classList.add("filled");
+                var block = document.createElement("div");
+                var randomColor = colorTypes[Math.floor(Math.random() * colorTypes.length)];
+                block.classList.add("block", randomColor);
+                cell.appendChild(block);
+            }
+        }
+
+        currentRow--;
+    }, 100);
+}
+
 function showEndGameUI() {
     document.getElementById("game-container").style.display = "none";
     document.getElementById("coin-container").style.display = "none";
@@ -796,6 +986,14 @@ function showEndGameUI() {
         var winScreen = document.getElementById("win-screen");
         winScreen.style.display = "block";
         document.getElementById("win-score-text").textContent = progress;
+
+        document.getElementById('victory_logo').play();
+        setTimeout(function () {
+            document.getElementById('endgame_points').play();
+        }, 1500);
+        setTimeout(function () {
+            document.getElementById('endgame_button').play();
+        }, 2000);
     } else {
         var loseScreen = document.getElementById("lose-screen");
         loseScreen.style.display = "block";
@@ -803,12 +1001,22 @@ function showEndGameUI() {
         var percent = (progress / goalProgress) * 100;
         document.getElementById("lose-progress-fill").style.width = percent + "%";
 
-        var loseProgressBar = document.getElementById("lose-progress-bar");
         var loseScoreGreen = document.getElementById("lose-score-green");
         loseScoreGreen.style.left = percent + "%";
 
         document.getElementById("lose-score-green-text").textContent = progress;
         document.getElementById("lose-score-end-text").textContent = goalProgress;
+
+        setTimeout(function () {
+            document.getElementById('lose_logo').play();
+        }, 250);
+
+        setTimeout(function () {
+            document.getElementById('endgame_points').play();
+        }, 2000);
+        setTimeout(function () {
+            document.getElementById('endgame_button').play();
+        }, 2500);
     }
 }
 

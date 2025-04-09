@@ -14,7 +14,7 @@ body {
     height: 100vh;
     background-color: #f3f3f3;
     font-family: Arial, sans-serif;
-    background-image: url('images/background.png');
+    background-image: url('../images/background.png');
     background-size: cover;
     background-position: center;
     overflow: hidden;
@@ -25,6 +25,7 @@ body {
     position: relative;
     width: 600px;
     height: 1000px;
+    bottom: 6vh;
 }
 
 #coin-container {
@@ -34,9 +35,9 @@ body {
     transform-origin: top left;
     width: 120px;
     height: 30px;
-    background: url('images/menubar_bg.png') no-repeat center center;
+    background: url('../images/menubar_bg.png') no-repeat center center;
     background-size: contain;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: left;
     padding: 10px;
@@ -48,7 +49,7 @@ body {
     height: 50px;
     margin-right: 0;
     transform: translateX(-20px);
-    background-image: url('images/coin.png');
+    background-image: url('../images/coin.png');
     background-size: cover;
     background-position: center;
 }
@@ -85,11 +86,11 @@ body {
 
 #playing-field {
     position: absolute;
-    top: 200px;
+    top: 22%;
     left: 50%;
     transform: translateX(-50%);
-    width: 504px;
-    height: 504px;
+    width: 560px;
+    height: 560px;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
@@ -120,7 +121,7 @@ body {
     height: 50%;
     background-size: contain;
     z-index: 1;
-    background-image: url('images/crystal.png');
+    background-image: url('../images/crystal.png');
 }
 
 .block {
@@ -133,15 +134,31 @@ body {
 }
 
 .block.blue {
-    background-image: url('images/blue.png');
+    background-image: url('../images/blue.png');
 }
 
 .block.red {
-    background-image: url('images/red.png');
+    background-image: url('../images/red.png');
 }
 
 .block.yellow {
-    background-image: url('images/yellow.png');
+    background-image: url('../images/yellow.png');
+}
+
+.block.cyan {
+    background-image: url('../images/cyan.png');
+}
+
+.block.green {
+    background-image: url('../images/green.png');
+}
+
+.block.orange {
+    background-image: url('../images/orange.png');
+}
+
+.block.purple {
+    background-image: url('../images/purple.png');
 }
 
 .burn-scale {
@@ -154,7 +171,7 @@ body {
     100% { transform: scale(0); opacity: 0; }
 }
 
-.highlight {
+.highlight, .burn-highlight {
     position: absolute;
     top: 0;
     left: 0;
@@ -166,29 +183,38 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-
-.highlight.blue {
-    background-image: url('images/blue.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-.highlight.red {
-    background-image: url('images/red.png');
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-.highlight.yellow {
-    background-image: url('images/yellow.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }
 
-.highlight .crystal {
+.burn-highlight {
+    opacity: 1;
+}
+
+.highlight.blue, .burn-highlight.blue {
+    background-image: url('../images/blue.png');
+}
+.highlight.red, .burn-highlight.red {
+    background-image: url('../images/red.png');
+}
+.highlight.yellow, .burn-highlight.yellow {
+    background-image: url('../images/yellow.png');
+}
+.highlight.cyan, .burn-highlight.cyan {
+    background-image: url('../images/cyan.png');
+}
+.highlight.green, .burn-highlight.green {
+    background-image: url('../images/green.png');
+}
+.highlight.orange, .burn-highlight.orange {
+    background-image: url('../images/orange.png');
+}
+.highlight.purple, .burn-highlight.purple {
+    background-image: url('../images/purple.png');
+}
+
+.highlight.crystal, .burn-highlight.crystal {
     position: relative;
     width: 50%;
     height: 50%;
@@ -198,18 +224,22 @@ body {
 
 #shapes-container {
     position: absolute;
-    bottom: 100px;
+    bottom: 5vh;
     left: 50%;
     transform: translateX(-50%);
-    width: 520px;
-    height: 125px;
+    width: 624px;
+    height: 150px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: url('images/pieces_bg.png') no-repeat center center;
-    background-size: cover;
     padding: 10px 20px;
     box-sizing: border-box;
+}
+
+@media (max-width: 450px) {
+    #shapes-container {
+        bottom: 0vh;
+    }
 }
 
 .shape {
@@ -259,7 +289,7 @@ body {
     z-index: 9999;
     width: 117px;
     height: 123px;
-    background-image: url("images/finger.png");
+    background-image: url("../images/finger.png");
     background-size: contain;
     background-repeat: no-repeat;
 }
@@ -272,14 +302,20 @@ body {
 
 #progress-bar-container {
     position: absolute;
-    top: 110px;
+    top: 150px;
     left: 50%;
     transform: translateX(-50%);
     width: 300px;
-    height: 30px;
+    height: 40px;
     background-color: #371279;
     border: none;
     border-radius: 7px;
+}
+
+@media (max-width: 450px) {
+    #progress-bar-container {
+        top: 120px;
+    }
 }
 
 #progressbar-fill {
@@ -299,9 +335,9 @@ body {
     top: 50%;
     left: 0;
     transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
-    background: url("images/score_green.png") no-repeat center center;
+    width: 66px;
+    height: 66px;
+    background: url("../images/score_green.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     transition: left 0.5s ease-in-out;
@@ -313,12 +349,12 @@ body {
     top: 50%;
     right: 0;
     transform: translate(50%, -50%);
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
     background-color: #371279;
     background-size: contain;
     pointer-events: none;
-    border-radius: 24px;
+    border-radius: 32px;
 }
 
 .score-text {
@@ -328,7 +364,7 @@ body {
     transform: translate(-50%, -50%);
     font-weight: bold;
     color: #fff;
-    font-size: 18px;
+    font-size: 24px;
     user-select: none;
 }
 
@@ -352,16 +388,16 @@ body {
     transform: translateX(-50%);
     width: 800px;
     height: 213px;
-    background: url('images/logo_en.png') center / contain no-repeat;
+    background: url('../images/logo_en.png') center / contain no-repeat;
 }
 
 
 #win-score-label {
     position: absolute;
     left: 50%;
-    top: 39%;
+    top: 37%;
     transform: translateX(-50%);
-    font-size: 28px;
+    font-size: 36px;
 }
 
 #win-score-circle {
@@ -372,7 +408,7 @@ body {
     width: 173px;
     height: 173px;
     border-radius: 50%;
-    background: url('images/score_end.png') center / contain no-repeat;
+    background: url('../images/score_end.png') center / contain no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -392,35 +428,36 @@ body {
     transform: translateX(-50%);
     width: 292px;
     height: 86px;
-    background-image: url('images/button_green.png');
+    background-image: url('../images/button_green.png');
     background-repeat: no-repeat;
     background-position: center center;
     background-size: 100% 100%;
     cursor: pointer;
     text-align: center;
-    line-height: 86px;
-    font-size: 30px;
+    font-size: 36px;
     color: #fff;
 }
 
-#btn-next-level::before,
-#btn-retry::before {
+.btn-next, .btn-retry {
+    display: inline-flex;
+    align-items: center;
+    transform: translateX(-5px) translateY(20px);
+}
+.btn-next::before, .btn-retry::before {
     content: "";
     display: inline-block;
     vertical-align: middle;
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
     background-size: contain;
     background-repeat: no-repeat;
 }
-
-#btn-next-level::before {
-    background-image: url('images/play.png');
+.btn-next::before {
+    background-image: url('../images/play.png');
 }
-
-#btn-retry::before {
-    background-image: url('images/reload.png');
+.btn-retry::before {
+    background-image: url('../images/reload.png');
 }
 
 #lose-progress-bar {
@@ -429,7 +466,7 @@ body {
     left: 50%;
     transform: translateX(-50%);
     width: 300px;
-    height: 30px;
+    height: 40px;
     background-color: #371279;
     border: none;
     border-radius: 7px;
@@ -452,9 +489,9 @@ body {
     top: 50%;
     left: 0;
     transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
-    background: url("images/score_green.png") no-repeat center center;
+    width: 66px;
+    height: 66px;
+    background: url("../images/score_green.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     transition: left 0.5s ease-in-out;
@@ -466,12 +503,20 @@ body {
     top: 50%;
     right: 0;
     transform: translate(50%, -50%);
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
     background-color: #371279;
     background-size: contain;
     pointer-events: none;
-    border-radius: 24px;
+    border-radius: 32px;
+}
+
+#lose-subtitle {
+    position: absolute;
+    left: 50%;
+    top: 35%;
+    transform: translateX(-50%);
+    font-size: 48px;
 }
 
 #lose-score-text {
@@ -479,7 +524,89 @@ body {
     left: 50%;
     top: 43%;
     transform: translateX(-50%);
-    font-size: 26px;
+    font-size: 36px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: translateX(-50%) scale(0);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+}
+
+#win-screen {
+    display: none;
+}
+
+#win-screen .logo {
+    opacity: 0;
+    animation: scaleIn 0.5s ease forwards;
+    animation-delay: 0.3s;
+}
+
+#win-screen #win-score-label {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 0.8s;
+}
+
+#win-screen #win-score-circle {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 1.3s;
+}
+
+#win-screen .end-button {
+    opacity: 0;
+    animation: scaleIn 0.5s ease forwards;
+    animation-delay: 1.8s;
+}
+
+#lose-screen {
+    display: none;
+}
+
+#lose-screen .logo {
+    opacity: 0;
+    animation: scaleIn 0.5s ease forwards;
+    animation-delay: 0.3s;
+}
+
+#lose-screen #lose-subtitle {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 0.8s;
+}
+
+#lose-screen #lose-progress-bar {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 1.8s;
+}
+
+#lose-screen #lose-score-text {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 1.3s;
+}
+
+#lose-screen .end-button {
+    opacity: 0;
+    animation: scaleIn 0.5s ease forwards;
+    animation-delay: 2.3s;
 }
 
 #bottom-stripe {
@@ -487,7 +614,7 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 50px;
+    height: 6vh;
     background-color: #000;
     display: flex;
     justify-content: space-between;
@@ -507,13 +634,13 @@ body {
 #bottom-stripe .free-label .free-icon {
     width: 40px;
     height: 40px;
-    background: url('images/icon_block.png') no-repeat center center;
+    background: url('../images/icon_block.png') no-repeat center center;
     background-size: cover;
     margin-right: 10px;
 }
 
 #bottom-stripe .install-btn button {
-    background: url('images/button_green.png') no-repeat center center;
+    background: url('../images/button_green.png') no-repeat center center;
     background-size: cover;
     width: 120px;
     height: 40px;
@@ -525,6 +652,20 @@ body {
     -webkit-appearance: none;
     outline: none;
     -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-height: 800px) {
+    #bottom-stripe .free-label .free-icon {
+        width: 30px;
+        height: 30px;
+        margin-right: 8px;
+    }
+
+    #bottom-stripe .install-btn button {
+        width: 80px;
+        height: 30px;
+        font-size: clamp(14px, 2vw, 18px);
+    }
 }
 
 @keyframes pulse {
