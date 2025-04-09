@@ -27,6 +27,7 @@
     </div>
 
     <div id="playing-field"></div>
+
     <div id="shapes-container">
         <div class="shape-slot"></div>
         <div class="shape-slot"></div>
@@ -58,17 +59,16 @@
     </div>
 </div>
 
-
 <div id="win-screen" class="end-screen">
     <div class="logo"></div>
     <div id="win-score-label">IQ: 160</div>
     <div id="win-score-circle"></div>
-    <div id="btn-next-level" class="end-button">Next level</div>
+    <div id="btn-next-level" class="end-button"><span class="btn-next">Next level</span></div>
 </div>
 
 <div id="lose-screen" class="end-screen">
     <div class="logo"></div>
-    <div id="lose-subtitle">so close!</div>
+    <div id="lose-subtitle">So Close!</div>
     <div id="lose-progress-bar">
         <div id="lose-progress-fill"></div>
         <div id="lose-score-green">
@@ -80,7 +80,7 @@
         </div>
     </div>
     <div id="lose-score-text">Score</div>
-    <div id="btn-retry" class="end-button">Retry</div>
+    <div id="btn-retry" class="end-button"><span class="btn-retry">Retry</span></div>
 </div>
 
 <audio id="burn_line_effect">
@@ -92,8 +92,29 @@
 <audio id="collect_effect">
     <source src="sounds/collect_effect.mp3" type="audio/mpeg">
 </audio>
-<audio loop id="music">
-    <source src="sounds/music.mp3" type="audio/mpeg">
+<audio id="fill_grid">
+    <source src="sounds/fill_grid.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="lose_sound">
+    <source src="sounds/lose_sound.mp3" type="audio/mpeg">
+</audio>
+<audio id="lose_logo">
+    <source src="sounds/lose_logo.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="win_sound">
+    <source src="sounds/win_sound.mp3" type="audio/mpeg">
+</audio>
+<audio id="victory_logo">
+    <source src="sounds/victory_logo.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="endgame_points">
+    <source src="sounds/endgame_points.mp3" type="audio/mpeg">
+</audio>
+<audio id="endgame_button">
+    <source src="sounds/endgame_button.mp3" type="audio/mpeg">
 </audio>
 
 <script src="js/animations.js"></script>

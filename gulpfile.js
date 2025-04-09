@@ -48,7 +48,7 @@ gulp.task('inline-and-minify', function () {
         }))
         .pipe(base64({
             maxImageSize: 3000 * 1024,
-            baseDir: __dirname,
+            baseDir: __dirname + "/images",
             debug: true
         }))
         .pipe(inlineAudio())
