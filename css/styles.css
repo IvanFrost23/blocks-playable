@@ -25,6 +25,7 @@ body {
     position: relative;
     width: 600px;
     height: 1000px;
+    bottom: 6vh;
 }
 
 #coin-container {
@@ -85,7 +86,7 @@ body {
 
 #playing-field {
     position: absolute;
-    top: 160px;
+    top: 22%;
     left: 50%;
     transform: translateX(-50%);
     width: 560px;
@@ -223,7 +224,7 @@ body {
 
 #shapes-container {
     position: absolute;
-    bottom: 110px;
+    bottom: 5vh;
     left: 50%;
     transform: translateX(-50%);
     width: 624px;
@@ -295,7 +296,7 @@ body {
 
 #progress-bar-container {
     position: absolute;
-    top: 110px;
+    top: 170px;
     left: 50%;
     transform: translateX(-50%);
     width: 300px;
@@ -601,7 +602,7 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 50px;
+    height: 6vh;
     background-color: #000;
     display: flex;
     justify-content: space-between;
@@ -639,6 +640,20 @@ body {
     -webkit-appearance: none;
     outline: none;
     -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-height: 800px) {
+    #bottom-stripe .free-label .free-icon {
+        width: 30px;
+        height: 30px;
+        margin-right: 8px;
+    }
+
+    #bottom-stripe .install-btn button {
+        width: 80px;
+        height: 30px;
+        font-size: clamp(14px, 2vw, 18px);
+    }
 }
 
 @keyframes pulse {
