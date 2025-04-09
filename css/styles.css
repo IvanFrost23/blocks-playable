@@ -517,6 +517,7 @@ body {
     top: 35%;
     transform: translateX(-50%);
     font-size: 48px;
+    white-space: nowrap;
 }
 
 #lose-score-text {
