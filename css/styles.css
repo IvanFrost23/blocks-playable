@@ -421,28 +421,29 @@ body {
     background-size: 100% 100%;
     cursor: pointer;
     text-align: center;
-    line-height: 86px;
-    font-size: 30px;
+    font-size: 36px;
     color: #fff;
 }
 
-#btn-next-level::before,
-#btn-retry::before {
+.btn-next, .btn-retry {
+    display: inline-flex;
+    align-items: center;
+    transform: translateX(-10px) translateY(20px);
+}
+.btn-next::before, .btn-retry::before {
     content: "";
     display: inline-block;
     vertical-align: middle;
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
+    width: 30px;
+    height: 30px;
+    margin-right: 5px;
     background-size: contain;
     background-repeat: no-repeat;
 }
-
-#btn-next-level::before {
+.btn-next::before {
     background-image: url('../images/play.png');
 }
-
-#btn-retry::before {
+.btn-retry::before {
     background-image: url('../images/reload.png');
 }
 
@@ -594,7 +595,6 @@ body {
     animation: scaleIn 0.5s ease forwards;
     animation-delay: 2.3s;
 }
-
 
 #bottom-stripe {
     position: fixed;
