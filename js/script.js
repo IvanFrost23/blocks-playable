@@ -1,6 +1,5 @@
 var scaleFactor = 1;
 var MOBILE_DRAG_OFFSET = -75;
-var musicStarted = false;
 
 var shapeTypes = [
     [[1]],
@@ -101,13 +100,6 @@ function createDragImage(shape, shapeOffsets, cellSize) {
     }
 
     return dragImage;
-}
-
-function startMusic () {
-    if (!musicStarted) {
-        document.getElementById('music').play();
-        musicStarted = true;
-    }
 }
 
 function handleStart(event, isTouch) {
@@ -390,8 +382,6 @@ function handleTouchEnd(event) {
 
     draggedShape = null;
     shapeOffsets = [];
-
-    startMusic();
 }
 
 function handleDragEnd() {
@@ -408,8 +398,6 @@ function handleDragEnd() {
     }
 
     clearHighlight();
-
-    startMusic();
 }
 
 document.body.addEventListener("dragover", function(e) {
@@ -601,7 +589,17 @@ function showPiecesOverlay() {
 
     overlay.style.zIndex = "100";
 
-    overlay.textContent = progress >= goalProgress ? "You win" : "No Space Left";
+    var text, sound;
+    if (progress >= goalProgress) {
+        text = "You win";
+        sound = "win_sound";
+    } else {
+        text = "No Space Left";
+        sound = "lose_sound";
+    }
+
+    document.getElementById(sound).play();
+    overlay.textContent = text;
     overlay.style.color = "#fff";
     overlay.style.fontSize = "2em";
     overlay.style.fontWeight = "bold";
@@ -610,7 +608,6 @@ function showPiecesOverlay() {
 
     shapesContainer.appendChild(overlay);
 }
-
 
 function placeShape(startIndex) {
     if (!draggedShape) return;
@@ -957,7 +954,7 @@ function updateProgress(amount) {
 function animateFieldFill() {
     var currentRow = 7;
 
-    document.getElementById('lose_animation_effect').play();
+    document.getElementById('fill_grid').play();
 
     var rowInterval = setInterval(function () {
         if (currentRow < 0) {
@@ -990,6 +987,14 @@ function showEndGameUI() {
         var winScreen = document.getElementById("win-screen");
         winScreen.style.display = "block";
         document.getElementById("win-score-text").textContent = progress;
+
+        document.getElementById('victory_logo').play();
+        setTimeout(function () {
+            document.getElementById('endgame_points').play();
+        }, 1500);
+        setTimeout(function () {
+            document.getElementById('endgame_button').play();
+        }, 2000);
     } else {
         var loseScreen = document.getElementById("lose-screen");
         loseScreen.style.display = "block";
@@ -1003,8 +1008,16 @@ function showEndGameUI() {
         document.getElementById("lose-score-green-text").textContent = progress;
         document.getElementById("lose-score-end-text").textContent = goalProgress;
 
-        document.getElementById('music').pause();
-        document.getElementById('lose_effect').play();
+        setTimeout(function () {
+            document.getElementById('lose_logo').play();
+        }, 250);
+
+        setTimeout(function () {
+            document.getElementById('endgame_points').play();
+        }, 2000);
+        setTimeout(function () {
+            document.getElementById('endgame_button').play();
+        }, 2500);
     }
 }
 
