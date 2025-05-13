@@ -559,6 +559,17 @@ body {
     }
 }
 
+.win-bg {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(180deg, #560FB2 0%, #823BE0 100%) no-repeat center/cover fixed;
+    z-index: 9999;
+}
+
 #win-screen {
     display: none;
 }
@@ -619,6 +630,18 @@ body {
     opacity: 0;
     animation: scaleIn 0.5s ease forwards;
     animation-delay: 2.3s;
+}
+
+.lose-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(180deg, #6A1B9A 0%, #8E24AA 65%, #BA68C8 100%) no-repeat center/cover fixed;
+    z-index: 9999;
 }
 
 #bottom-stripe {

@@ -985,6 +985,7 @@ function showEndGameUI() {
     if (progress >= goalProgress) {
         var winScreen = document.getElementById("win-screen");
         winScreen.style.display = "block";
+        document.body.classList.add('win-bg');
         document.getElementById("win-score-text").textContent = progress;
 
         document.getElementById('victory_logo').play();
@@ -997,6 +998,7 @@ function showEndGameUI() {
     } else {
         var loseScreen = document.getElementById("lose-screen");
         loseScreen.style.display = "block";
+        document.body.classList.add('lose-bg');
 
         var percent = (progress / goalProgress) * 100;
         document.getElementById("lose-progress-fill").style.width = percent + "%";
