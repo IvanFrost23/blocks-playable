@@ -16,7 +16,6 @@ function inlineAudio() {
         }
 
         let contents = file.contents.toString();
-
         const audioSourceRegex = /<source([^>]*?)src=(["'])([^"']+\.mp3)\2([^>]*?)>/g;
 
         contents = contents.replace(audioSourceRegex, (match, before, quote, srcValue, after) => {
@@ -24,9 +23,7 @@ function inlineAudio() {
                 const audioFilePath = path.join(path.dirname(file.path), srcValue);
                 const audioData = fs.readFileSync(audioFilePath);
                 const base64Audio = audioData.toString('base64');
-
                 const dataUri = `data:audio/mpeg;base64,${base64Audio}`;
-
                 return `<source${before}src="${dataUri}"${after}>`;
             } catch (err) {
                 console.error('Ошибка при встраивании аудио:', err);
@@ -35,7 +32,6 @@ function inlineAudio() {
         });
 
         file.contents = Buffer.from(contents);
-
         cb(null, file);
     });
 }
@@ -47,9 +43,13 @@ gulp.task('inline-and-minify', function () {
             ignore: []
         }))
         .pipe(base64({
-            maxImageSize: 3000 * 1024,
             baseDir: __dirname + "/images",
+            maxImageSize: 10 * 1024 * 1024,
             debug: true
+        }))
+        .pipe(base64({
+            baseDir: __dirname + "/fonts",
+            extensions: ['ttf','woff','woff2']
         }))
         .pipe(inlineAudio())
         .pipe(htmlmin({

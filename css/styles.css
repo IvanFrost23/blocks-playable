@@ -5,6 +5,13 @@
     -ms-user-select: none;
 }
 
+@font-face {
+    font-family: 'Shantellsans';
+    src: url('../fonts/shantellsans-extrabold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -13,7 +20,7 @@ body {
     align-items: center;
     height: 100vh;
     background-color: #f3f3f3;
-    font-family: Arial, sans-serif;
+    font-family: 'Shantellsans', sans-serif;
     background-image: url('../images/background.png');
     background-size: cover;
     background-position: center;
