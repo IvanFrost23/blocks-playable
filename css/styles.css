@@ -12,6 +12,10 @@
     font-style: normal;
 }
 
+button, input, select, textarea {
+    font-family: inherit;
+}
+
 body {
     margin: 0;
     padding: 0;
