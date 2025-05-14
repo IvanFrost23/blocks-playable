@@ -25,10 +25,11 @@
     <div id="progress-bar-container">
         <div id="progressbar-fill"></div>
         <div id="score-green">
-            <span class="score-text" id="score-green-text">0</span>
+            <span class="iq-text">IQ</span>
+            <span class="score-text-green" id="score-green-text">0</span>
         </div>
         <div id="score-end">
-            <span class="score-text" id="score-end-text">368</span>
+            <span class="score-text" id="score-end-text">160</span>
         </div>
     </div>
 
@@ -54,10 +55,10 @@
 <div id="start-message-overlay" class="start-message-overlay">
     <div id="start-message-box" class="start-message-box">
         <div class="start-message-title">
-            Target Score <span id="start-message-score"></span>
+            Target IQ <span class="start-message-score" id="start-message-score"></span>
         </div>
         <div id="start-message-circle" class="start-message-circle">
-            368
+            160
         </div>
         <div class="start-message-subtitle">
             Only <span class="start-message-subtitle--highlight">40%</span> players can pass this level
@@ -67,10 +68,8 @@
 
 <div id="win-screen" class="end-screen">
     <div class="logo"></div>
-    <div id="win-score-label" class="animated-text">Score</div>
-    <div id="win-score-circle">
-        <span id="win-score-text">0</span>
-    </div>
+    <div id="win-score-label">IQ: <span class="win-circle-subtitle--highlight">160</span></div>
+    <div id="win-score-circle"></div>
     <div id="btn-next-level" class="end-button"><span class="btn-next">Next level</span></div>
 </div>
 
@@ -80,10 +79,11 @@
     <div id="lose-progress-bar">
         <div id="lose-progress-fill"></div>
         <div id="lose-score-green">
+            <span class="iq-text">IQ</span>
             <span class="score-text" id="lose-score-green-text">0</span>
         </div>
         <div id="lose-score-end">
-            <span class="score-text" id="lose-score-end-text">368</span>
+            <span class="score-text" id="lose-score-end-text">160</span>
         </div>
     </div>
     <div id="lose-score-text" class="animated-text">Score</div>

@@ -7,7 +7,7 @@
     z-index: 99999;
     text-align: center;
     color: #fff;
-    padding-top: 210px;
+    padding-top: 150px;
     box-sizing: border-box;
 }
 
@@ -28,7 +28,12 @@
     top: 37%;
     transform: translateX(-50%);
     font-size: 36px;
-    visibility: hidden;
+}
+
+#win-screen #win-score-label {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 0.8s;
 }
 
 #win-score-circle {
@@ -39,7 +44,7 @@
     width: 173px;
     height: 173px;
     border-radius: 50%;
-    background: url('../images/score_end.png') center / contain no-repeat;
+    background: url('../images/einstein.png') center / contain no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -79,6 +84,7 @@
     vertical-align: middle;
     width: 30px;
     height: 30px;
+    margin-right: 5px;
     background-size: contain;
     background-repeat: no-repeat;
 }
@@ -93,11 +99,11 @@
 
 #lose-progress-bar {
     position: absolute;
-    top: 50%;
+    top: 55%;
     left: 50%;
     transform: translateX(-50%);
-    width: 300px;
-    height: 40px;
+    width: 350px;
+    height: 48px;
     background-color: #371279;
     border: none;
     border-radius: 7px;
@@ -120,8 +126,8 @@
     top: 50%;
     left: 0;
     transform: translate(-50%, -50%);
-    width: 66px;
-    height: 66px;
+    width: 53px;
+    height: 53px;
     background: url("../images/score_green.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
@@ -134,20 +140,21 @@
     top: 50%;
     right: 0;
     transform: translate(50%, -50%);
-    width: 64px;
-    height: 64px;
-    background-color: #371279;
+    width: 80px;
+    height: 80px;
+    background: url("../images/einstein.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
-    border-radius: 32px;
+    border-radius: 24px;
+    z-index: 10001;
 }
 
 #lose-subtitle {
     position: absolute;
     left: 50%;
-    top: 35%;
+    top: 32%;
     transform: translateX(-50%);
-    font-size: 48px;
+    font-size: 55px;
     white-space: nowrap;
     visibility: hidden;
 }
@@ -155,7 +162,7 @@
 #lose-score-text {
     position: absolute;
     left: 50%;
-    top: 43%;
+    top: 45%;
     transform: translateX(-50%);
     font-size: 36px;
     visibility: hidden;
@@ -230,6 +237,17 @@
     animation-delay: 1.8s;
 }
 
+#lose-score-green-text {
+    position: absolute;
+    top: -40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #fff;
+    font-size: 24px;
+    user-select: none;
+}
+
 #lose-screen .end-button {
     opacity: 0;
     animation: scaleIn 0.5s ease forwards;
@@ -246,4 +264,14 @@
     padding: 0;
     background: linear-gradient(180deg, #6A1B9A 0%, #8E24AA 65%, #BA68C8 100%) no-repeat center/cover fixed;
     z-index: 9999;
+}
+
+.win-circle-subtitle {
+    font-size: 18px;
+    color: #ffffff;
+    line-height: 1.3;
+}
+
+.win-circle-subtitle--highlight {
+    color: #daa33d;
 }

@@ -11,8 +11,9 @@ function showEndGameUI(progress, goalProgress) {
         var winScreen = document.getElementById("win-screen");
         winScreen.style.display = "block";
         document.body.classList.add('win-bg');
-        document.getElementById("win-score-text").textContent = progress;
-
+        if (document.getElementById("win-score-text")) {
+            document.getElementById("win-score-text").textContent = progress;
+        }
         var winTexts = document.querySelectorAll('#win-screen .animated-text');
         for (var i = 0; i < winTexts.length; i++) {
             (function(el, idx) {
