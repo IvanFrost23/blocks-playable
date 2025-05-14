@@ -48,3 +48,14 @@
 .pop-in {
     animation: popIn 0.3s ease-out forwards;
 }
+
+.fade-in-letter {
+    opacity: 0;
+    display: inline-block;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}

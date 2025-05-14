@@ -104,3 +104,37 @@ function animateCollect(startElement, finishElement, callback, gameScale) {
         });
     }
 }
+
+function wrapLetters(el) {
+    el.style.visibility = 'visible';
+    const text = el.textContent;
+    el.innerHTML = '';
+
+    Array.from(text).forEach((char, i) => {
+        if (char === ' ') {
+            el.appendChild(document.createTextNode('\u00A0'));
+        } else {
+            const span = document.createElement('span');
+            span.className = 'fade-in-letter';
+            span.textContent = char;
+            span.style.animationDelay = `${i * 0.03}s`;
+            el.appendChild(span);
+        }
+    });
+}
+
+
+function animateCount(el, start, end, duration) {
+    let startTime = null;
+    function tick(time) {
+        if (!startTime) startTime = time;
+        const progress = Math.min((time - startTime) / duration, 1);
+        el.textContent = Math.floor(progress * (end - start) + start);
+        if (progress < 1) {
+            requestAnimationFrame(tick);
+        } else {
+            el.textContent = end;
+        }
+    }
+    requestAnimationFrame(tick);
+}
