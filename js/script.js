@@ -650,7 +650,9 @@ function placeShape(startIndex) {
         if (isGameOver()) {
             showPiecesOverlay();
             setTimeout(animateFieldFill, 1000);
-            setTimeout(() => showEndGameUI(progress, goalProgress), 2500);
+            setTimeout(function () {
+                showEndGameUI(progress, goalProgress)
+            }, 2500);
         }
         step++;
     }
@@ -870,10 +872,13 @@ function getScaleFactor() {
     var viewportWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
     var viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
-    if (viewportWidth / viewportHeight < widthToHeightRatio) {
+    var menuBarArea = 100;
+    var availableHeight = viewportHeight - menuBarArea;
+
+    if (viewportWidth / availableHeight < widthToHeightRatio) {
         scaleFactor = viewportWidth / 600;
     } else {
-        scaleFactor = viewportHeight / 931;
+        scaleFactor = availableHeight / 931;
     }
     return scaleFactor;
 }
@@ -1029,6 +1034,11 @@ function resizeGame() {
     coinContainer.style.transform = "scale(" + scaleFactor + ")";
     coinContainer.style.left = (20 * scaleFactor) + "px";
     coinContainer.style.top = (20 * scaleFactor) + "px";
+
+    var goldContainer = document.getElementById("gold-container");
+    goldContainer.style.transform = "scale(" + scaleFactor + ")";
+    goldContainer.style.left = (180 * scaleFactor) + "px";
+    goldContainer.style.top = (20 * scaleFactor) + "px";
 }
 
 function startGame() {

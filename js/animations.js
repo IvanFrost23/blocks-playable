@@ -1,3 +1,7 @@
+/**
+ * Created by Ivan on 13.05.2025
+ */
+
 function animateCollect(startElement, finishElement, callback, gameScale) {
     var startRect = startElement.getBoundingClientRect();
     var startX = startRect.left + startRect.width / 2;
@@ -8,12 +12,11 @@ function animateCollect(startElement, finishElement, callback, gameScale) {
     var targetY = finishRect.top + finishRect.height / 2;
 
     var flyingTarget = document.createElement('div');
-    flyingTarget.classList.add('flying-target');
+    flyingTarget.className = 'flying-target';
     document.body.appendChild(flyingTarget);
 
     flyingTarget.style.left = '0px';
     flyingTarget.style.top = '0px';
-
     flyingTarget.style.transform = 'scale(' + gameScale + ')';
 
     var deltaX = targetX - startX;
@@ -38,16 +41,19 @@ function animateCollect(startElement, finishElement, callback, gameScale) {
         var randomControlOffset1 = baseControlOffset * (0.1 + Math.random());
         var randomControlOffset2 = baseControlOffset * (0.1 + Math.random());
 
-        var control1X =
-            startX + deltaX * t1 + randomControlOffset1 * Math.cos(perpAngle + randomAngleOffset1);
-        var control1Y =
-            startY + deltaY * t1 + randomControlOffset1 * Math.sin(perpAngle + randomAngleOffset1);
-        var control2X =
-            startX + deltaX * t2 + randomControlOffset2 * Math.cos(perpAngle + randomAngleOffset2);
-        var control2Y =
-            startY + deltaY * t2 + randomControlOffset2 * Math.sin(perpAngle + randomAngleOffset2);
+        var control1X = startX + deltaX * t1 +
+            randomControlOffset1 * Math.cos(perpAngle + randomAngleOffset1);
+        var control1Y = startY + deltaY * t1 +
+            randomControlOffset1 * Math.sin(perpAngle + randomAngleOffset1);
+        var control2X = startX + deltaX * t2 +
+            randomControlOffset2 * Math.cos(perpAngle + randomAngleOffset2);
+        var control2Y = startY + deltaY * t2 +
+            randomControlOffset2 * Math.sin(perpAngle + randomAngleOffset2);
 
-        var path = 'M ' + startX + ' ' + startY + ' C ' + control1X + ' ' + control1Y + ', ' + control2X + ' ' + control2Y + ', ' + targetX + ' ' + targetY;
+        var path = 'M ' + startX + ' ' + startY +
+            ' C ' + control1X + ' ' + control1Y +
+            ', ' + control2X + ' ' + control2Y +
+            ', ' + targetX + ' ' + targetY;
 
         flyingTarget.style.offsetPath = 'path(\'' + path + '\')';
         flyingTarget.style.webkitOffsetPath = 'path(\'' + path + '\')';
@@ -74,17 +80,17 @@ function animateCollect(startElement, finishElement, callback, gameScale) {
                 callback();
             }
         });
+
     } else {
         flyingTarget.style.left = (startX - 20) + 'px';
-        flyingTarget.style.top = (startY - 20) + 'px';
-
+        flyingTarget.style.top  = (startY - 20) + 'px';
         flyingTarget.style.transform = 'translate(0px, 0px) scale(' + gameScale + ')';
 
         flyingTarget.offsetWidth;
 
         flyingTarget.style.transition = 'transform ' + duration + 's ease-in-out';
-
-        flyingTarget.style.transform = 'translate(' + deltaX + 'px, ' + deltaY + 'px) scale(' + gameScale + ')';
+        flyingTarget.style.transform =
+            'translate(' + deltaX + 'px, ' + deltaY + 'px) scale(' + gameScale + ')';
 
         flyingTarget.addEventListener('transitionend', function handleTransitionEnd(e) {
             if (e.propertyName === 'transform') {
@@ -107,28 +113,31 @@ function animateCollect(startElement, finishElement, callback, gameScale) {
 
 function wrapLetters(el) {
     el.style.visibility = 'visible';
-    const text = el.textContent;
+    var text = el.textContent;
     el.innerHTML = '';
 
-    Array.from(text).forEach((char, i) => {
+    for (var i = 0; i < text.length; i++) {
+        var char = text.charAt(i);
         if (char === ' ') {
             el.appendChild(document.createTextNode('\u00A0'));
         } else {
-            const span = document.createElement('span');
+            var span = document.createElement('span');
             span.className = 'fade-in-letter';
             span.textContent = char;
-            span.style.animationDelay = `${i * 0.03}s`;
+            span.style.animationDelay = (i * 0.03) + 's';
             el.appendChild(span);
         }
-    });
+    }
 }
 
-
 function animateCount(el, start, end, duration) {
-    let startTime = null;
+    var startTime = null;
+
     function tick(time) {
-        if (!startTime) startTime = time;
-        const progress = Math.min((time - startTime) / duration, 1);
+        if (!startTime) {
+            startTime = time;
+        }
+        var progress = Math.min((time - startTime) / duration, 1);
         el.textContent = Math.floor(progress * (end - start) + start);
         if (progress < 1) {
             requestAnimationFrame(tick);
@@ -136,5 +145,6 @@ function animateCount(el, start, end, duration) {
             el.textContent = end;
         }
     }
+
     requestAnimationFrame(tick);
 }

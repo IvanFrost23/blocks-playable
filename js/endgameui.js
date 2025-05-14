@@ -5,6 +5,7 @@
 function showEndGameUI(progress, goalProgress) {
     document.getElementById("game-container").style.display = "none";
     document.getElementById("coin-container").style.display = "none";
+    document.getElementById("gold-container").style.display = "none";
 
     if (progress >= goalProgress) {
         var winScreen = document.getElementById("win-screen");
@@ -12,11 +13,14 @@ function showEndGameUI(progress, goalProgress) {
         document.body.classList.add('win-bg');
         document.getElementById("win-score-text").textContent = progress;
 
-        document.querySelectorAll('#win-screen .animated-text').forEach((el, index) => {
-            setTimeout(function () {
-                wrapLetters(el)
-            }, 1000 + index * 500);
-        });
+        var winTexts = document.querySelectorAll('#win-screen .animated-text');
+        for (var i = 0; i < winTexts.length; i++) {
+            (function(el, idx) {
+                setTimeout(function () {
+                    wrapLetters(el);
+                }, 1000 + idx * 500);
+            })(winTexts[i], i);
+        }
 
         document.getElementById('victory_logo').play();
         setTimeout(function () {
@@ -25,47 +29,62 @@ function showEndGameUI(progress, goalProgress) {
         setTimeout(function () {
             document.getElementById('endgame_button').play();
         }, 2000);
+
     } else {
-        if (progress < goalProgress) {
-            const loseScreen = document.getElementById("lose-screen");
-            loseScreen.style.display = "block";
-            document.body.classList.add('lose-bg');
+        var loseScreen = document.getElementById("lose-screen");
+        loseScreen.style.display = "block";
+        document.body.classList.add('lose-bg');
 
-            const pct = (progress / goalProgress) * 100;
-            const fillEl = document.getElementById("lose-progress-fill");
-            const greenEl = document.getElementById("lose-score-green");
+        var pct = (progress / goalProgress) * 100;
+        var fillEl   = document.getElementById("lose-progress-fill");
+        var greenEl  = document.getElementById("lose-score-green");
 
-            fillEl.style.width = '0%';
-            greenEl.style.left = '0%';
+        fillEl.style.width = '0%';
+        greenEl.style.left = '0%';
 
-            document.querySelectorAll('#lose-screen .animated-text').forEach((el, index) => {
+        var loseTexts = document.querySelectorAll('#lose-screen .animated-text');
+        for (var j = 0; j < loseTexts.length; j++) {
+            (function(el, idx) {
                 setTimeout(function () {
-                    wrapLetters(el)
-                }, 1000 + index * 500);
-            });
-
-
-            setTimeout(() => document.getElementById('lose_logo').play(), 250);
-
-            setTimeout(() => {
-                fillEl.style.width = pct + '%';
-                greenEl.style.left = pct + '%';
-
-                const numEl = document.getElementById("lose-score-green-text");
-                animateCount(numEl, 0, progress, 500);
-
-                setTimeout(() => document.getElementById('endgame_points').play(), 500);
-            }, 1500);
-
-            setTimeout(() => document.getElementById('endgame_button').play(), 2500);
+                    wrapLetters(el);
+                }, 1000 + idx * 500);
+            })(loseTexts[j], j);
         }
+
+        setTimeout(function () {
+            document.getElementById('lose_logo').play();
+        }, 250);
+
+        setTimeout(function () {
+            fillEl.style.width = pct + '%';
+            greenEl.style.left = pct + '%';
+
+            var numEl = document.getElementById("lose-score-green-text");
+            animateCount(numEl, 0, progress, 500);
+
+            setTimeout(function () {
+                document.getElementById('endgame_points').play();
+            }, 500);
+        }, 1500);
+
+        // Кнопка
+        setTimeout(function () {
+            document.getElementById('endgame_button').play();
+        }, 2500);
     }
 }
 
-document.getElementById("btn-next-level").addEventListener("click", function() {
-    onCTAClick();
-});
+var btnNext  = document.getElementById("btn-next-level");
+var btnRetry = document.getElementById("btn-retry");
 
-document.getElementById("btn-retry").addEventListener("click", function() {
-    onCTAClick();
-});
+if (btnNext) {
+    btnNext.addEventListener("click", function() {
+        onCTAClick();
+    });
+}
+
+if (btnRetry) {
+    btnRetry.addEventListener("click", function() {
+        onCTAClick();
+    });
+}
