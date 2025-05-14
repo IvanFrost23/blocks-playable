@@ -7,11 +7,10 @@ function showEndGameUI(progress, goalProgress) {
     document.getElementById("coin-container").style.display = "none";
     document.getElementById("gold-container").style.display = "none";
 
-    if (progress >= goalProgress) {
+    if (progress <= goalProgress) {
         var winScreen = document.getElementById("win-screen");
         winScreen.style.display = "block";
         document.body.classList.add('win-bg');
-        document.getElementById("win-score-text").textContent = progress;
 
         var winTexts = document.querySelectorAll('#win-screen .animated-text');
         for (var i = 0; i < winTexts.length; i++) {
@@ -35,7 +34,8 @@ function showEndGameUI(progress, goalProgress) {
         loseScreen.style.display = "block";
         document.body.classList.add('lose-bg');
 
-        var pct = (progress / goalProgress) * 100;
+        progress = Math.max(25, Math.max(goalProgress, progress));
+        var pct = Math.min(100, (75 - (progress - goalProgress)) / 75 * 100);
         var fillEl   = document.getElementById("lose-progress-fill");
         var greenEl  = document.getElementById("lose-score-green");
 

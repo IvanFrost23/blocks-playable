@@ -32,8 +32,8 @@ var coinCountElement = document.getElementById("coin-count");
 var coinCount = parseInt(coinCountElement.textContent, 10);
 var step = 0;
 
-var progress = 0;
-var goalProgress = parseInt(document.getElementById("score-end-text").textContent);
+var progress = 100;
+var goalProgress = 25;
 
 var initialFieldState = [
     null, null, null, 2, 2, null, null, null,
@@ -590,7 +590,7 @@ function showPiecesOverlay() {
     overlay.style.zIndex = "100";
 
     var text, sound;
-    if (progress >= goalProgress) {
+    if (progress <= goalProgress) {
         text = "You win";
         sound = "win_sound";
     } else {
@@ -853,7 +853,7 @@ function canPlaceShape(shape) {
 }
 
 function isGameOver() {
-    if (progress >= goalProgress) {
+    if (progress <= goalProgress) {
         return true;
     }
 
@@ -872,7 +872,7 @@ function getScaleFactor() {
     var viewportWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
     var viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
-    var menuBarArea = 100;
+    var menuBarArea = 120;
     var availableHeight = viewportHeight - menuBarArea;
 
     if (viewportWidth / availableHeight < widthToHeightRatio) {
@@ -944,10 +944,10 @@ function updateProgress(amount) {
     var scoreGreenText = document.getElementById("score-green-text");
     var scoreEndText = document.getElementById("score-end-text");
 
-    progress += amount;
-    progress = Math.max(0, Math.min(goalProgress, progress));
+    progress -= amount;
+    progress = Math.max(25, Math.max(goalProgress, progress));
 
-    var percentage = Math.min(100, (progress / goalProgress) * 100);
+    var percentage = Math.min(100, (75 - (progress - goalProgress)) / 75 * 100);
     fill.style.width = percentage + "%";
     scoreGreen.style.left = percentage + "%";
 

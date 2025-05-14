@@ -21,36 +21,45 @@
     background: url('../images/logo_en.png') center / contain no-repeat;
 }
 
-
 #win-score-label {
     position: absolute;
     left: 50%;
     top: 37%;
     transform: translateX(-50%);
     font-size: 36px;
-    visibility: hidden;
+    white-space: nowrap;
 }
 
 #win-score-circle {
-    position: absolute;
-    left: 50%;
-    top: 43%;
-    transform: translateX(-50%);
-    width: 173px;
-    height: 173px;
+    width: 125px;
+    height: 125px;
     border-radius: 50%;
-    background: url('../images/score_end.png') center / contain no-repeat;
+    background: url('../images/brain_color.png') center / contain no-repeat;
+}
+
+#score-container {
+    position: absolute;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    gap: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 46%;
+}
+
+#win-score-age {
+    font-size: 56px;
 }
 
 #win-score-text {
-    font-size: 60px;
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    font-size: 90px;
     font-weight: bold;
     color: #f09b1c;
 }
-
 .end-button {
     position: absolute;
     left: 50%;
@@ -91,13 +100,14 @@
     background-image: url('../images/reload.png');
 }
 
+
 #lose-progress-bar {
     position: absolute;
-    top: 50%;
+    top: 55%;
     left: 50%;
     transform: translateX(-50%);
-    width: 300px;
-    height: 40px;
+    width: 350px;
+    height: 48px;
     background-color: #371279;
     border: none;
     border-radius: 7px;
@@ -122,11 +132,22 @@
     transform: translate(-50%, -50%);
     width: 66px;
     height: 66px;
-    background: url("../images/score_green.png") no-repeat center center;
+    background: url("../images/brain_gray.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     transition: left 0.5s ease-in-out;
     z-index: 10000;
+}
+
+.lose-score-green-text {
+    position: absolute;
+    top: -30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #fff;
+    font-size: 18px;
+    user-select: none;
 }
 
 #lose-score-end {
@@ -136,7 +157,7 @@
     transform: translate(50%, -50%);
     width: 64px;
     height: 64px;
-    background-color: #371279;
+    background: url("../images/brain_color.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     border-radius: 32px;
@@ -145,9 +166,9 @@
 #lose-subtitle {
     position: absolute;
     left: 50%;
-    top: 35%;
+    top: 32%;
     transform: translateX(-50%);
-    font-size: 48px;
+    font-size: 55px;
     white-space: nowrap;
     visibility: hidden;
 }
@@ -155,7 +176,7 @@
 #lose-score-text {
     position: absolute;
     left: 50%;
-    top: 43%;
+    top: 45%;
     transform: translateX(-50%);
     font-size: 36px;
     visibility: hidden;
@@ -202,7 +223,19 @@
     animation-delay: 0.3s;
 }
 
+#win-screen #win-score-label {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 0.8s;
+}
+
 #win-screen #win-score-circle {
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+    animation-delay: 1.3s;
+}
+
+#win-screen #win-score-age {
     opacity: 0;
     animation: fadeIn 0.5s ease forwards;
     animation-delay: 1.3s;

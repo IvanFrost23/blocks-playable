@@ -382,7 +382,7 @@ body {
     transform: translate(-50%, -50%);
     width: 66px;
     height: 66px;
-    background: url("../images/score_green.png") no-repeat center center;
+    background: url("../images/brain_gray.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     transition: left 0.5s ease-in-out;
@@ -396,7 +396,7 @@ body {
     transform: translate(50%, -50%);
     width: 64px;
     height: 64px;
-    background-color: #371279;
+    background: url("../images/brain_color.png") no-repeat center center;
     background-size: contain;
     pointer-events: none;
     border-radius: 32px;
@@ -404,7 +404,18 @@ body {
 
 .score-text {
     position: absolute;
-    top: 50%;
+    top: -20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: #fff;
+    font-size: 24px;
+    user-select: none;
+}
+
+.score-text-green {
+    position: absolute;
+    top: -20%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-weight: bold;
