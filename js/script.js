@@ -1004,6 +1004,25 @@ function resizeGame() {
     goldContainer.style.top = (20 * scaleFactor) + "px";
 }
 
+function resetGame() {
+    document.getElementById("win-screen").style.display = "none";
+    document.getElementById("lose-screen").style.display = "none";
+    document.body.classList.remove('lose-bg', 'win-bg');
+
+    document.getElementById("game-container").style.display = "block";
+    document.getElementById("coin-container").style.display = "flex";
+    document.getElementById("gold-container").style.display = "flex";
+
+    progress = 0;
+    coinCount = 0;
+    step = 0;
+
+    updateProgress(0);
+
+    buildField();
+    regenerateShapes();
+}
+
 function startGame() {
     window.gameStarted = true;
 

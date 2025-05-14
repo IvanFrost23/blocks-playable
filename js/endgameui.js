@@ -67,7 +67,6 @@ function showEndGameUI(progress, goalProgress) {
             }, 500);
         }, 1500);
 
-        // Кнопка
         setTimeout(function () {
             document.getElementById('endgame_button').play();
         }, 2500);
@@ -85,6 +84,6 @@ if (btnNext) {
 
 if (btnRetry) {
     btnRetry.addEventListener("click", function() {
-        onCTAClick();
+        resetGame();
     });
 }
