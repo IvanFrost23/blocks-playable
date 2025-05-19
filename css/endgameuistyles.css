@@ -52,7 +52,6 @@
 
 #win-score-text {
     font-size: 60px;
-    font-weight: bold;
     color: #f09b1c;
 }
 
@@ -242,7 +241,6 @@
     top: -40%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-weight: bold;
     color: #fff;
     font-size: 24px;
     user-select: none;

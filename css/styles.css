@@ -6,8 +6,8 @@
 }
 
 @font-face {
-    font-family: 'Shantellsans';
-    src: url('../fonts/shantellsans-extrabold.ttf') format('truetype');
+    font-family: 'BryndanWrite';
+    src: url('../fonts/bryndan_write_fix.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -24,7 +24,7 @@ body {
     align-items: center;
     height: 100vh;
     background-color: #f3f3f3;
-    font-family: 'Shantellsans', sans-serif;
+    font-family: 'BryndanWrite', sans-serif;
     background-image: url('../images/background.png');
     background-size: cover;
     background-position: center;
@@ -67,7 +67,6 @@ body {
 
 #coin-count {
     font-size: 28px;
-    font-weight: bold;
     color: #333;
     transform: translateX(-5px);
 }
@@ -100,7 +99,6 @@ body {
 
 #gold-count {
     font-size: 28px;
-    font-weight: bold;
     color: #333;
     transform: translateX(3px);
 }
@@ -108,7 +106,6 @@ body {
 .coin-animation {
     position: absolute;
     font-size: 24px;
-    font-weight: bold;
     color: gold;
     left: 50%;
     top: 50%;
@@ -120,7 +117,6 @@ body {
 .coin-delta {
     position: absolute;
     font-size: 24px;
-    font-weight: bold;
     color: white;
     opacity: 1;
     transform: translateY(0);
@@ -407,7 +403,6 @@ body {
     top: -20%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-weight: bold;
     color: #fff;
     font-size: 24px;
     user-select: none;
@@ -418,7 +413,6 @@ body {
     top: -30%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-weight: bold;
     color: #fff;
     font-size: 24px;
     user-select: none;
@@ -429,13 +423,10 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-weight: bold;
     color: #fff;
     font-size: 24px;
     user-select: none;
 }
-
-
 
 #bottom-stripe {
     position: fixed;
@@ -456,7 +447,7 @@ body {
     display: flex;
     align-items: center;
     color: #fff;
-    font-size: clamp(16px, 2vw, 20px);
+    font-size: clamp(18px, 2vw, 24px);
 }
 
 #bottom-stripe .free-label .free-icon {
