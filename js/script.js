@@ -947,7 +947,8 @@ function updateProgress(amount) {
     progress += amount;
     progress = Math.max(0, Math.min(goalProgress, progress));
 
-    var percentage = Math.min(100, (progress / goalProgress) * 100);
+    // So that the progress bar slider does not run over Einstein and the hole between Einstein and the progress bar is not visible.
+    var percentage = Math.min(87, (progress / goalProgress) * 87);
     fill.style.width = percentage + "%";
     scoreGreen.style.left = percentage + "%";
 

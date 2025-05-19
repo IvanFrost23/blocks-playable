@@ -396,6 +396,7 @@ body {
     background-size: contain;
     pointer-events: none;
     border-radius: 32px;
+    z-index: 11001;
 }
 
 .score-text {

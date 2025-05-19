@@ -36,7 +36,8 @@ function showEndGameUI(progress, goalProgress) {
         loseScreen.style.display = "block";
         document.body.classList.add('lose-bg');
 
-        var pct = (progress / goalProgress) * 100;
+        // So that the progress bar slider does not run over Einstein and the hole between Einstein and the progress bar is not visible.
+        var pct = (progress / goalProgress) * 87;
         var fillEl   = document.getElementById("lose-progress-fill");
         var greenEl  = document.getElementById("lose-score-green");
 
