@@ -6,32 +6,10 @@
     <title>Playable Woodenblock Game</title>
     <link href="css/styles.css" rel="stylesheet">
     <link href="css/animationsstyles.css" rel="stylesheet">
-    <link href="css/endgameuistyles.css" rel="stylesheet">
-    <link href="css/startmessagestyles.css" rel="stylesheet">
 </head>
 <body>
 
-<div id="coin-container">
-    <div id="coin-icon"></div>
-    <span id="coin-count">300</span>
-</div>
-
-<div id="gold-container">
-    <div id="gold-icon"></div>
-    <span id="gold-count">50</span>
-</div>
-
 <div id="game-container">
-    <div id="progress-bar-container">
-        <div id="progressbar-fill"></div>
-        <div id="score-green">
-            <span class="score-text" id="score-green-text">0</span>
-        </div>
-        <div id="score-end">
-            <span class="score-text" id="score-end-text">368</span>
-        </div>
-    </div>
-
     <div id="playing-field"></div>
 
     <div id="shapes-container">
@@ -49,45 +27,6 @@
     <div class="install-btn">
         <button onclick="onCTAClick()">Install</button>
     </div>
-</div>
-
-<div id="start-message-overlay" class="start-message-overlay">
-    <div id="start-message-box" class="start-message-box">
-        <div class="start-message-title">
-            Target Score <span id="start-message-score"></span>
-        </div>
-        <div id="start-message-circle" class="start-message-circle">
-            368
-        </div>
-        <div class="start-message-subtitle">
-            Only <span class="start-message-subtitle--highlight">40%</span> players can pass this level
-        </div>
-    </div>
-</div>
-
-<div id="win-screen" class="end-screen">
-    <div class="logo"></div>
-    <div id="win-score-label" class="animated-text">Score</div>
-    <div id="win-score-circle">
-        <span id="win-score-text">0</span>
-    </div>
-    <div id="btn-next-level" class="end-button"><span class="btn-next">Next level</span></div>
-</div>
-
-<div id="lose-screen" class="end-screen">
-    <div class="logo"></div>
-    <div id="lose-subtitle" class="animated-text">So Close!</div>
-    <div id="lose-progress-bar">
-        <div id="lose-progress-fill"></div>
-        <div id="lose-score-green">
-            <span class="score-text" id="lose-score-green-text">0</span>
-        </div>
-        <div id="lose-score-end">
-            <span class="score-text" id="lose-score-end-text">368</span>
-        </div>
-    </div>
-    <div id="lose-score-text" class="animated-text">Score</div>
-    <div id="btn-retry" class="end-button"><span class="btn-retry">Retry</span></div>
 </div>
 
 <audio id="burn_line_effect">
@@ -126,8 +65,6 @@
 
 <script src="js/animations.js"></script>
 <script src="js/tutorial.js"></script>
-<script src="js/startmessage.js"></script>
-<script src="js/endgameui.js"></script>
 <script src="js/script.js"></script>
 <script src="js/integration.js"></script>
 </body>

@@ -22,21 +22,18 @@ var shapeTypes = [
     [[0, 1], [1, 1], [1, 0]]
 ];
 
-var colorTypes = ["blue", "red", "yellow", "cyan", "green", "orange", "purple"];
+var colorTypes = ["pink"];
 
 var playingField = document.getElementById("playing-field");
 var cells = [];
 var shapesContainer = document.getElementById("shapes-container");
 var coinCountElement = document.getElementById("coin-count");
 
-var coinCount = parseInt(coinCountElement.textContent, 10);
 var step = 0;
 
 var progress = 0;
-var goalProgress = parseInt(document.getElementById("score-end-text").textContent);
-
 var initialFieldState = [
-    null, null, null, 2, 2, null, null, null,
+    null, null, null, 7, 2, null, null, null,
     null, null, null, null, 2, null, null, null,
     null, null, null, 2, null, null, null, null,
     2, 2, null, null, 2, null, 2, 2,
@@ -569,46 +566,6 @@ function clearHighlight() {
     });
 }
 
-function showPiecesOverlay() {
-    var shapesContainer = document.getElementById("shapes-container");
-
-    var overlay = document.createElement("div");
-    overlay.id = "game-over-overlay";
-
-    overlay.style.position = "absolute";
-    overlay.style.top = "0";
-    overlay.style.left = "0";
-    overlay.style.width = "100%";
-    overlay.style.height = "100%";
-
-    overlay.style.backgroundColor = "rgba(0, 0, 0, 0.3)";
-
-    overlay.style.display = "flex";
-    overlay.style.justifyContent = "center";
-    overlay.style.alignItems = "center";
-
-    overlay.style.zIndex = "100";
-
-    var text, sound;
-    if (progress >= goalProgress) {
-        text = "You win";
-        sound = "win_sound";
-    } else {
-        text = "No Space Left";
-        sound = "lose_sound";
-    }
-
-    document.getElementById(sound).play();
-    overlay.textContent = text;
-    overlay.style.color = "#fff";
-    overlay.style.fontSize = "2em";
-    overlay.style.fontWeight = "bold";
-
-    overlay.style.pointerEvents = "none";
-
-    shapesContainer.appendChild(overlay);
-}
-
 function placeShape(startIndex) {
     if (!draggedShape) return;
 
@@ -645,14 +602,6 @@ function placeShape(startIndex) {
             return shape.style.visibility === "hidden";
         })) {
             regenerateShapes();
-        }
-
-        if (isGameOver()) {
-            showPiecesOverlay();
-            setTimeout(animateFieldFill, 1000);
-            setTimeout(function () {
-                showEndGameUI(progress, goalProgress)
-            }, 2500);
         }
         step++;
     }
@@ -853,10 +802,6 @@ function canPlaceShape(shape) {
 }
 
 function isGameOver() {
-    if (progress >= goalProgress) {
-        return true;
-    }
-
     var shapes = shapesContainer.querySelectorAll(".shape");
     for (var i = 0; i < shapes.length; i++) {
         if (shapes[i].style.visibility !== "hidden" && canPlaceShape(shapes[i])) {
@@ -938,21 +883,7 @@ function addCoins(amount) {
 }
 
 function updateProgress(amount) {
-    var container = document.getElementById("progress-bar-container");
-    var fill = document.getElementById("progressbar-fill");
-    var scoreGreen = document.getElementById("score-green");
-    var scoreGreenText = document.getElementById("score-green-text");
-    var scoreEndText = document.getElementById("score-end-text");
-
     progress += amount;
-    progress = Math.max(0, Math.min(goalProgress, progress));
-
-    var percentage = Math.min(100, (progress / goalProgress) * 100);
-    fill.style.width = percentage + "%";
-    scoreGreen.style.left = percentage + "%";
-
-    scoreGreenText.textContent = progress;
-    scoreEndText.textContent = goalProgress;
 }
 
 function animateFieldFill() {
@@ -987,21 +918,6 @@ function resizeGame() {
     var gameContainer = document.getElementById("game-container");
     scaleFactor = getScaleFactor();
     gameContainer.style.transform = "scale(" + scaleFactor + ")";
-
-    var winScreen = document.getElementById("win-screen");
-    winScreen.style.transform = "scale(" + scaleFactor + ")";
-    var loseScreen = document.getElementById("lose-screen");
-    loseScreen.style.transform = "scale(" + scaleFactor + ")";
-
-    var coinContainer = document.getElementById("coin-container");
-    coinContainer.style.transform = "scale(" + scaleFactor + ")";
-    coinContainer.style.left = (20 * scaleFactor) + "px";
-    coinContainer.style.top = (20 * scaleFactor) + "px";
-
-    var goldContainer = document.getElementById("gold-container");
-    goldContainer.style.transform = "scale(" + scaleFactor + ")";
-    goldContainer.style.left = (180 * scaleFactor) + "px";
-    goldContainer.style.top = (20 * scaleFactor) + "px";
 }
 
 function startGame() {
@@ -1010,8 +926,6 @@ function startGame() {
     buildField();
     regenerateShapes();
     resizeGame();
-
-    showStartMessage();
 
     setTimeout(startTutorialAnimation, 1500);
 
