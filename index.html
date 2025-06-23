@@ -10,6 +10,10 @@
 <body>
 
 <div id="game-container">
+    <div id="score-container">
+        <span id="score">0</span>
+    </div>
+
     <div id="playing-field"></div>
 
     <div id="shapes-container">
@@ -18,6 +22,8 @@
         <div class="shape-slot"></div>
     </div>
 </div>
+
+<div id="reply-button"></div>
 
 <div id="bottom-stripe">
     <div class="free-label">
@@ -40,27 +46,6 @@
 </audio>
 <audio id="fill_grid">
     <source src="sounds/fill_grid.mp3" type="audio/mpeg">
-</audio>
-
-<audio id="lose_sound">
-    <source src="sounds/lose_sound.mp3" type="audio/mpeg">
-</audio>
-<audio id="lose_logo">
-    <source src="sounds/lose_logo.mp3" type="audio/mpeg">
-</audio>
-
-<audio id="win_sound">
-    <source src="sounds/win_sound.mp3" type="audio/mpeg">
-</audio>
-<audio id="victory_logo">
-    <source src="sounds/victory_logo.mp3" type="audio/mpeg">
-</audio>
-
-<audio id="endgame_points">
-    <source src="sounds/endgame_points.mp3" type="audio/mpeg">
-</audio>
-<audio id="endgame_button">
-    <source src="sounds/endgame_button.mp3" type="audio/mpeg">
 </audio>
 
 <script src="js/animations.js"></script>
