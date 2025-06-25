@@ -216,7 +216,8 @@ body {
     display: flex;
     align-items: center;
     color: #fff;
-    font-size: clamp(18px, 2vw, 24px);
+    font-size: clamp(22px, 2vw, 30px);
+    font-family: Arial, sans-serif;
 }
 
 #bottom-stripe .free-label .free-icon {
@@ -236,10 +237,22 @@ body {
     color: #fff;
     font-size: 20px;
     cursor: pointer;
-    animation: pulse 1.5s infinite;
+    animation: button_pulse 1.5s infinite;
     -webkit-appearance: none;
     outline: none;
     -webkit-tap-highlight-color: transparent;
+}
+
+@keyframes button_pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 @media (max-height: 800px) {
@@ -302,4 +315,7 @@ body {
     background-position: center;
     cursor: pointer;
     z-index: 200;
+    -webkit-appearance: none;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
