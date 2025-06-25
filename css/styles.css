@@ -216,7 +216,7 @@ body {
     display: flex;
     align-items: center;
     color: #fff;
-    font-size: clamp(18px, 2vw, 30px);
+    font-size: clamp(18px, 2vw, 24px);
     font-weight: bold;
     font-family: Arial, sans-serif;
 }
@@ -244,18 +244,6 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-@keyframes button_pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
 @media (max-height: 800px) {
     #bottom-stripe .free-label .free-icon {
         width: 30px;
@@ -267,6 +255,18 @@ body {
         width: 80px;
         height: 30px;
         font-size: clamp(14px, 2vw, 18px);
+    }
+}
+
+@keyframes button_pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
     }
 }
 
