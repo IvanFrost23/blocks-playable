@@ -826,7 +826,7 @@ function updateProgress(amount) {
     var scoreValueEl = document.getElementById('score');
     scoreValueEl.textContent = progress;
     scoreEl.classList.add('pulse');
-    setTimeout(() => {
+    setTimeout(function () {
         scoreEl.classList.remove('pulse');
     }, 300);
 }
@@ -879,10 +879,9 @@ function startGame() {
 }
 
 window.startGame = startGame;
-document.getElementById('reply-button').addEventListener('click', () => {
+document.getElementById('reply-button').addEventListener('click', function () {
     document.getElementById("game-container").style.display = "block";
     progress = 0;
-    coinCount = 0;
     step = 0;
 
     updateProgress(0);
