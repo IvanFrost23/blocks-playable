@@ -2,24 +2,12 @@ var scaleFactor = 1;
 var MOBILE_DRAG_OFFSET = -75;
 
 var shapeTypes = [
-    [[1]],
-    [[1, 1]],
-    [[1],[1]],
-    [[1, 1],[1, 1]],
-    [[1, 0],[1, 1]],
-    [[1, 0],[0, 1]],
-    [[0, 1],[1, 0]],
-    [[1, 1, 1]],
-    [[0, 1], [1, 1]],
-    [[1], [1], [1]],
-    [[1, 1], [1, 1], [1, 1]],
-    [[1, 0], [1, 0], [1, 1]],
-    [[0, 1], [0, 1], [1, 1]],
-    [[0, 1, 0], [1, 1, 1], [0, 1, 0]],
-    [[1, 1, 0], [0, 1, 1]],
-    [[0, 1, 1], [1, 1, 0]],
-    [[1, 0], [1, 1], [0, 1]],
-    [[0, 1], [1, 1], [1, 0]]
+    [[0, 1, 0], [1, 1, 1]],
+    [[1, 1, 1], [0, 1, 0]],
+    [[0, 1], [1, 1], [0, 1]],
+    [[1, 0], [1, 1], [1, 0]],
+    [[1, 0, 0, 0], [1, 0, 0, 0], [1, 0, 0, 0], [1, 1, 1, 1]],
+    [[1, 1, 1, 1], [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]]
 ];
 
 var colorTypes = ["pink"];
@@ -33,14 +21,14 @@ var step = 0;
 
 var progress = 0;
 var initialFieldState = [
-    null, null, null, null, null, null, null, null,
-    null, null, null, null, null, null, null, null,
-    null, null, null, null, null, null, null, null,
-    null, null, null, null, null, null, null, null,
-    null, null, null, null, null, null, null, null,
-    null, null, null, null, null, null, null, null,
-    null, null, null, null, null, null, null, null,
-    null, null, null, null, null, null, null, null
+    0, null, null, null, null, null, null, null,
+    null, 0, null, 0, 0, 0, 0, null,
+    null, null, 0, 0, 0, 0, 0, null,
+    null, 0, 0, 0, 0, 0, 0, null,
+    null, 0, 0, 0, 0, 0, 0, null,
+    null, 0, 0, 0, 0, 0, null, null,
+    null, 0, 0, 0, 0, null, 0, null,
+    null, null, null, null, null, null, null, 0
 ];
 
 var draggedShape = null;
@@ -168,12 +156,18 @@ function handleStart(event, isTouch) {
 function handleTouchStart(event) {
     if (!isGameOver()) {
         handleStart(event, true);
+    } else {
+        event.preventDefault();
+        onCTAClick();
     }
 }
 
 function handleDragStart(event) {
     if (!isGameOver()) {
         handleStart(event, false);
+    } else {
+        event.preventDefault();
+        onCTAClick();
     }
 }
 
@@ -226,7 +220,7 @@ function createNewShape(randomType) {
     return shape;
 }
 
-var startShapes = [3, 7, 6];
+var startShapes = [[0, 1, 2], [3, 4, 5]];
 
 function createShapeSlots(count) {
     shapesContainer.innerHTML = "";
@@ -258,8 +252,8 @@ function generateShapesForSlots(slots, validCandidates) {
         var shapeDef;
         var shapeColor = colorTypes[Math.floor(Math.random() * colorTypes.length)];
 
-        if (step === 0) {
-            shapeDef = shapeTypes[startShapes[i]];
+        if (step < startShapes.length) {
+            shapeDef = shapeTypes[startShapes[step][i]];
         } else {
             var remainingSlots = numSlots - i;
 
@@ -801,14 +795,7 @@ function canPlaceShape(shape) {
 }
 
 function isGameOver() {
-    var shapes = shapesContainer.querySelectorAll(".shape");
-    for (var i = 0; i < shapes.length; i++) {
-        if (shapes[i].style.visibility !== "hidden" && canPlaceShape(shapes[i])) {
-            return false;
-        }
-    }
-
-    return true;
+    return step >= 3;
 }
 
 function getScaleFactor() {
