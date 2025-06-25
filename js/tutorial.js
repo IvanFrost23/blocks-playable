@@ -11,8 +11,8 @@ function createTutorialShape(shape, shapeOffsets, cellSize) {
 
     dragImage.style.gridTemplateRows = "repeat(" + maxRow + ", " + cellSize + "px)";
     dragImage.style.gridTemplateColumns = "repeat(" + maxCol + ", " + cellSize + "px)";
-    dragImage.style.width = Math.floor(cellSize * maxCol) + "px";
-    dragImage.style.height = Math.floor(cellSize * maxRow) + "px";
+    dragImage.style.width = Math.ceil(cellSize * maxCol) + "px";
+    dragImage.style.height = Math.ceil(cellSize * maxRow) + "px";
     var blocks = dragImage.querySelectorAll(".block");
     for (var i = 0; i < blocks.length; i++) {
         var block = blocks[i];
@@ -36,61 +36,57 @@ function startTutorialAnimation() {
         finger.id = "tutorialFinger";
         document.body.appendChild(finger);
     }
-
-    var scaleFactor = getScaleFactor();
-    var shapeRect = shape.getBoundingClientRect();
-    var startX = shapeRect.left + shapeRect.width / 2;
-    var startY = shapeRect.top + shapeRect.height / 2;
-    var targetCell = cells[57];
-    var targetRect = targetCell.getBoundingClientRect();
-    var endX = targetRect.left;
-    var endY = targetRect.top;
-
-    var cellSize = playingField.querySelector(".cell").offsetWidth;
-    var blocks = shape.querySelectorAll(".block");
-    var shapeOffsets = [];
-    for (var i = 0; i < blocks.length; i++) {
-        var block = blocks[i];
-        var row = parseInt(block.style.gridRowStart, 10) - 1;
-        var col = parseInt(block.style.gridColumnStart, 10) - 1;
-        shapeOffsets.push({ row: row, col: col });
-    }
-
-    var scaledClone = createTutorialShape(shape, shapeOffsets, cellSize);
-    scaledClone.id = "scaledClone";
-    scaledClone.style.opacity = "0.5";
-    scaledClone.style.transformOrigin = "center center";
-    scaledClone.style.left = endX + "px";
-    scaledClone.style.top = endY + "px";
-    scaledClone.style.transform = "translate(-50%, -50%) scale(" + scaleFactor + ")";
-    document.body.appendChild(scaledClone);
-    void scaledClone.offsetWidth;
-    var deltaX = endX - startX;
-    var deltaY = endY - startY;
-
     function animateCycle() {
+        var scaleFactor = getScaleFactor();
+        var shapeRect = shape.getBoundingClientRect();
+        var startX = shapeRect.left + shapeRect.width / 2;
+        var startY = shapeRect.top + shapeRect.height / 2;
+        var targetCell = cells[53];
+        var targetRect = targetCell.getBoundingClientRect();
+        var endX = targetRect.left + targetRect.width / 2;
+        var endY = targetRect.top + targetRect.height;
         finger.style.transition = "none";
         finger.style.left = startX + "px";
         finger.style.top = startY + "px";
         finger.style.opacity = "1";
-
         finger.style.transformOrigin = "center center";
         finger.style.transform = "translate(-50%, -50%) translate(" + (45 * scaleFactor) + "px, " + (55 * scaleFactor) + "px) scale(" + scaleFactor + ")";
         void finger.offsetWidth;
-
+        var cellSize = playingField.querySelector(".cell").offsetWidth;
+        var blocks = shape.querySelectorAll(".block");
+        var shapeOffsets = [];
+        for (var i = 0; i < blocks.length; i++) {
+            var block = blocks[i];
+            var row = parseInt(block.style.gridRowStart, 10) - 1;
+            var col = parseInt(block.style.gridColumnStart, 10) - 1;
+            shapeOffsets.push({ row: row, col: col });
+        }
+        var scaledClone = createTutorialShape(shape, shapeOffsets, cellSize);
+        scaledClone.id = "scaledClone";
+        scaledClone.style.opacity = "0.5";
+        scaledClone.style.transformOrigin = "center center";
+        scaledClone.style.left = startX + "px";
+        scaledClone.style.top = startY + "px";
+        scaledClone.style.transform = "translate(-50%, -50%) scale(" + scaleFactor + ")";
+        document.body.appendChild(scaledClone);
+        void scaledClone.offsetWidth;
         var deltaX = endX - startX;
         var deltaY = endY - startY;
-
-        finger.style.transition = "transform 1s ease-out, opacity 1s ease-out";
-       finger.style.transform = "translate(" + deltaX + "px, " + deltaY + "px) translate(-50%, -50%) translate(" + (45 * scaleFactor) + "px, " + (55 * scaleFactor) + "px) scale(" + scaleFactor + ")";
-
+        var transitionStyle = "transform 1.5s ease-out, opacity 1s ease-out";
+        finger.style.transition = transitionStyle;
+        scaledClone.style.transition = transitionStyle;
+        finger.style.transform = "translate(" + deltaX + "px, " + deltaY + "px) translate(-50%, -50%) translate(" + (45 * scaleFactor) + "px, " + (55 * scaleFactor) + "px) scale(" + scaleFactor + ")";
+        scaledClone.style.transform = "translate(" + deltaX + "px, " + deltaY + "px) translate(-50%, -50%) scale(" + scaleFactor + ")";
         setTimeout(function() {
+            if (scaledClone.parentNode) {
+                scaledClone.parentNode.removeChild(scaledClone);
+            }
             finger.style.opacity = "0";
-        }, 1000);
+        }, 2000);
         function onFade(e) {
             if (e.propertyName === "opacity") {
                 finger.removeEventListener("transitionend", onFade);
-                setTimeout(animateCycle, 500);
+                setTimeout(animateCycle, 1000);
             }
         }
         finger.addEventListener("transitionend", onFade);
