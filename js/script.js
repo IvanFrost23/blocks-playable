@@ -33,14 +33,14 @@ var step = 0;
 
 var progress = 0;
 var initialFieldState = [
-    null, null, null, 7, 2, null, null, null,
-    null, null, null, null, 2, null, null, null,
-    null, null, null, 2, null, null, null, null,
-    2, 2, null, null, 2, null, 2, 2,
-    2, 2, null, 2, null, null, 2, 2,
-    null, null, null, null, 2, null, null, null,
-    null, null, null, 2, null, null, null, null,
-    null, null, null, 2, 2, null, null, null
+    null, null, null, null, null, null, null, null,
+    null, null, null, null, null, null, null, null,
+    null, null, null, null, null, null, null, null,
+    null, null, null, null, null, null, null, null,
+    null, null, null, null, null, null, null, null,
+    null, null, null, null, null, null, null, null,
+    null, null, null, null, null, null, null, null,
+    null, null, null, null, null, null, null, null
 ];
 
 var draggedShape = null;
@@ -672,7 +672,6 @@ function checkAndClearFullRowsOrColumns(color) {
         });
 
         var totalBonus = linesCleared * 10;
-        addCoins(totalBonus);
         updateProgress(totalBonus);
 
         var totalX = 0, totalY = 0;
@@ -832,55 +831,6 @@ var currentDeltaAmount = 0;
 var activeDeltaElement = null;
 var accumulatedDelta = 0;
 var deltaTimeoutId = null;
-
-function addCoins(amount) {
-    coinCount += amount;
-
-    var coinCountElement = document.getElementById('coin-count');
-    coinCountElement.textContent = coinCount;
-
-    var coinContainer = document.getElementById('coin-container');
-
-    if (activeDeltaElement) {
-        accumulatedDelta += amount;
-        activeDeltaElement.textContent = "+" + accumulatedDelta;
-
-        clearTimeout(deltaTimeoutId);
-
-        activeDeltaElement.style.transform = 'translateY(0)';
-        activeDeltaElement.style.opacity = '1';
-
-        setTimeout(function () {
-            activeDeltaElement.style.transform = 'translateY(-10px)';
-            activeDeltaElement.style.opacity = '0';
-        }, 10);
-    } else {
-        accumulatedDelta = amount;
-        activeDeltaElement = document.createElement('div');
-        activeDeltaElement.textContent = "+" + accumulatedDelta;
-        activeDeltaElement.classList.add('coin-delta');
-
-        var left = coinCountElement.offsetLeft;
-        var top = coinCountElement.offsetTop + coinCountElement.offsetHeight;
-        activeDeltaElement.style.left = left + "px";
-        activeDeltaElement.style.top = (top + 10) + "px";
-
-        coinContainer.appendChild(activeDeltaElement);
-
-        setTimeout(function () {
-            activeDeltaElement.style.transform = 'translateY(-10px)';
-            activeDeltaElement.style.opacity = '0';
-        }, 10);
-    }
-
-    deltaTimeoutId = setTimeout(function () {
-        if (activeDeltaElement) {
-            activeDeltaElement.remove();
-            activeDeltaElement = null;
-            accumulatedDelta = 0;
-        }
-    }, 1000);
-}
 
 function updateProgress(amount) {
     progress += amount;
