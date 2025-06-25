@@ -44,15 +44,15 @@ body {
     top: 22%;
     left: 50%;
     transform: translateX(-50%);
-    width: 566px;
-    height: 566px;
+    width: 560px;
+    height: 560px;
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
     background-image: url('../images/grid.png');
     border: none;
     box-sizing: border-box;
-    padding: 3px;
+    padding: 4px;
     z-index: 10000;
 }
 
@@ -64,7 +64,7 @@ body {
     align-items: center;
     background-color: transparent;
     position: relative;
-    border: none;
+    border: 1px solid transparent
 }
 
 .cell.filled {
